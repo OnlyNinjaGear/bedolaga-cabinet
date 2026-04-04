@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router';
+import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -288,14 +289,14 @@ export function AppShell({ children }: AppShellProps) {
       <SuccessNotificationModal />
 
       {/* Desktop Header */}
-      <header className="fixed left-0 right-0 top-0 z-50 hidden border-b border-dark-800/50 bg-dark-950/95 lg:block">
+      <header className="border-border bg-background/80 fixed top-0 right-0 left-0 z-50 hidden border-b backdrop-blur-xl lg:block">
         <div className="mx-auto grid h-14 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5" onClick={handleNavClick}>
-            <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-dark-800">
+            <div className="bg-card relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
               <span
                 className={cn(
-                  'absolute text-sm font-bold text-accent-400 transition-opacity duration-200',
+                  'text-primary absolute text-sm font-bold transition-opacity duration-200',
                   hasCustomLogo && isLogoPreloaded() ? 'opacity-0' : 'opacity-100',
                 )}
               >
@@ -312,7 +313,7 @@ export function AppShell({ children }: AppShellProps) {
                 />
               )}
             </div>
-            <span className="text-base font-semibold text-dark-100">{appName}</span>
+            <span className="text-foreground text-base font-semibold">{appName}</span>
           </Link>
 
           {/* Center Navigation */}
@@ -325,12 +326,12 @@ export function AppShell({ children }: AppShellProps) {
                 className={cn(
                   'group flex items-center rounded-xl px-2.5 py-2 transition-all duration-200',
                   isActive(item.path)
-                    ? 'bg-dark-800 text-dark-50'
-                    : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
                 )}
               >
-                <item.icon className="h-[18px] w-[18px] shrink-0" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
+                <item.icon className="h-4.5 w-4.5 shrink-0" />
+                <span className="max-w-0 overflow-hidden text-xs font-medium whitespace-nowrap opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
                   {item.label}
                 </span>
               </Link>
@@ -342,12 +343,12 @@ export function AppShell({ children }: AppShellProps) {
                 className={cn(
                   'group flex items-center rounded-xl px-2.5 py-2 transition-all duration-200',
                   isActive('/referral')
-                    ? 'bg-dark-800 text-dark-50'
-                    : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
                 )}
               >
-                <UsersIcon className="h-[18px] w-[18px] shrink-0" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
+                <UsersIcon className="h-4.5 w-4.5 shrink-0" />
+                <span className="max-w-0 overflow-hidden text-xs font-medium whitespace-nowrap opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
                   {t('nav.referral')}
                 </span>
               </Link>
@@ -359,19 +360,19 @@ export function AppShell({ children }: AppShellProps) {
                 className={cn(
                   'group flex items-center rounded-xl px-2.5 py-2 transition-all duration-200',
                   isActive('/gift')
-                    ? 'bg-dark-800 text-dark-50'
-                    : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
                 )}
               >
-                <GiftIcon className="h-[18px] w-[18px] shrink-0" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
+                <GiftIcon className="h-4.5 w-4.5 shrink-0" />
+                <span className="max-w-0 overflow-hidden text-xs font-medium whitespace-nowrap opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
                   {t('nav.gift')}
                 </span>
               </Link>
             )}
             {isAdmin && (
               <>
-                <div className="mx-1 h-5 w-px shrink-0 bg-dark-700" />
+                <div className="bg-border mx-1 h-5 w-px shrink-0" />
                 <Link
                   to="/admin"
                   onClick={handleNavClick}
@@ -382,8 +383,8 @@ export function AppShell({ children }: AppShellProps) {
                       : 'text-warning-500/70 hover:bg-warning-500/10 hover:text-warning-400',
                   )}
                 >
-                  <ShieldIcon className="h-[18px] w-[18px] shrink-0" />
-                  <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
+                  <ShieldIcon className="h-4.5 w-4.5 shrink-0" />
+                  <span className="max-w-0 overflow-hidden text-xs font-medium whitespace-nowrap opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-40 group-hover:opacity-100">
                     {t('admin.nav.title')}
                   </span>
                 </Link>
@@ -393,31 +394,35 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Right side actions */}
           <div className="flex items-center justify-end gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 haptic.impact('light');
                 toggleTheme();
               }}
               className={cn(
-                'rounded-xl border border-dark-700/50 bg-dark-800/50 p-2 text-dark-400 transition-colors duration-200 hover:bg-dark-700 hover:text-accent-400',
+                'border-border bg-card/50 text-muted-foreground hover:bg-muted hover:text-primary rounded-xl border',
                 !canToggleTheme && 'pointer-events-none invisible',
               )}
               title={isDark ? t('theme.light') || 'Light mode' : t('theme.dark') || 'Dark mode'}
             >
               {isDark ? <MoonIcon className="h-5 w-5" /> : <SunIcon className="h-5 w-5" />}
-            </button>
+            </Button>
             <TicketNotificationBell isAdmin={location.pathname.startsWith('/admin')} />
             <LanguageSwitcher />
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 haptic.impact('light');
                 logout();
               }}
-              className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-2 text-dark-400 transition-colors duration-200 hover:bg-dark-700 hover:text-accent-400"
+              className="border-border bg-card/50 text-muted-foreground hover:bg-muted hover:text-primary rounded-xl border"
               title={t('nav.logout')}
             >
               <LogoutIcon className="h-5 w-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </header>

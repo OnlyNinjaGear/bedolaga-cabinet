@@ -5,10 +5,21 @@ import { useTranslation } from 'react-i18next';
 import { rbacApi, AccessPolicy, AdminRole } from '@/api/rbac';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { usePlatform } from '@/platform/hooks/usePlatform';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -211,7 +222,7 @@ export default function AdminPolicies() {
         icons.push(
           <span
             key="time"
-            className="inline-flex items-center gap-1 rounded bg-dark-700 px-1.5 py-0.5 text-xs text-dark-300"
+            className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
             title={t('admin.policies.conditions.timeRange')}
           >
             <ClockIcon />
@@ -224,7 +235,7 @@ export default function AdminPolicies() {
         icons.push(
           <span
             key="ip"
-            className="inline-flex items-center gap-1 rounded bg-dark-700 px-1.5 py-0.5 text-xs text-dark-300"
+            className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
             title={t('admin.policies.conditions.ipWhitelist')}
           >
             <GlobeIcon />
@@ -237,7 +248,7 @@ export default function AdminPolicies() {
         icons.push(
           <span
             key="rate"
-            className="inline-flex items-center gap-1 rounded bg-dark-700 px-1.5 py-0.5 text-xs text-dark-300"
+            className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
             title={t('admin.policies.conditions.rateLimit')}
           >
             <BoltIcon />
@@ -253,7 +264,7 @@ export default function AdminPolicies() {
         icons.push(
           <span
             key="weekdays"
-            className="inline-flex items-center gap-1 rounded bg-dark-700 px-1.5 py-0.5 text-xs text-dark-300"
+            className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
             title={t('admin.policies.conditions.weekdays')}
           >
             <CalendarIcon />
@@ -283,60 +294,57 @@ export default function AdminPolicies() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.policies.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.policies.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-semibold">{t('admin.policies.title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('admin.policies.subtitle')}</p>
           </div>
         </div>
         <PermissionGate permission="roles:create">
-          <button
+          <Button
             onClick={() => navigate('/admin/policies/create')}
-            className="flex items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
+            className="flex items-center justify-center gap-2"
           >
             <PlusIcon />
             {t('admin.policies.createPolicy')}
-          </button>
+          </Button>
         </PermissionGate>
       </div>
 
       {/* Error message */}
       {formError && (
-        <div className="mb-4 rounded-lg border border-error-500/30 bg-error-500/10 p-3">
-          <p className="text-sm text-error-400">{formError}</p>
+        <div className="border-error-500/30 bg-error-500/10 mb-4 rounded-lg border p-3">
+          <p className="text-error-400 text-sm">{formError}</p>
         </div>
       )}
 
       {/* Stats Overview */}
       {sortedPolicies.length > 0 && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-dark-100">{sortedPolicies.length}</div>
-            <div className="text-xs text-dark-400">{t('admin.policies.stats.total')}</div>
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-foreground text-2xl font-bold">{sortedPolicies.length}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.policies.stats.total')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-success-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-success-400 text-2xl font-bold">
               {sortedPolicies.filter((p) => p.effect === 'allow').length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.policies.stats.allow')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.policies.stats.allow')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+          <div className="border-border bg-card rounded-xl border p-4">
             <div className="text-2xl font-bold text-red-400">
               {sortedPolicies.filter((p) => p.effect === 'deny').length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.policies.stats.deny')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.policies.stats.deny')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-accent-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-primary text-2xl font-bold">
               {sortedPolicies.filter((p) => p.is_active).length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.policies.stats.active')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.policies.stats.active')}</div>
           </div>
         </div>
       )}
@@ -344,7 +352,7 @@ export default function AdminPolicies() {
       {/* Policies List */}
       {policiesLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : policiesError ? (
         <div className="py-12 text-center">
@@ -353,7 +361,7 @@ export default function AdminPolicies() {
       ) : sortedPolicies.length === 0 ? (
         <div className="py-12 text-center">
           <ShieldIcon />
-          <p className="mt-2 text-dark-400">{t('admin.policies.noPolicies')}</p>
+          <p className="text-muted-foreground mt-2">{t('admin.policies.noPolicies')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -364,18 +372,18 @@ export default function AdminPolicies() {
             return (
               <div
                 key={policy.id}
-                className={`rounded-xl border bg-dark-800 p-4 transition-colors ${
-                  policy.is_active ? 'border-dark-700' : 'border-dark-700/50 opacity-60'
+                className={`bg-card rounded-xl border p-4 transition-colors ${
+                  policy.is_active ? 'border-border' : 'border-border/50 opacity-60'
                 }`}
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                   <div className="min-w-0 flex-1">
                     {/* Policy name + effect badge */}
                     <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-dark-100">{policy.name}</span>
+                      <span className="text-foreground font-medium">{policy.name}</span>
                       <EffectBadge effect={policy.effect} />
                       {!policy.is_active && (
-                        <span className="rounded bg-dark-600 px-1.5 py-0.5 text-xs text-dark-400">
+                        <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs">
                           {t('admin.policies.inactiveBadge')}
                         </span>
                       )}
@@ -383,14 +391,14 @@ export default function AdminPolicies() {
 
                     {/* Resource + actions */}
                     <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
-                      <span className="rounded bg-dark-700 px-2 py-0.5 text-xs text-accent-400">
+                      <span className="bg-muted text-primary rounded px-2 py-0.5 text-xs">
                         {t(
                           `admin.roles.form.permissionSections.${policy.resource}`,
                           policy.resource,
                         )}
                       </span>
-                      <span className="text-dark-500">:</span>
-                      <span className="text-xs text-dark-300">
+                      <span className="text-muted-foreground">:</span>
+                      <span className="text-muted-foreground text-xs">
                         {(policy.actions ?? [])
                           .map((a) => t(`admin.roles.form.permissionActions.${a}`, a))
                           .join(', ')}
@@ -398,7 +406,7 @@ export default function AdminPolicies() {
                     </div>
 
                     {/* Info row */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-dark-400">
+                    <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                       <span>
                         {t('admin.policies.roleLabel')}: {roleName}
                       </span>
@@ -414,24 +422,27 @@ export default function AdminPolicies() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 border-t border-dark-700 pt-3 sm:border-0 sm:pt-0">
+                  <div className="border-border flex items-center gap-2 border-t pt-3 sm:border-0 sm:pt-0">
                     <PermissionGate permission="roles:edit">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => navigate(`/admin/policies/${policy.id}/edit`)}
-                        className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100 sm:flex-none"
                         title={t('admin.policies.actions.edit')}
                       >
                         <EditIcon />
-                      </button>
+                      </Button>
                     </PermissionGate>
                     <PermissionGate permission="roles:delete">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => setDeleteConfirm(policy.id)}
-                        className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-error-500/20 hover:text-error-400 sm:flex-none"
+                        className="hover:bg-error-500/20 hover:text-error-400"
                         title={t('admin.policies.actions.delete')}
                       >
                         <TrashIcon />
-                      </button>
+                      </Button>
                     </PermissionGate>
                   </div>
                 </div>
@@ -442,38 +453,31 @@ export default function AdminPolicies() {
       )}
 
       {/* Delete Confirmation */}
-      {deleteConfirm !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/60"
-            onClick={() => setDeleteConfirm(null)}
-            aria-hidden="true"
-          />
-          <div className="relative w-full max-w-sm rounded-xl border border-dark-700 bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.policies.confirm.title')}
-            </h3>
-            <p className="mb-6 text-dark-400">{t('admin.policies.confirm.text')}</p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('admin.policies.confirm.cancel')}
-              </button>
-              <button
-                onClick={() => deleteMutation.mutate(deleteConfirm)}
-                disabled={deleteMutation.isPending}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
-              >
-                {deleteMutation.isPending
-                  ? t('admin.policies.confirm.deleting')
-                  : t('admin.policies.confirm.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertDialog
+        open={deleteConfirm !== null}
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.policies.confirm.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('admin.policies.confirm.text')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirm(null)}>
+              {t('admin.policies.confirm.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteConfirm !== null && deleteMutation.mutate(deleteConfirm)}
+              disabled={deleteMutation.isPending}
+              className="bg-error-500 hover:bg-error-600"
+            >
+              {deleteMutation.isPending
+                ? t('admin.policies.confirm.deleting')
+                : t('admin.policies.confirm.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

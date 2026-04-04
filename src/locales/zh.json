@@ -946,7 +946,10 @@
       "salesStats": "销售统计",
       "landings": "落地页",
       "referralNetwork": "推荐网络",
-      "news": "新闻"
+      "news": "新闻",
+      "health": "系统健康",
+      "notifications": "通知",
+      "seo": "SEO / Open Graph"
     },
     "panel": {
       "title": "管理面板",
@@ -1689,6 +1692,16 @@
         "sys_backup": "备份",
         "sys_version": "版本",
         "sys_logging": "日志"
+      },
+      "presets": {
+        "zinc": "锌灰",
+        "slate": "石板",
+        "stone": "岩石",
+        "neutral": "中性",
+        "blue": "蓝色",
+        "green": "绿色",
+        "rose": "玫瑰",
+        "violet": "紫罗兰"
       },
       "categories": {
         "TELEGRAM_WIDGET": "Telegram Login Widget",
@@ -2562,7 +2575,8 @@
           "sync": "同步",
           "tickets": "工单",
           "gifts": "礼物",
-          "referrals": "推荐"
+          "referrals": "推荐",
+          "timeline": "时间线"
         },
         "noTickets": "该用户没有工单",
         "ticketsCount": "个工单",
@@ -2740,6 +2754,10 @@
           "searchPlaceholder": "按名称、邮箱或 Telegram ID 搜索...",
           "alreadyReferred": "已有推荐人",
           "noUsersFound": "未找到用户"
+        },
+        "timeline": {
+          "title": "活动时间线",
+          "empty": "暂无活动记录"
         }
       }
     },

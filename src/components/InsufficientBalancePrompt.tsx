@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../hooks/useCurrency';
+import { Button } from '@/components/ui/button';
 
 interface InsufficientBalancePromptProps {
   /** Amount missing in kopeks */
@@ -52,11 +53,11 @@ export default function InsufficientBalancePrompt({
   if (compact) {
     return (
       <div
-        className={`flex items-center justify-between gap-3 rounded-xl border border-error-500/30 bg-error-500/10 p-3 ${className}`}
+        className={`border-error-500/30 bg-error-500/10 flex items-center justify-between gap-3 rounded-xl border p-3 ${className}`}
       >
-        <div className="flex items-center gap-2 text-sm text-error-400">
+        <div className="text-error-400 flex items-center gap-2 text-sm">
           <svg
-            className="h-4 w-4 flex-shrink-0"
+            className="h-4 w-4 shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -75,29 +76,30 @@ export default function InsufficientBalancePrompt({
             </span>
           </span>
         </div>
-        <button
+        <Button
           onClick={handleTopUpClick}
           disabled={isPreparingTopUp}
-          className="btn-primary whitespace-nowrap px-3 py-1.5 text-xs"
+          size="sm"
+          className="whitespace-nowrap"
         >
           {isPreparingTopUp ? (
             <span className="h-3 w-3 animate-spin rounded-full border border-white/30 border-t-white" />
           ) : (
             t('balance.topUp')
           )}
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <div
-      className={`rounded-xl border border-error-500/30 bg-gradient-to-br from-error-500/10 to-warning-500/5 p-4 ${className}`}
+      className={`border-error-500/30 from-error-500/10 to-warning-500/5 rounded-xl border bg-linear-to-br p-4 ${className}`}
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-error-500/20">
+        <div className="bg-error-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
           <svg
-            className="h-5 w-5 text-error-400"
+            className="text-error-400 h-5 w-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -111,10 +113,12 @@ export default function InsufficientBalancePrompt({
           </svg>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="mb-1 font-medium text-error-400">{t('balance.insufficientFunds')}</div>
-          <div className="text-sm text-dark-300">{message || t('balance.topUpToComplete')}</div>
+          <div className="text-error-400 mb-1 font-medium">{t('balance.insufficientFunds')}</div>
+          <div className="text-muted-foreground text-sm">
+            {message || t('balance.topUpToComplete')}
+          </div>
           <div className="mt-3 flex items-center gap-3">
-            <div className="text-lg font-bold text-dark-100">
+            <div className="text-foreground text-lg font-bold">
               {t('balance.missing')}:{' '}
               <span className="text-error-400">
                 {displayAmount} {currencySymbol}
@@ -123,10 +127,10 @@ export default function InsufficientBalancePrompt({
           </div>
         </div>
       </div>
-      <button
+      <Button
         onClick={handleTopUpClick}
         disabled={isPreparingTopUp}
-        className="btn-primary mt-4 flex w-full items-center justify-center gap-2 py-2.5"
+        className="mt-4 flex w-full items-center justify-center gap-2"
       >
         {isPreparingTopUp ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -144,7 +148,7 @@ export default function InsufficientBalancePrompt({
             {t('balance.topUpBalance')}
           </>
         )}
-      </button>
+      </Button>
     </div>
   );
 }

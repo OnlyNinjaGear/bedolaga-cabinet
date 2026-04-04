@@ -6,6 +6,7 @@ import { setCachedFullscreenEnabled } from '../../hooks/useTelegramSDK';
 import { UploadIcon, TrashIcon, PencilIcon, CheckIcon, CloseIcon } from './icons';
 import { Toggle } from './Toggle';
 import { BackgroundEditor } from './BackgroundEditor';
+import { Button } from '@/components/ui/button';
 
 interface BrandingTabProps {
   accentColor?: string;
@@ -98,16 +99,16 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
   return (
     <div className="space-y-6">
       {/* Logo & Name */}
-      <div className="rounded-2xl border border-dark-700/50 bg-dark-800/50 p-6">
-        <h3 className="mb-4 text-lg font-semibold text-dark-100">
+      <div className="border-border/50 bg-card/50 rounded-2xl border p-6">
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
           {t('admin.settings.logoAndName')}
         </h3>
 
         <div className="flex items-start gap-6">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div
-              className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-3xl font-bold text-white"
+              className="text-primary-foreground flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl text-3xl font-bold"
               style={{
                 background: `linear-gradient(135deg, ${accentColor}, ${accentColor}dd)`,
               }}
@@ -131,28 +132,32 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
                 onChange={handleLogoUpload}
                 className="hidden"
               />
-              <button
+              <Button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadLogoMutation.isPending}
-                className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-dark-700 px-3 py-2 text-sm text-dark-200 transition-colors hover:bg-dark-600 disabled:opacity-50"
+                variant="secondary"
+                size="icon"
+                className="flex flex-1 rounded-xl"
               >
                 <UploadIcon />
-              </button>
+              </Button>
               {branding?.has_custom_logo && (
-                <button
+                <Button
                   onClick={() => deleteLogoMutation.mutate()}
                   disabled={deleteLogoMutation.isPending}
-                  className="rounded-xl bg-dark-700 px-3 py-2 text-dark-400 transition-colors hover:bg-error-500/20 hover:text-error-400 disabled:opacity-50"
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-destructive/20 hover:text-destructive rounded-xl"
                 >
                   <TrashIcon />
-                </button>
+                </Button>
               )}
             </div>
           </div>
 
           {/* Name */}
           <div className="flex-1">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.settings.projectName')}
             </label>
             {editingName ? (
@@ -161,37 +166,42 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="flex-1 rounded-xl border border-dark-600 bg-dark-700 px-4 py-2 text-dark-100 focus:border-accent-500 focus:outline-none"
+                  className="border-border bg-muted text-foreground focus:border-primary flex-1 rounded-xl border px-4 py-2 focus:outline-none"
                   maxLength={50}
                 />
-                <button
+                <Button
                   onClick={() => updateBrandingMutation.mutate(newName)}
                   disabled={updateBrandingMutation.isPending}
-                  className="rounded-xl bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+                  size="icon"
+                  className="rounded-xl"
                 >
                   <CheckIcon />
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setEditingName(false)}
-                  className="rounded-xl bg-dark-700 px-4 py-2 text-dark-300 transition-colors hover:bg-dark-600"
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-xl"
                 >
                   <CloseIcon />
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="text-lg text-dark-100">
+                <span className="text-foreground text-lg">
                   {branding?.name || t('admin.settings.notSpecified')}
                 </span>
-                <button
+                <Button
                   onClick={() => {
                     setNewName(branding?.name ?? '');
                     setEditingName(true);
                   }}
-                  className="rounded-lg p-1.5 text-dark-400 transition-colors hover:bg-dark-700 hover:text-dark-200"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-lg"
                 >
                   <PencilIcon />
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -199,23 +209,25 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
       </div>
 
       {/* Animated Background Editor */}
-      <div className="rounded-2xl border border-dark-700/50 bg-dark-800/50 p-6">
+      <div className="border-border/50 bg-card/50 rounded-2xl border p-6">
         <BackgroundEditor />
       </div>
 
       {/* Fullscreen & Email toggles */}
-      <div className="rounded-2xl border border-dark-700/50 bg-dark-800/50 p-6">
-        <h3 className="mb-4 text-lg font-semibold text-dark-100">
+      <div className="border-border/50 bg-card/50 rounded-2xl border p-6">
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
           {t('admin.settings.interfaceOptions')}
         </h3>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-xl bg-dark-700/30 p-4">
+          <div className="bg-muted/30 flex items-center justify-between rounded-xl p-4">
             <div>
-              <span className="font-medium text-dark-100">
+              <span className="text-foreground font-medium">
                 {t('admin.settings.autoFullscreen')}
               </span>
-              <p className="text-sm text-dark-400">{t('admin.settings.autoFullscreenDesc')}</p>
+              <p className="text-muted-foreground text-sm">
+                {t('admin.settings.autoFullscreenDesc')}
+              </p>
             </div>
             <Toggle
               checked={fullscreenSettings?.enabled ?? false}
@@ -226,10 +238,10 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between rounded-xl bg-dark-700/30 p-4">
+          <div className="bg-muted/30 flex items-center justify-between rounded-xl p-4">
             <div>
-              <span className="font-medium text-dark-100">{t('admin.settings.emailAuth')}</span>
-              <p className="text-sm text-dark-400">{t('admin.settings.emailAuthDesc')}</p>
+              <span className="text-foreground font-medium">{t('admin.settings.emailAuth')}</span>
+              <p className="text-muted-foreground text-sm">{t('admin.settings.emailAuthDesc')}</p>
             </div>
             <Toggle
               checked={emailAuthSettings?.enabled ?? true}
@@ -238,10 +250,10 @@ export function BrandingTab({ accentColor = '#3b82f6' }: BrandingTabProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between rounded-xl bg-dark-700/30 p-4">
+          <div className="bg-muted/30 flex items-center justify-between rounded-xl p-4">
             <div>
-              <span className="font-medium text-dark-100">{t('admin.settings.giftEnabled')}</span>
-              <p className="text-sm text-dark-400">{t('admin.settings.giftEnabledDesc')}</p>
+              <span className="text-foreground font-medium">{t('admin.settings.giftEnabled')}</span>
+              <p className="text-muted-foreground text-sm">{t('admin.settings.giftEnabledDesc')}</p>
             </div>
             <Toggle
               checked={giftSettings?.enabled ?? false}

@@ -54,7 +54,7 @@ export const DialogOverlay = forwardRef<HTMLDivElement, DialogOverlayProps>(
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn('fixed inset-0 z-50 bg-black/60 backdrop-blur-sm', className)}
+      className={cn('fixed inset-0 z-50 bg-black/80 backdrop-blur-sm', className)}
       asChild
       {...props}
     >
@@ -91,11 +91,11 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
               <DialogPrimitive.Content
                 ref={ref}
                 className={cn(
-                  'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+                  'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
                   'max-h-[85vh] w-full max-w-lg',
                   'grid gap-4 overflow-auto',
-                  'rounded-linear-lg border border-dark-700/50 bg-dark-900/95 backdrop-blur-linear',
-                  'p-6 shadow-linear-lg',
+                  'rounded-linear-lg border-border bg-card backdrop-blur-linear border',
+                  'shadow-linear-lg p-6',
                   'focus:outline-none',
                   className,
                 )}
@@ -113,10 +113,10 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                   {showCloseButton && (
                     <DialogPrimitive.Close
                       className={cn(
-                        'absolute right-4 top-4 rounded-linear p-1.5',
-                        'text-dark-400 opacity-70 transition-all',
-                        'hover:bg-dark-800/80 hover:opacity-100',
-                        'focus:outline-none focus:ring-2 focus:ring-accent-500/50',
+                        'rounded-linear absolute top-4 right-4 p-1.5',
+                        'text-muted-foreground opacity-70 transition-all',
+                        'hover:bg-muted hover:opacity-100',
+                        'focus:ring-ring/50 focus:ring-2 focus:outline-none',
                       )}
                     >
                       <CloseIcon />
@@ -163,7 +163,7 @@ export const DialogTitle = forwardRef<HTMLHeadingElement, DialogTitleProps>(
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Title
       ref={ref}
-      className={cn('text-lg font-semibold text-dark-100', className)}
+      className={cn('text-foreground text-lg font-semibold', className)}
       {...props}
     />
   ),
@@ -178,7 +178,7 @@ export const DialogDescription = forwardRef<HTMLParagraphElement, DialogDescript
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Description
       ref={ref}
-      className={cn('text-sm text-dark-400', className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   ),

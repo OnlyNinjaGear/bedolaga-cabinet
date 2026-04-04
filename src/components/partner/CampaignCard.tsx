@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 import type { PartnerCampaignInfo } from '../../api/partners';
 import { PARTNER_STATS } from '../../constants/partner';
@@ -81,12 +83,15 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
     <div className="bento-card space-y-4">
       {/* Campaign header */}
       <div className="flex items-center justify-between gap-2">
-        <h3 className="min-w-0 truncate text-base font-semibold text-dark-100">{campaign.name}</h3>
-        <button
+        <h3 className="text-foreground min-w-0 truncate text-base font-semibold">
+          {campaign.name}
+        </h3>
+        <Button
+          variant="ghost"
           onClick={handleToggleExpand}
           aria-expanded={expanded}
           aria-controls={`campaign-detail-${campaign.id}`}
-          className="flex shrink-0 items-center gap-1 text-sm text-accent-400 transition-colors hover:text-accent-300"
+          className="text-primary hover:text-primary/70 flex h-auto shrink-0 items-center gap-1 p-0 text-sm"
         >
           <span>
             {expanded
@@ -94,7 +99,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
               : t('referral.partner.stats.showDetails')}
           </span>
           <ChevronIcon expanded={expanded} />
-        </button>
+        </Button>
       </div>
 
       {/* Basic stats -- always visible */}
@@ -106,7 +111,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         <StatCard
           label={t('referral.partner.stats.referrals')}
           value={campaign.referrals_count}
-          valueClassName="text-accent-400"
+          valueClassName="text-primary"
         />
         <StatCard
           label={t('referral.partner.stats.earnings')}
@@ -117,11 +122,11 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
       {/* Bonus info */}
       {campaign.bonus_type !== 'none' && (
-        <div className="rounded-lg bg-success-500/10 p-3">
-          <div className="mb-1 text-xs font-medium text-success-500">
+        <div className="bg-success-500/10 rounded-lg p-3">
+          <div className="text-success-500 mb-1 text-xs font-medium">
             {t('referral.partner.campaignBonus.title')}
           </div>
-          <div className="text-sm font-semibold text-success-400">
+          <div className="text-success-400 text-sm font-semibold">
             {campaign.bonus_type === 'balance' &&
               t('referral.partner.campaignBonus.balanceDesc', {
                 amount: formatWithCurrency(
@@ -144,24 +149,20 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       {/* Bot link */}
       {campaign.deep_link && (
         <div>
-          <div className="mb-1 text-xs font-medium text-dark-500">
+          <div className="text-muted-foreground mb-1 text-xs font-medium">
             {t('referral.partner.campaignLinks.bot')}
           </div>
           <div className="flex items-center gap-2">
-            <input
-              type="text"
-              readOnly
-              value={campaign.deep_link}
-              className="input flex-1 text-xs"
-            />
-            <button
+            <Input type="text" readOnly value={campaign.deep_link} className="flex-1 text-xs" />
+            <Button
               onClick={() => handleCopy(campaign.deep_link!, botKey)}
-              className={`btn-primary shrink-0 px-3 py-2.5 ${
+              size="icon"
+              className={`h-auto shrink-0 px-3 py-2.5 ${
                 copiedLink === botKey ? 'bg-success-500 hover:bg-success-500' : ''
               }`}
             >
               {copiedLink === botKey ? <CheckIcon /> : <CopyIcon />}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -169,24 +170,20 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       {/* Web link */}
       {campaign.web_link && (
         <div>
-          <div className="mb-1 text-xs font-medium text-dark-500">
+          <div className="text-muted-foreground mb-1 text-xs font-medium">
             {t('referral.partner.campaignLinks.web')}
           </div>
           <div className="flex items-center gap-2">
-            <input
-              type="text"
-              readOnly
-              value={campaign.web_link}
-              className="input flex-1 text-xs"
-            />
-            <button
+            <Input type="text" readOnly value={campaign.web_link} className="flex-1 text-xs" />
+            <Button
               onClick={() => handleCopy(campaign.web_link!, webKey)}
-              className={`btn-primary shrink-0 px-3 py-2.5 ${
+              size="icon"
+              className={`h-auto shrink-0 px-3 py-2.5 ${
                 copiedLink === webKey ? 'bg-success-500 hover:bg-success-500' : ''
               }`}
             >
               {copiedLink === webKey ? <CheckIcon /> : <CopyIcon />}
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -28,7 +28,7 @@ export default function Meteors({ settings }: Props) {
       {meteors.map((meteor) => (
         <span
           key={meteor.id}
-          className="absolute top-0 rotate-[215deg] animate-meteor-effect rounded-[9999px]"
+          className="animate-meteor-effect absolute top-0 rotate-[215deg] rounded-full"
           style={{
             left: meteor.left,
             animationDelay: meteor.delay,
@@ -41,7 +41,7 @@ export default function Meteors({ settings }: Props) {
           }}
         >
           <div
-            className="pointer-events-none absolute top-1/2 -z-10 h-px w-[50px] -translate-y-1/2"
+            className="pointer-events-none absolute top-1/2 -z-10 h-px w-12.5 -translate-y-1/2"
             style={{
               background: `linear-gradient(to right, ${meteorColor}, transparent)`,
             }}

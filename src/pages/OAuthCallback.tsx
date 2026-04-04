@@ -11,6 +11,8 @@ import {
   getErrorDetail,
 } from '../utils/oauth';
 import type { ServerCompleteResponse } from '../types';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type CallbackMode = 'login' | 'link-browser' | 'link-server';
 
@@ -141,12 +143,12 @@ export default function OAuthCallback() {
 
     return (
       <div className="flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
+        <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
         <div className="relative w-full max-w-md text-center">
-          <div className="card">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-success-500/20">
+          <Card>
+            <div className="bg-success-500/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
               <svg
-                className="h-8 w-8 text-success-400"
+                className="text-success-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -155,19 +157,21 @@ export default function OAuthCallback() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </div>
-            <h2 className="mb-2 text-lg font-semibold text-dark-50">
+            <h2 className="text-foreground mb-2 text-lg font-semibold">
               {t('profile.accounts.linkSuccess')}
             </h2>
-            <p className="mb-6 text-sm text-dark-400">{t('profile.accounts.returnToTelegram')}</p>
+            <p className="text-muted-foreground mb-6 text-sm">
+              {t('profile.accounts.returnToTelegram')}
+            </p>
             {telegramLink && (
               <a
                 href={telegramLink}
-                className="btn-primary inline-block w-full rounded-lg bg-accent-500 px-6 py-3 text-center font-medium text-dark-950 no-underline transition-colors hover:bg-accent-400"
+                className="btn-primary bg-primary text-foreground hover:bg-primary/80 inline-block w-full rounded-lg px-6 py-3 text-center font-medium no-underline transition-colors"
               >
                 {t('profile.accounts.openTelegram')}
               </a>
             )}
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -183,34 +187,28 @@ export default function OAuthCallback() {
       isServerMode && telegramLink ? (
         <a
           href={telegramLink}
-          className="btn-primary inline-block w-full rounded-lg bg-accent-500 px-6 py-3 text-center font-medium text-dark-950 no-underline transition-colors hover:bg-accent-400"
+          className="btn-primary bg-primary text-foreground hover:bg-primary/80 inline-block w-full rounded-lg px-6 py-3 text-center font-medium no-underline transition-colors"
         >
           {t('profile.accounts.openTelegram')}
         </a>
       ) : isLinkBrowserMode ? (
-        <button
-          onClick={() => navigate('/profile/accounts', { replace: true })}
-          className="btn-primary w-full"
-        >
+        <Button onClick={() => navigate('/profile/accounts', { replace: true })} className="w-full">
           {t('profile.accounts.backToAccounts', 'Back to accounts')}
-        </button>
+        </Button>
       ) : (
-        <button
-          onClick={() => navigate('/login', { replace: true })}
-          className="btn-primary w-full"
-        >
+        <Button onClick={() => navigate('/login', { replace: true })} className="w-full">
           {t('auth.backToLogin', 'Back to login')}
-        </button>
+        </Button>
       );
 
     return (
       <div className="flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
+        <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
         <div className="relative w-full max-w-md text-center">
-          <div className="card">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-error-500/20">
+          <Card>
+            <div className="bg-error-500/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
               <svg
-                className="h-8 w-8 text-error-400"
+                className="text-error-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -223,10 +221,10 @@ export default function OAuthCallback() {
                 />
               </svg>
             </div>
-            <h2 className="mb-2 text-lg font-semibold text-dark-50">{t('auth.loginFailed')}</h2>
-            <p className="mb-6 text-sm text-dark-400">{error}</p>
+            <h2 className="text-foreground mb-2 text-lg font-semibold">{t('auth.loginFailed')}</h2>
+            <p className="text-muted-foreground mb-6 text-sm">{error}</p>
             {errorAction}
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -234,11 +232,11 @@ export default function OAuthCallback() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
+      <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
       <div className="relative text-center">
-        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
-        <h2 className="text-lg font-semibold text-dark-50">{t('auth.authenticating')}</h2>
-        <p className="mt-2 text-sm text-dark-400">{t('common.loading')}</p>
+        <div className="border-primary mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
+        <h2 className="text-foreground text-lg font-semibold">{t('auth.authenticating')}</h2>
+        <p className="text-muted-foreground mt-2 text-sm">{t('common.loading')}</p>
       </div>
     </div>
   );

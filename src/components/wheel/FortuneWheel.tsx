@@ -46,7 +46,7 @@ const FortuneWheel = memo(function FortuneWheel({
   if (prizes.length === 0) {
     return (
       <div className="mx-auto flex aspect-square w-full max-w-md items-center justify-center">
-        <p className="text-dark-400">No prizes configured</p>
+        <p className="text-muted-foreground">No prizes configured</p>
       </div>
     );
   }
@@ -110,7 +110,7 @@ const FortuneWheel = memo(function FortuneWheel({
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-[380px] select-none">
+    <div className="relative mx-auto w-full max-w-95 select-none">
       {/* Outer glow effect */}
       <div
         className={`absolute inset-[-30px] rounded-full transition-all duration-500 ${
@@ -124,7 +124,7 @@ const FortuneWheel = memo(function FortuneWheel({
       />
 
       {/* Pointer */}
-      <div className="absolute left-1/2 top-[-12px] z-20 -translate-x-1/2">
+      <div className="absolute top-[-12px] left-1/2 z-20 -translate-x-1/2">
         <div className="relative">
           <div
             className={`absolute inset-[-10px] blur-lg transition-opacity ${isSpinning ? 'opacity-100' : 'opacity-70'}`}
@@ -407,7 +407,7 @@ const FortuneWheel = memo(function FortuneWheel({
           {SPARKLE_POSITIONS.map((pos, i) => (
             <div
               key={`sparkle-${i}`}
-              className="absolute h-2 w-2 animate-ping rounded-full bg-yellow-300"
+              className="bg-warning-400 absolute h-2 w-2 animate-ping rounded-full"
               style={{
                 top: pos.top,
                 left: pos.left,

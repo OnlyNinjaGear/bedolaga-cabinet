@@ -11,6 +11,9 @@ import {
 import { serversApi } from '../api/servers';
 import { AdminBackButton } from '../components/admin';
 import { createNumberInputHandler, toNumber } from '../utils/inputHelpers';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 const getOfferTypeIcon = (offerType: string): string => {
   return OFFER_TYPE_CONFIG[offerType as OfferType]?.icon || '🎁';
@@ -98,7 +101,7 @@ export default function AdminPromoOfferTemplateEdit() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -108,7 +111,7 @@ export default function AdminPromoOfferTemplateEdit() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/promo-offers" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.promoOffers.form.editTemplate')}
           </h1>
         </div>
@@ -126,7 +129,7 @@ export default function AdminPromoOfferTemplateEdit() {
         <AdminBackButton to="/admin/promo-offers" />
         <div className="flex items-center gap-3">
           <span className="text-2xl">{getOfferTypeIcon(template.offer_type)}</span>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.promoOffers.form.editTemplate')}
           </h1>
         </div>
@@ -134,10 +137,10 @@ export default function AdminPromoOfferTemplateEdit() {
 
       {/* Form */}
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
+        <div className="border-border bg-card rounded-xl border p-6">
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.promoOffers.form.templateName')}
                 <span className="text-error-400">*</span>
               </label>
@@ -150,7 +153,7 @@ export default function AdminPromoOfferTemplateEdit() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.promoOffers.form.messageText')}
                 <span className="text-error-400">*</span>
               </label>
@@ -163,7 +166,7 @@ export default function AdminPromoOfferTemplateEdit() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.promoOffers.form.buttonText')}
                 <span className="text-error-400">*</span>
               </label>
@@ -177,32 +180,30 @@ export default function AdminPromoOfferTemplateEdit() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-dark-300">
+                <label className="text-muted-foreground mb-2 block text-sm font-medium">
                   {t('admin.promoOffers.form.validHours')}
                 </label>
-                <input
+                <Input
                   type="number"
                   value={validHours}
                   onChange={createNumberInputHandler(setValidHours, 1)}
-                  className="input"
                   min={1}
                   placeholder="0"
                 />
-                <p className="mt-1 text-xs text-dark-500">
+                <p className="text-muted-foreground mt-1 text-xs">
                   {t('admin.promoOffers.form.activationTime')}
                 </p>
               </div>
 
               {!isTestAccess && (
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-dark-300">
+                  <label className="text-muted-foreground mb-2 block text-sm font-medium">
                     {t('admin.promoOffers.form.discountPercent')}
                   </label>
-                  <input
+                  <Input
                     type="number"
                     value={discountPercent}
                     onChange={createNumberInputHandler(setDiscountPercent, 0, 100)}
-                    className="input"
                     min={0}
                     max={100}
                     placeholder="0"
@@ -214,23 +215,22 @@ export default function AdminPromoOfferTemplateEdit() {
             {isTestAccess ? (
               <>
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-dark-300">
+                  <label className="text-muted-foreground mb-2 block text-sm font-medium">
                     {t('admin.promoOffers.form.testDurationHours')}
                   </label>
-                  <input
+                  <Input
                     type="number"
                     value={testDurationHours}
                     onChange={createNumberInputHandler(setTestDurationHours, 0)}
-                    className="input"
                     min={0}
                     placeholder="0"
                   />
-                  <p className="mt-1 text-xs text-dark-500">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     {t('admin.promoOffers.form.defaultZero')}
                   </p>
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-dark-300">
+                  <label className="text-muted-foreground mb-2 block text-sm font-medium">
                     {t('admin.promoOffers.form.testSquads', 'Тестовые серверы')}
                   </label>
                   {serversData?.servers && serversData.servers.length > 0 ? (
@@ -238,13 +238,12 @@ export default function AdminPromoOfferTemplateEdit() {
                       {serversData.servers.map((server) => (
                         <label
                           key={server.squad_uuid || server.id}
-                          className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-2 text-sm transition-colors hover:border-accent-500/50"
+                          className="border-border bg-muted/50 hover:border-primary/50 flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2 text-sm transition-colors"
                         >
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={selectedSquadUuids.includes(server.squad_uuid)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
+                            onCheckedChange={(checked) => {
+                              if (checked) {
                                 setSelectedSquadUuids([...selectedSquadUuids, server.squad_uuid]);
                               } else {
                                 setSelectedSquadUuids(
@@ -252,22 +251,21 @@ export default function AdminPromoOfferTemplateEdit() {
                                 );
                               }
                             }}
-                            className="accent-accent-500"
                           />
-                          <span className="text-dark-200">{server.display_name}</span>
+                          <span className="text-foreground">{server.display_name}</span>
                           {server.country_code && (
-                            <span className="text-dark-500">{server.country_code}</span>
+                            <span className="text-muted-foreground">{server.country_code}</span>
                           )}
                         </label>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-dark-500">
+                    <p className="text-muted-foreground text-sm">
                       {t('admin.promoOffers.form.noServers', 'Нет доступных серверов')}
                     </p>
                   )}
                   {selectedSquadUuids.length === 0 && (
-                    <p className="mt-1 text-xs text-warning-400">
+                    <p className="text-warning-400 mt-1 text-xs">
                       {t(
                         'admin.promoOffers.form.selectSquadHint',
                         'Выберите хотя бы один сервер для тестового доступа',
@@ -278,29 +276,29 @@ export default function AdminPromoOfferTemplateEdit() {
               </>
             ) : (
               <div>
-                <label className="mb-2 block text-sm font-medium text-dark-300">
+                <label className="text-muted-foreground mb-2 block text-sm font-medium">
                   {t('admin.promoOffers.form.activeDiscountHours')}
                 </label>
-                <input
+                <Input
                   type="number"
                   value={activeDiscountHours}
                   onChange={createNumberInputHandler(setActiveDiscountHours, 0)}
-                  className="input"
                   min={0}
                   placeholder="0"
                 />
-                <p className="mt-1 text-xs text-dark-500">
+                <p className="text-muted-foreground mt-1 text-xs">
                   {t('admin.promoOffers.form.discountDurationHint')}
                 </p>
               </div>
             )}
 
             <label className="flex cursor-pointer items-center gap-3">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => setIsActive(!isActive)}
-                className={`relative h-6 w-11 rounded-full transition-colors ${
-                  isActive ? 'bg-accent-500' : 'bg-dark-600'
+                className={`relative h-6 w-11 rounded-full p-0 transition-colors ${
+                  isActive ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
                 }`}
               >
                 <span
@@ -308,8 +306,8 @@ export default function AdminPromoOfferTemplateEdit() {
                     isActive ? 'left-6' : 'left-1'
                   }`}
                 />
-              </button>
-              <span className="text-sm text-dark-200">
+              </Button>
+              <span className="text-foreground text-sm">
                 {t('admin.promoOffers.form.templateActive')}
               </span>
             </label>
@@ -318,16 +316,12 @@ export default function AdminPromoOfferTemplateEdit() {
 
         {/* Actions */}
         <div className="flex justify-end gap-3">
-          <button onClick={() => navigate('/admin/promo-offers')} className="btn-secondary">
+          <Button variant="secondary" onClick={() => navigate('/admin/promo-offers')}>
             {t('common.cancel')}
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={!name.trim() || updateMutation.isPending}
-            className="btn-primary"
-          >
+          </Button>
+          <Button onClick={handleSubmit} disabled={!name.trim() || updateMutation.isPending}>
             {updateMutation.isPending ? t('admin.promoOffers.form.saving') : t('common.save')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { referralNetworkApi } from '@/api/referralNetwork';
 import { MAX_SCOPE_ITEMS } from '@/store/referralNetwork';
 import type { ScopeSelection, ScopeType } from '@/types/referralNetwork';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ScopeSelectorProps {
   value: ScopeSelection[];
@@ -18,7 +20,7 @@ const SCOPE_TABS: ScopeType[] = ['campaign', 'partner', 'user'];
 const CHIP_COLORS: Record<ScopeType, string> = {
   campaign: 'bg-success-500/20 text-success-400',
   partner: 'bg-warning-500/20 text-warning-400',
-  user: 'bg-accent-500/20 text-accent-400',
+  user: 'bg-primary/20 text-primary',
 };
 
 // Reuse CHIP_COLORS for avatar backgrounds (same palette)
@@ -55,13 +57,13 @@ function CloseIcon({ className = 'h-3 w-3' }: { className?: string }) {
 function Spinner({ size = 'h-5 w-5' }: { size?: string }) {
   return (
     <div
-      className={`${size} animate-spin rounded-full border-2 border-dark-600 border-t-accent-400`}
+      className={`${size} border-border border-t-accent-400 animate-spin rounded-full border-2`}
     />
   );
 }
 
 function EmptyMessage({ text }: { text: string }) {
-  return <div className="px-4 py-3 text-center text-sm text-dark-500">{text}</div>;
+  return <div className="text-muted-foreground px-4 py-3 text-center text-sm">{text}</div>;
 }
 
 interface ScopeListItemProps {
@@ -75,13 +77,15 @@ interface ScopeListItemProps {
 
 function ScopeListItem({ type, selected, onClick, title, subtitle, badge }: ScopeListItemProps) {
   return (
-    <button
+    <Button
       role="option"
       aria-selected={selected}
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-dark-700/50 focus-visible:bg-dark-700/50 focus-visible:outline-none ${
-        selected ? 'bg-dark-700/30' : ''
-      }`}
+      variant="ghost"
+      className={cn(
+        'flex h-auto w-full items-center justify-start gap-3 px-4 py-2.5 text-left',
+        selected && 'bg-muted/30',
+      )}
     >
       <div
         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium ${AVATAR_COLORS[type]}`}
@@ -89,11 +93,11 @@ function ScopeListItem({ type, selected, onClick, title, subtitle, badge }: Scop
         {selected ? <CheckIcon /> : AVATAR_LETTERS[type]}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-dark-100">{title}</p>
-        <p className="truncate text-xs text-dark-500">{subtitle}</p>
+        <p className="text-foreground truncate text-sm font-medium">{title}</p>
+        <p className="text-muted-foreground truncate text-xs">{subtitle}</p>
       </div>
       {badge}
-    </button>
+    </Button>
   );
 }
 
@@ -239,38 +243,42 @@ export function ScopeSelector({ value, onAdd, onRemove, onClear, className }: Sc
                 key={`${item.type}:${item.id}`}
                 className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${CHIP_COLORS[item.type]}`}
               >
-                <span className="max-w-[120px] truncate">{item.label}</span>
-                <button
+                <span className="max-w-30 truncate">{item.label}</span>
+                <Button
                   onClick={() => onRemove(item.type, item.id)}
                   aria-label={t('admin.referralNetwork.scope.removeItem', { label: item.label })}
-                  className="ml-0.5 rounded-sm p-0.5 transition-colors hover:bg-white/10"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="ml-0.5 hover:bg-white/10"
                 >
                   <CloseIcon />
-                </button>
+                </Button>
               </span>
             ))}
             {/* Clear all (only when 2+ items) */}
             {value.length > 1 && (
-              <button
+              <Button
                 onClick={onClear}
                 aria-label={t('admin.referralNetwork.scope.clearAll')}
-                className="shrink-0 rounded-md p-1 text-dark-500 transition-colors hover:bg-dark-800 hover:text-dark-300"
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
               >
                 <CloseIcon className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             )}
           </div>
         )}
 
         {/* Add button */}
-        <button
+        <Button
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           aria-label={t('admin.referralNetwork.scope.addScope')}
           aria-expanded={isDropdownOpen}
           aria-haspopup="listbox"
-          className={`shrink-0 rounded-lg border border-dark-700/50 bg-dark-800 p-1.5 transition-colors hover:border-accent-500/50 hover:text-accent-400 ${
-            isMaxReached ? 'cursor-not-allowed text-dark-600 opacity-50' : 'text-dark-400'
-          }`}
+          variant="outline"
+          size="icon"
+          className="hover:border-primary/50 hover:text-primary shrink-0"
           disabled={isMaxReached && !isDropdownOpen}
         >
           <svg
@@ -282,49 +290,52 @@ export function ScopeSelector({ value, onAdd, onRemove, onClear, className }: Sc
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {/* Dropdown */}
       {isDropdownOpen && (
         <div
-          className="absolute left-0 right-0 top-full z-50 mt-1 rounded-xl border border-dark-700/50 bg-dark-800 shadow-xl backdrop-blur-md"
+          className="border-border/50 bg-card absolute top-full right-0 left-0 z-50 mt-1 rounded-xl border shadow-xl backdrop-blur-md"
           role="dialog"
           aria-label={t('admin.referralNetwork.scope.addScope')}
         >
           {/* Max reached banner */}
           {isMaxReached && (
-            <div className="border-b border-dark-700/50 px-3 py-1.5 text-center text-xs text-warning-400">
+            <div className="border-border/50 text-warning-400 border-b px-3 py-1.5 text-center text-xs">
               {t('admin.referralNetwork.scope.maxReached', { max: MAX_SCOPE_ITEMS })}
             </div>
           )}
 
           {/* Tab bar + search input */}
-          <div className="flex items-center gap-2 border-b border-dark-700/50 px-3 py-2">
+          <div className="border-border/50 flex items-center gap-2 border-b px-3 py-2">
             <div
-              className="flex shrink-0 rounded-lg border border-dark-700/50 bg-dark-900 p-0.5"
+              className="border-border/50 bg-background flex shrink-0 rounded-lg border p-0.5"
               role="tablist"
             >
               {SCOPE_TABS.map((tab) => (
-                <button
+                <Button
                   key={tab}
                   role="tab"
                   aria-selected={activeTab === tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'rounded-md px-2.5 py-1',
                     activeTab === tab
-                      ? 'bg-accent-500/20 text-accent-400'
-                      : 'text-dark-400 hover:text-dark-200'
-                  }`}
+                      ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                 >
                   {tabLabels[tab]}
-                </button>
+                </Button>
               ))}
             </div>
 
             <div className="relative min-w-0 flex-1">
               <svg
-                className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-dark-500"
+                className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -343,10 +354,10 @@ export function ScopeSelector({ value, onAdd, onRemove, onClear, className }: Sc
                 maxLength={200}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={placeholders[activeTab]}
-                className="w-full rounded-lg border border-dark-700/50 bg-dark-900/50 py-1.5 pl-8 pr-8 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30"
+                className="border-border/50 bg-background/50 text-foreground placeholder-muted-foreground focus:border-primary/50 focus:ring-ring/30 w-full rounded-lg border py-1.5 pr-8 pl-8 text-sm transition-colors outline-none focus:ring-1"
               />
               {isLoading && (
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
                   <Spinner size="h-3.5 w-3.5" />
                 </div>
               )}
@@ -390,7 +401,7 @@ export function ScopeSelector({ value, onAdd, onRemove, onClear, className }: Sc
             className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${
               campaign.is_active
                 ? 'bg-success-500/20 text-success-400'
-                : 'bg-dark-700/50 text-dark-400'
+                : 'bg-muted/50 text-muted-foreground'
             }`}
           >
             {campaign.is_active
@@ -456,7 +467,7 @@ export function ScopeSelector({ value, onAdd, onRemove, onClear, className }: Sc
         subtitle={`${user.username ? `@${user.username}` : ''}${user.tg_id ? ` #${user.tg_id}` : ''}`}
         badge={
           user.is_partner ? (
-            <span className="shrink-0 rounded bg-warning-500/20 px-1.5 py-0.5 text-[10px] font-medium text-warning-400">
+            <span className="bg-warning-500/20 text-warning-400 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium">
               {t('admin.referralNetwork.user.partner')}
             </span>
           ) : undefined

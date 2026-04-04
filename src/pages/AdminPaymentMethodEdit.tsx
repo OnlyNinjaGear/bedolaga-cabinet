@@ -7,9 +7,12 @@ import { METHOD_LABELS } from '../constants/paymentMethods';
 import type { PromoGroupSimple } from '../types';
 import { usePlatform } from '../platform/hooks/usePlatform';
 import { createNumberInputHandler, toNumber } from '../utils/inputHelpers';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -138,7 +141,7 @@ export default function AdminPaymentMethodEdit() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -149,14 +152,15 @@ export default function AdminPaymentMethodEdit() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/admin/payment-methods')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
             >
               <BackIcon />
-            </button>
+            </Button>
           )}
-          <h1 className="text-2xl font-bold text-dark-50">
+          <h1 className="text-foreground text-2xl font-bold">
             {t('admin.paymentMethods.notFound', 'Payment method not found')}
           </h1>
         </div>
@@ -172,39 +176,37 @@ export default function AdminPaymentMethodEdit() {
       <div className="flex items-center gap-3">
         {/* Show back button only on web, not in Telegram Mini App */}
         {!capabilities.hasBackButton && (
-          <button
-            onClick={() => navigate('/admin/payment-methods')}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-          >
+          <Button variant="outline" size="icon" onClick={() => navigate('/admin/payment-methods')}>
             <BackIcon />
-          </button>
+          </Button>
         )}
         <div>
-          <h1 className="text-2xl font-bold text-dark-50">{displayName}</h1>
-          <p className="text-sm text-dark-500">
+          <h1 className="text-foreground text-2xl font-bold">{displayName}</h1>
+          <p className="text-muted-foreground text-sm">
             {METHOD_LABELS[config.method_id] || config.method_id}
           </p>
         </div>
       </div>
 
       {/* Form */}
-      <div className="card space-y-6">
+      <Card className="space-y-6">
         {/* Enable toggle */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium text-dark-200">
+            <div className="text-foreground text-sm font-medium">
               {t('admin.paymentMethods.methodEnabled')}
             </div>
             {!config.is_provider_configured && (
-              <div className="mt-0.5 text-xs text-warning-400">
+              <div className="text-warning-400 mt-0.5 text-xs">
                 {t('admin.paymentMethods.providerNotConfigured')}
               </div>
             )}
           </div>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setIsEnabled(!isEnabled)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
-              isEnabled ? 'bg-accent-500' : 'bg-dark-600'
+            className={`relative h-6 w-11 rounded-full p-0 transition-colors ${
+              isEnabled ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
             }`}
           >
             <span
@@ -212,22 +214,21 @@ export default function AdminPaymentMethodEdit() {
                 isEnabled ? 'left-6' : 'left-1'
               }`}
             />
-          </button>
+          </Button>
         </div>
 
         {/* Display name */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.paymentMethods.displayName')}
           </label>
-          <input
+          <Input
             type="text"
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
             placeholder={config.default_display_name}
-            className="input"
           />
-          <p className="mt-1 text-xs text-dark-500">
+          <p className="text-muted-foreground mt-1 text-xs">
             {t('admin.paymentMethods.displayNameHint')}: {config.default_display_name}
           </p>
         </div>
@@ -235,31 +236,32 @@ export default function AdminPaymentMethodEdit() {
         {/* Sub-options */}
         {config.available_sub_options && config.available_sub_options.length > 0 && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.paymentMethods.subOptions')}
             </label>
             <div className="space-y-2">
               {config.available_sub_options.map((opt) => {
                 const enabled = subOptions[opt.id] !== false;
                 return (
-                  <button
+                  <Button
                     key={opt.id}
+                    variant="outline"
                     onClick={() => setSubOptions((prev) => ({ ...prev, [opt.id]: !enabled }))}
-                    className={`flex w-full items-center justify-between rounded-xl border p-3 transition-all ${
+                    className={`flex h-auto w-full items-center justify-between rounded-xl p-3 transition-all ${
                       enabled
-                        ? 'border-accent-500/30 bg-dark-700/30 text-dark-100'
-                        : 'border-dark-800 bg-dark-900/30 text-dark-500'
+                        ? 'border-primary/30 bg-muted/30 text-foreground hover:bg-muted/30'
+                        : 'border-border bg-background/30 text-muted-foreground hover:bg-background/30'
                     }`}
                   >
                     <span className="text-sm">{opt.name}</span>
                     <div
                       className={`flex h-5 w-5 items-center justify-center rounded ${
-                        enabled ? 'bg-accent-500 text-white' : 'border border-dark-600 bg-dark-700'
+                        enabled ? 'bg-primary text-white' : 'border-border bg-muted border'
                       }`}
                     >
                       {enabled && <CheckIcon />}
                     </div>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -269,51 +271,51 @@ export default function AdminPaymentMethodEdit() {
         {/* Min/Max amounts */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.paymentMethods.minAmount')}
             </label>
-            <input
+            <Input
               type="number"
               value={minAmount}
               onChange={createNumberInputHandler(setMinAmount, 0)}
               placeholder={config.default_min_amount_kopeks.toString()}
-              className="input"
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.paymentMethods.maxAmount')}
             </label>
-            <input
+            <Input
               type="number"
               value={maxAmount}
               onChange={createNumberInputHandler(setMaxAmount, 0)}
               placeholder={config.default_max_amount_kopeks.toString()}
-              className="input"
             />
           </div>
         </div>
 
         {/* Display conditions */}
-        <div className="border-t border-dark-700 pt-3">
-          <h3 className="mb-4 text-sm font-semibold text-dark-200">
+        <div className="border-border border-t pt-3">
+          <h3 className="text-foreground mb-4 text-sm font-semibold">
             {t('admin.paymentMethods.conditions')}
           </h3>
 
           {/* User type filter */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm">
               {t('admin.paymentMethods.userTypeFilter')}
             </label>
             <div className="flex gap-2">
               {(['all', 'telegram', 'email'] as const).map((val) => (
-                <button
+                <Button
                   key={val}
+                  variant={userTypeFilter === val ? 'default' : 'outline'}
+                  size="sm"
                   onClick={() => setUserTypeFilter(val)}
-                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-xl transition-all ${
                     userTypeFilter === val
-                      ? 'border border-accent-500/40 bg-accent-500/20 text-accent-300'
-                      : 'border border-dark-700 bg-dark-900/50 text-dark-400 hover:border-dark-600'
+                      ? 'border-primary/40 bg-primary/20 text-primary/70 hover:bg-primary/20'
+                      : 'bg-background/50 text-muted-foreground hover:border-border'
                   }`}
                 >
                   {val === 'all'
@@ -321,25 +323,27 @@ export default function AdminPaymentMethodEdit() {
                     : val === 'telegram'
                       ? 'Telegram'
                       : 'Email'}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* First topup filter */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm">
               {t('admin.paymentMethods.firstTopupFilter')}
             </label>
             <div className="flex gap-2">
               {(['any', 'yes', 'no'] as const).map((val) => (
-                <button
+                <Button
                   key={val}
+                  variant={firstTopupFilter === val ? 'default' : 'outline'}
+                  size="sm"
                   onClick={() => setFirstTopupFilter(val)}
-                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-xl transition-all ${
                     firstTopupFilter === val
-                      ? 'border border-accent-500/40 bg-accent-500/20 text-accent-300'
-                      : 'border border-dark-700 bg-dark-900/50 text-dark-400 hover:border-dark-600'
+                      ? 'border-primary/40 bg-primary/20 text-primary/70 hover:bg-primary/20'
+                      : 'bg-background/50 text-muted-foreground hover:border-border'
                   }`}
                 >
                   {val === 'any'
@@ -347,62 +351,65 @@ export default function AdminPaymentMethodEdit() {
                     : val === 'yes'
                       ? t('admin.paymentMethods.firstTopupWas')
                       : t('admin.paymentMethods.firstTopupWasNot')}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Promo groups filter */}
           <div>
-            <label className="mb-2 block text-sm text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm">
               {t('admin.paymentMethods.promoGroupFilter')}
             </label>
             <div className="mb-3 flex gap-2">
               {(['all', 'selected'] as const).map((val) => (
-                <button
+                <Button
                   key={val}
+                  variant={promoGroupFilterMode === val ? 'default' : 'outline'}
+                  size="sm"
                   onClick={() => setPromoGroupFilterMode(val)}
-                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-xl transition-all ${
                     promoGroupFilterMode === val
-                      ? 'border border-accent-500/40 bg-accent-500/20 text-accent-300'
-                      : 'border border-dark-700 bg-dark-900/50 text-dark-400 hover:border-dark-600'
+                      ? 'border-primary/40 bg-primary/20 text-primary/70 hover:bg-primary/20'
+                      : 'bg-background/50 text-muted-foreground hover:border-border'
                   }`}
                 >
                   {val === 'all'
                     ? t('admin.paymentMethods.promoGroupAll')
                     : t('admin.paymentMethods.promoGroupSelected')}
-                </button>
+                </Button>
               ))}
             </div>
 
             {promoGroupFilterMode === 'selected' && (
-              <div className="max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-dark-700/50 bg-dark-900/30 p-3">
+              <div className="border-border/50 bg-background/30 max-h-48 space-y-1.5 overflow-y-auto rounded-xl border p-3">
                 {promoGroups.length === 0 ? (
-                  <p className="py-2 text-center text-sm text-dark-500">
+                  <p className="text-muted-foreground py-2 text-center text-sm">
                     {t('admin.paymentMethods.noPromoGroups')}
                   </p>
                 ) : (
                   promoGroups.map((group) => {
                     const selected = selectedPromoGroupIds.includes(group.id);
                     return (
-                      <button
+                      <Button
                         key={group.id}
+                        variant="ghost"
                         onClick={() => togglePromoGroup(group.id)}
-                        className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all ${
+                        className={`flex h-auto w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all ${
                           selected
-                            ? 'bg-accent-500/15 text-accent-300'
-                            : 'text-dark-400 hover:bg-dark-800/50'
+                            ? 'bg-primary/15 text-primary/70 hover:bg-primary/15'
+                            : 'text-muted-foreground hover:bg-card/50'
                         }`}
                       >
                         <span>{group.name}</span>
                         <div
                           className={`flex h-4 w-4 items-center justify-center rounded ${
-                            selected ? 'bg-accent-500 text-white' : 'border border-dark-600'
+                            selected ? 'bg-primary text-white' : 'border-border border'
                           }`}
                         >
                           {selected && <CheckIcon />}
                         </div>
-                      </button>
+                      </Button>
                     );
                   })
                 )}
@@ -410,17 +417,21 @@ export default function AdminPaymentMethodEdit() {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate('/admin/payment-methods')} className="btn-secondary flex-1">
+        <Button
+          variant="secondary"
+          className="flex-1"
+          onClick={() => navigate('/admin/payment-methods')}
+        >
           {t('admin.paymentMethods.cancelButton')}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleSave}
           disabled={updateMethodMutation.isPending}
-          className="btn-primary flex flex-1 items-center justify-center gap-2"
+          className="flex flex-1 items-center justify-center gap-2"
         >
           {updateMethodMutation.isPending ? (
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -428,7 +439,7 @@ export default function AdminPaymentMethodEdit() {
             <SaveIcon />
           )}
           {t('admin.paymentMethods.saveButton')}
-        </button>
+        </Button>
       </div>
     </div>
   );

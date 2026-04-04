@@ -42,18 +42,20 @@ export default function ConnectionQR() {
     <div className="animate-fade-in">
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={connectionPath} replace />
-        <h1 className="text-2xl font-bold text-dark-100">{t('subscription.connection.qrTitle')}</h1>
+        <h1 className="text-foreground text-2xl font-bold">
+          {t('subscription.connection.qrTitle')}
+        </h1>
       </div>
 
       <div className="flex flex-col items-center">
         <div className="flex w-full max-w-sm flex-col items-center px-6">
           {appName && (
-            <p className="mb-3 text-sm font-medium uppercase tracking-wider text-dark-400">
+            <p className="text-muted-foreground mb-3 text-sm font-medium tracking-wider uppercase">
               {appName}
             </p>
           )}
 
-          <p className="mb-8 text-center text-sm text-dark-400">
+          <p className="text-muted-foreground mb-8 text-center text-sm">
             {t('subscription.connection.qrScanHint')}
           </p>
 
@@ -63,12 +65,12 @@ export default function ConnectionQR() {
               size={280}
               level="M"
               includeMargin={false}
-              className="h-[280px] w-[280px] sm:h-[360px] sm:w-[360px]"
+              className="h-70 w-70 sm:h-90 sm:w-90"
             />
           </div>
 
           {!validState.hideLink && (
-            <p className="mt-6 max-w-full truncate text-center font-mono text-xs text-dark-500">
+            <p className="text-muted-foreground mt-6 max-w-full truncate text-center font-mono text-xs">
               {validState.url}
             </p>
           )}

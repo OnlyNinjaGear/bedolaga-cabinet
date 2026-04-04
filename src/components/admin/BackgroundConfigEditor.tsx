@@ -9,6 +9,14 @@ import type {
 } from '@/components/ui/backgrounds/types';
 import { Toggle } from './Toggle';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function SettingField({
   def,
@@ -26,7 +34,7 @@ function SettingField({
     const displayVal = numVal < 0.01 ? numVal.toExponential(1) : String(numVal);
     return (
       <div className="flex items-center justify-between gap-4">
-        <label className="text-sm text-dark-300">{t(def.label)}</label>
+        <label className="text-muted-foreground text-sm">{t(def.label)}</label>
         <div className="flex items-center gap-2">
           <input
             type="range"
@@ -35,9 +43,11 @@ function SettingField({
             step={def.step}
             value={numVal}
             onChange={(e) => onChange(parseFloat(e.target.value))}
-            className="w-24 accent-accent-500"
+            className="accent-primary w-24"
           />
-          <span className="w-16 text-right text-xs tabular-nums text-dark-400">{displayVal}</span>
+          <span className="text-muted-foreground w-16 text-right text-xs tabular-nums">
+            {displayVal}
+          </span>
         </div>
       </div>
     );
@@ -48,15 +58,15 @@ function SettingField({
     const hexForInput = /^#[0-9a-fA-F]{3,8}$/.test(colorVal) ? colorVal : '#818cf8';
     return (
       <div className="flex items-center justify-between gap-4">
-        <label className="text-sm text-dark-300">{t(def.label)}</label>
+        <label className="text-muted-foreground text-sm">{t(def.label)}</label>
         <div className="flex items-center gap-2">
           <input
             type="color"
             value={hexForInput}
             onChange={(e) => onChange(e.target.value)}
-            className="h-7 w-10 cursor-pointer rounded border border-dark-600 bg-transparent"
+            className="border-border h-7 w-10 cursor-pointer rounded border bg-transparent"
           />
-          <span className="w-16 text-right text-xs text-dark-400">{colorVal}</span>
+          <span className="text-muted-foreground w-16 text-right text-xs">{colorVal}</span>
         </div>
       </div>
     );
@@ -66,7 +76,7 @@ function SettingField({
     const boolVal = (value as boolean) ?? (def.default as boolean);
     return (
       <div className="flex items-center justify-between gap-4">
-        <label className="text-sm text-dark-300">{t(def.label)}</label>
+        <label className="text-muted-foreground text-sm">{t(def.label)}</label>
         <Toggle checked={boolVal} onChange={() => onChange(!boolVal)} />
       </div>
     );
@@ -76,18 +86,19 @@ function SettingField({
     const selectVal = (value as string) ?? (def.default as string);
     return (
       <div className="flex items-center justify-between gap-4">
-        <label className="text-sm text-dark-300">{t(def.label)}</label>
-        <select
-          value={selectVal}
-          onChange={(e) => onChange(e.target.value)}
-          className="rounded-lg border border-dark-600 bg-dark-700 px-3 py-1.5 text-sm text-dark-200 focus:border-accent-500 focus:outline-none"
-        >
-          {def.options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label.startsWith('admin.') ? t(opt.label) : opt.label}
-            </option>
-          ))}
-        </select>
+        <label className="text-muted-foreground text-sm">{t(def.label)}</label>
+        <Select value={selectVal} onValueChange={(v) => onChange(v)}>
+          <SelectTrigger className="border-border bg-muted text-foreground rounded-lg border px-3 py-1.5 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {def.options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label.startsWith('admin.') ? t(opt.label) : opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     );
   }
@@ -142,8 +153,8 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
       {/* Header with enable toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-dark-100">{t('admin.backgrounds.title')}</h3>
-          <p className="text-sm text-dark-400">{t('admin.backgrounds.description')}</p>
+          <h3 className="text-foreground text-lg font-semibold">{t('admin.backgrounds.title')}</h3>
+          <p className="text-muted-foreground text-sm">{t('admin.backgrounds.description')}</p>
         </div>
         <Toggle
           checked={config.enabled}
@@ -155,7 +166,7 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
         <>
           {/* Preview */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.backgrounds.preview')}
             </label>
             <BackgroundPreview
@@ -169,50 +180,56 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
 
           {/* Type selector gallery */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.backgrounds.selectType')}
             </label>
 
             {/* None option */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => handleTypeChange('none')}
               className={cn(
-                'mb-3 w-full rounded-xl border p-3 text-left transition-colors',
+                'mb-3 h-auto w-full justify-start rounded-xl border p-3 text-left',
                 config.type === 'none'
-                  ? 'border-accent-500 bg-accent-500/10'
-                  : 'border-dark-700/50 bg-dark-800/30 hover:border-dark-600',
+                  ? 'border-primary bg-primary/10 hover:bg-primary/10'
+                  : 'border-border/50 bg-card/30 hover:border-border hover:bg-card/30',
               )}
             >
-              <span className="text-sm font-medium text-dark-200">
+              <span className="text-foreground text-sm font-medium">
                 {t('admin.backgrounds.none')}
               </span>
-              <span className="ml-2 text-xs text-dark-400">{t('admin.backgrounds.noneDesc')}</span>
-            </button>
+              <span className="text-muted-foreground ml-2 text-xs">
+                {t('admin.backgrounds.noneDesc')}
+              </span>
+            </Button>
 
             {/* Background types by category */}
             <div className="space-y-4">
               {Array.from(categories.entries()).map(([category, defs]) => (
                 <div key={category}>
-                  <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-dark-500">
+                  <span className="text-muted-foreground mb-2 block text-xs font-medium tracking-wider uppercase">
                     {t(`admin.backgrounds.category${category.toUpperCase()}`)}
                   </span>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {defs.map((def) => (
-                      <button
+                      <Button
                         key={def.type}
+                        variant="ghost"
                         onClick={() => handleTypeChange(def.type)}
                         className={cn(
-                          'rounded-xl border p-3 text-left transition-colors',
+                          'h-auto flex-col items-start rounded-xl border p-3 text-left',
                           config.type === def.type
-                            ? 'border-accent-500 bg-accent-500/10'
-                            : 'border-dark-700/50 bg-dark-800/30 hover:border-dark-600',
+                            ? 'border-primary bg-primary/10 hover:bg-primary/10'
+                            : 'border-border/50 bg-card/30 hover:border-border hover:bg-card/30',
                         )}
                       >
-                        <span className="block text-sm font-medium text-dark-200">
+                        <span className="text-foreground block text-sm font-medium">
                           {t(def.labelKey)}
                         </span>
-                        <span className="block text-xs text-dark-400">{t(def.descriptionKey)}</span>
-                      </button>
+                        <span className="text-muted-foreground block text-xs">
+                          {t(def.descriptionKey)}
+                        </span>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -222,8 +239,8 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
 
           {/* Per-type settings */}
           {currentDef && currentDef.settings.length > 0 && (
-            <div className="rounded-xl border border-dark-700/50 bg-dark-800/30 p-4">
-              <h4 className="mb-3 text-sm font-medium text-dark-200">
+            <div className="border-border/50 bg-card/30 rounded-xl border p-4">
+              <h4 className="text-foreground mb-3 text-sm font-medium">
                 {t('admin.backgrounds.settings')}
               </h4>
               <div className="space-y-3">
@@ -241,10 +258,10 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
           )}
 
           {/* Global settings */}
-          <div className="rounded-xl border border-dark-700/50 bg-dark-800/30 p-4">
+          <div className="border-border/50 bg-card/30 rounded-xl border p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-4">
-                <label className="text-sm text-dark-300">
+                <label className="text-muted-foreground text-sm">
                   {t('admin.backgrounds.globalOpacity')}
                 </label>
                 <div className="flex items-center gap-2">
@@ -255,16 +272,18 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
                     step={0.05}
                     value={config.opacity}
                     onChange={(e) => updateConfig({ opacity: parseFloat(e.target.value) })}
-                    className="w-24 accent-accent-500"
+                    className="accent-primary w-24"
                   />
-                  <span className="w-14 text-right text-xs tabular-nums text-dark-400">
+                  <span className="text-muted-foreground w-14 text-right text-xs tabular-nums">
                     {config.opacity}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between gap-4">
-                <label className="text-sm text-dark-300">{t('admin.backgrounds.globalBlur')}</label>
+                <label className="text-muted-foreground text-sm">
+                  {t('admin.backgrounds.globalBlur')}
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="range"
@@ -273,9 +292,9 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
                     step={1}
                     value={config.blur}
                     onChange={(e) => updateConfig({ blur: Number(e.target.value) })}
-                    className="w-24 accent-accent-500"
+                    className="accent-primary w-24"
                   />
-                  <span className="w-14 text-right text-xs tabular-nums text-dark-400">
+                  <span className="text-muted-foreground w-14 text-right text-xs tabular-nums">
                     {config.blur}px
                   </span>
                 </div>
@@ -283,10 +302,10 @@ export function BackgroundConfigEditor({ value: config, onChange }: BackgroundCo
 
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <label className="text-sm text-dark-300">
+                  <label className="text-muted-foreground text-sm">
                     {t('admin.backgrounds.reducedOnMobile')}
                   </label>
-                  <p className="text-xs text-dark-500">
+                  <p className="text-muted-foreground text-xs">
                     {t('admin.backgrounds.reducedOnMobileDesc')}
                   </p>
                 </div>

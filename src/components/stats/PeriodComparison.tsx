@@ -44,13 +44,13 @@ export function PeriodComparison({
 
   return (
     <div className="bento-card">
-      <h4 className="mb-3 text-sm font-semibold text-dark-200">{resolvedTitle}</h4>
+      <h4 className="text-foreground mb-3 text-sm font-semibold">{resolvedTitle}</h4>
       <div className="grid grid-cols-2 gap-3">
         {/* Count comparison */}
-        <div className="rounded-xl bg-dark-800/30 p-3">
-          <div className="text-xs text-dark-500">{resolvedCountLabel}</div>
+        <div className="bg-card/30 rounded-xl p-3">
+          <div className="text-muted-foreground text-xs">{resolvedCountLabel}</div>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-base font-semibold text-dark-100 sm:text-lg">
+            <span className="text-foreground text-base font-semibold sm:text-lg">
               {data.current.referrals_count}
             </span>
             <TrendBadge
@@ -58,19 +58,19 @@ export function PeriodComparison({
               percent={data.referrals_change.percent}
             />
           </div>
-          <div className="mt-0.5 text-xs text-dark-500">{resolvedComparisonLabel}</div>
+          <div className="text-muted-foreground mt-0.5 text-xs">{resolvedComparisonLabel}</div>
         </div>
 
         {/* Earnings comparison */}
-        <div className="rounded-xl bg-dark-800/30 p-3">
-          <div className="text-xs text-dark-500">{resolvedEarningsLabel}</div>
+        <div className="bg-card/30 rounded-xl p-3">
+          <div className="text-muted-foreground text-xs">{resolvedEarningsLabel}</div>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-base font-semibold text-success-400 sm:text-lg">
+            <span className="text-success-400 text-base font-semibold sm:text-lg">
               {formatWithCurrency(data.current.earnings_kopeks / PARTNER_STATS.KOPEKS_DIVISOR)}
             </span>
             <TrendBadge trend={data.earnings_change.trend} percent={data.earnings_change.percent} />
           </div>
-          <div className="mt-0.5 text-xs text-dark-500">{resolvedComparisonLabel}</div>
+          <div className="text-muted-foreground mt-0.5 text-xs">{resolvedComparisonLabel}</div>
         </div>
       </div>
     </div>

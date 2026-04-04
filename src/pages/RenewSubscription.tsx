@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { subscriptionApi } from '../api/subscription';
-import { useTheme } from '../hooks/useTheme';
-import { getGlassColors } from '../utils/glassTheme';
 import { useCurrency } from '../hooks/useCurrency';
 import { useHaptic } from '../platform';
 import InsufficientBalancePrompt from '../components/InsufficientBalancePrompt';
@@ -17,8 +16,6 @@ export default function RenewSubscription() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
   const { formatAmount, currencySymbol } = useCurrency();
   const { impact } = useHaptic();
 
@@ -90,7 +87,7 @@ export default function RenewSubscription() {
   if (isLoading) {
     return (
       <div className="flex min-h-64 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -104,37 +101,27 @@ export default function RenewSubscription() {
       <div className="flex items-center gap-3">
         <WebBackButton to={`/subscriptions/${subId}`} />
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: g.text }}>
+          <h1 className="text-foreground text-2xl font-bold">
             {t('subscription.extend', 'Продлить подписку')}
           </h1>
           {subscription?.tariff_name && (
-            <p className="mt-1 text-sm" style={{ color: g.textSecondary }}>
-              {subscription.tariff_name}
-            </p>
+            <p className="text-muted-foreground mt-1 text-sm">{subscription.tariff_name}</p>
           )}
         </div>
       </div>
 
       {/* Balance */}
-      <div
-        className="flex items-center justify-between rounded-2xl p-4"
-        style={{ background: g.cardBg, border: `1px solid ${g.cardBorder}` }}
-      >
-        <span className="text-sm" style={{ color: g.textSecondary }}>
-          {t('common.balance', 'Баланс')}
-        </span>
-        <span className="text-base font-semibold" style={{ color: g.text }}>
+      <div className="border-border bg-card flex items-center justify-between rounded-2xl border p-4">
+        <span className="text-muted-foreground text-sm">{t('common.balance', 'Баланс')}</span>
+        <span className="text-foreground text-base font-semibold">
           {formatAmount(balanceKopeks / 100)} {currencySymbol}
         </span>
       </div>
 
       {/* Period options */}
       {!options || options.length === 0 ? (
-        <div
-          className="rounded-2xl p-6 text-center"
-          style={{ background: g.cardBg, border: `1px solid ${g.cardBorder}` }}
-        >
-          <p style={{ color: g.textSecondary }}>
+        <div className="border-border bg-card rounded-2xl border p-6 text-center">
+          <p className="text-muted-foreground">
             {t('subscription.noRenewalOptions', 'Нет доступных вариантов продления')}
           </p>
         </div>
@@ -147,26 +134,19 @@ export default function RenewSubscription() {
             const perMonth = option.price_kopeks / months;
 
             return (
-              <button
+              <Button
                 key={option.period_days}
                 onClick={() => {
                   impact('light');
                   setSelectedPeriod(option.period_days);
                   setError(null);
                 }}
-                className="w-full rounded-2xl border p-4 text-left transition-all duration-200"
-                style={{
-                  background: isSelected
-                    ? isDark
-                      ? 'rgba(var(--color-accent-400), 0.08)'
-                      : 'rgba(var(--color-accent-400), 0.05)'
-                    : g.cardBg,
-                  borderColor: isSelected ? 'rgb(var(--color-accent-400))' : g.cardBorder,
-                }}
+                variant="ghost"
+                className={`h-auto w-full justify-start rounded-2xl border p-4 text-left transition-all duration-200 ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-base font-semibold" style={{ color: g.text }}>
+                    <span className="text-foreground text-base font-semibold">
                       {option.period_days} {t('common.units.days', 'дней')}
                     </span>
                     {option.discount_percent > 0 && (
@@ -176,17 +156,17 @@ export default function RenewSubscription() {
                     )}
                   </div>
                   <div className="text-right">
-                    <div className="text-base font-semibold" style={{ color: g.text }}>
+                    <div className="text-foreground text-base font-semibold">
                       {formatAmount(option.price_kopeks / 100)} {currencySymbol}
                     </div>
                     {months > 1 && (
-                      <div className="text-[11px]" style={{ color: g.textSecondary }}>
+                      <div className="text-muted-foreground text-[11px]">
                         {formatAmount(perMonth / 100)} {currencySymbol}/
                         {t('common.units.mo', 'мес')}
                       </div>
                     )}
                     {option.original_price_kopeks && (
-                      <div className="text-[11px] line-through" style={{ color: g.textSecondary }}>
+                      <div className="text-muted-foreground text-[11px] line-through">
                         {formatAmount(option.original_price_kopeks / 100)} {currencySymbol}
                       </div>
                     )}
@@ -203,7 +183,7 @@ export default function RenewSubscription() {
                     )}
                   </div>
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -219,15 +199,16 @@ export default function RenewSubscription() {
 
       {/* Renew button */}
       {selectedPeriod && (
-        <button
+        <Button
           onClick={() => handleRenew(selectedPeriod)}
           disabled={renewMutation.isPending}
-          className="w-full rounded-2xl bg-accent-500 py-3.5 text-base font-semibold text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+          className="w-full"
+          size="lg"
         >
           {renewMutation.isPending
             ? t('common.processing', 'Обработка...')
             : t('subscription.extend', 'Продлить подписку')}
-        </button>
+        </Button>
       )}
     </div>
   );

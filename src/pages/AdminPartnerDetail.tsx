@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { partnerApi } from '../api/partners';
 import { AdminBackButton } from '../components/admin';
 import { useCurrency } from '../hooks/useCurrency';
+import { Button } from '@/components/ui/button';
 
 // Status badge config — keys must match backend PartnerStatus enum values
 const statusConfig: Record<string, { labelKey: string; color: string; bgColor: string }> = {
@@ -24,15 +25,15 @@ const statusConfig: Record<string, { labelKey: string; color: string; bgColor: s
   },
   none: {
     labelKey: 'admin.partnerDetail.status.none',
-    color: 'text-dark-400',
-    bgColor: 'bg-dark-600',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted',
   },
 };
 
 const unknownStatus = {
   labelKey: 'admin.partnerDetail.status.none',
-  color: 'text-dark-400',
-  bgColor: 'bg-dark-600',
+  color: 'text-muted-foreground',
+  bgColor: 'bg-muted',
 };
 
 export default function AdminPartnerDetail() {
@@ -63,7 +64,7 @@ export default function AdminPartnerDetail() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -73,16 +74,19 @@ export default function AdminPartnerDetail() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partnerDetail.title')}</h1>
+          <h1 className="text-foreground text-xl font-semibold">
+            {t('admin.partnerDetail.title')}
+          </h1>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-6 text-center">
           <p className="text-error-400">{t('admin.partnerDetail.loadError')}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate('/admin/partners')}
-            className="mt-4 text-sm text-dark-400 hover:text-dark-200"
+            className="mt-4 text-sm"
           >
             {t('common.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -97,81 +101,81 @@ export default function AdminPartnerDetail() {
         <AdminBackButton to="/admin/partners" />
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold text-dark-100">
+            <h1 className="text-foreground text-xl font-semibold">
               {partner.first_name || partner.username || `#${partner.user_id}`}
             </h1>
             <span className={`rounded px-2 py-0.5 text-xs ${badge.bgColor} ${badge.color}`}>
               {t(badge.labelKey)}
             </span>
           </div>
-          {partner.username && <p className="text-sm text-dark-400">@{partner.username}</p>}
+          {partner.username && <p className="text-muted-foreground text-sm">@{partner.username}</p>}
         </div>
       </div>
 
       <div className="space-y-6">
         {/* Referral Stats */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-2xl font-bold text-dark-100">{partner.total_referrals}</div>
-            <div className="text-xs text-dark-500">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-foreground text-2xl font-bold">{partner.total_referrals}</div>
+            <div className="text-muted-foreground text-xs">
               {t('admin.partnerDetail.stats.totalReferrals')}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-2xl font-bold text-success-400">{partner.paid_referrals}</div>
-            <div className="text-xs text-dark-500">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-success-400 text-2xl font-bold">{partner.paid_referrals}</div>
+            <div className="text-muted-foreground text-xs">
               {t('admin.partnerDetail.stats.paidReferrals')}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-2xl font-bold text-accent-400">{partner.active_referrals}</div>
-            <div className="text-xs text-dark-500">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-primary text-2xl font-bold">{partner.active_referrals}</div>
+            <div className="text-muted-foreground text-xs">
               {t('admin.partnerDetail.stats.activeReferrals')}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-2xl font-bold text-accent-400">{partner.conversion_to_paid}%</div>
-            <div className="text-xs text-dark-500">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-primary text-2xl font-bold">{partner.conversion_to_paid}%</div>
+            <div className="text-muted-foreground text-xs">
               {t('admin.partnerDetail.stats.conversionRate')}
             </div>
           </div>
         </div>
 
         {/* Earnings */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-          <h3 className="mb-4 font-medium text-dark-200">
+        <div className="border-border bg-card rounded-xl border p-4">
+          <h3 className="text-foreground mb-4 font-medium">
             {t('admin.partnerDetail.earnings.title')}
           </h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="mb-1 text-sm text-dark-400">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-muted-foreground mb-1 text-sm">
                 {t('admin.partnerDetail.earnings.allTime')}
               </div>
-              <div className="text-lg font-medium text-success-400">
+              <div className="text-success-400 text-lg font-medium">
                 {formatWithCurrency(partner.earnings_all_time / 100)}
               </div>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="mb-1 text-sm text-dark-400">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-muted-foreground mb-1 text-sm">
                 {t('admin.partnerDetail.earnings.today')}
               </div>
-              <div className="text-lg font-medium text-dark-200">
+              <div className="text-foreground text-lg font-medium">
                 {formatWithCurrency(partner.earnings_today / 100)}
               </div>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="mb-1 text-sm text-dark-400">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-muted-foreground mb-1 text-sm">
                 {t('admin.partnerDetail.earnings.week')}
               </div>
-              <div className="text-lg font-medium text-dark-200">
+              <div className="text-foreground text-lg font-medium">
                 {formatWithCurrency(partner.earnings_week / 100)}
               </div>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="mb-1 text-sm text-dark-400">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-muted-foreground mb-1 text-sm">
                 {t('admin.partnerDetail.earnings.month')}
               </div>
-              <div className="text-lg font-medium text-dark-200">
+              <div className="text-foreground text-lg font-medium">
                 {formatWithCurrency(partner.earnings_month / 100)}
               </div>
             </div>
@@ -179,52 +183,55 @@ export default function AdminPartnerDetail() {
         </div>
 
         {/* Commission */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+        <div className="border-border bg-card rounded-xl border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-dark-200">
+              <h3 className="text-foreground font-medium">
                 {t('admin.partnerDetail.commission.title')}
               </h3>
-              <div className="mt-1 text-2xl font-bold text-accent-400">
+              <div className="text-primary mt-1 text-2xl font-bold">
                 {partner.commission_percent ?? 0}%
               </div>
             </div>
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() =>
                 navigate(`/admin/partners/${userId}/commission`, {
                   state: { currentCommission: partner.commission_percent ?? 0 },
                 })
               }
-              className="rounded-lg bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
             >
               {t('admin.partnerDetail.commission.update')}
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Campaigns */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+        <div className="border-border bg-card rounded-xl border p-4">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-medium text-dark-200">
+            <h3 className="text-foreground font-medium">
               {t('admin.partnerDetail.campaigns.title')}
             </h3>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => navigate(`/admin/partners/${userId}/campaigns/assign`)}
-                className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
               >
                 {t('admin.partnerDetail.campaigns.assign')}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => navigate(`/admin/campaigns/create?partnerId=${userId}`)}
-                className="rounded-lg bg-accent-500/20 px-3 py-1.5 text-xs font-medium text-accent-400 transition-colors hover:bg-accent-500/30"
               >
                 {t('admin.partnerDetail.campaigns.createNew')}
-              </button>
+              </Button>
             </div>
           </div>
           {partner.campaigns.length === 0 ? (
-            <div className="py-4 text-center text-sm text-dark-500">
+            <div className="text-muted-foreground py-4 text-center text-sm">
               {t('admin.partnerDetail.campaigns.noCampaigns')}
             </div>
           ) : (
@@ -232,31 +239,33 @@ export default function AdminPartnerDetail() {
               {partner.campaigns.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className={`rounded-lg bg-dark-700/50 p-3 ${
+                  className={`bg-muted/50 rounded-lg p-3 ${
                     !campaign.is_active ? 'opacity-60' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1">
-                      <div className="font-medium text-dark-100">{campaign.name}</div>
-                      <div className="font-mono text-xs text-dark-500">
+                      <div className="text-foreground font-medium">{campaign.name}</div>
+                      <div className="text-muted-foreground font-mono text-xs">
                         ?start={campaign.start_parameter}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {campaign.is_active ? (
-                        <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+                        <span className="bg-success-500/20 text-success-400 rounded px-2 py-0.5 text-xs">
                           {t('admin.partnerDetail.campaigns.active')}
                         </span>
                       ) : (
-                        <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                        <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
                           {t('admin.partnerDetail.campaigns.inactive')}
                         </span>
                       )}
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => unassignMutation.mutate(campaign.id)}
                         disabled={unassignMutation.isPending}
-                        className="rounded p-1 text-dark-500 transition-colors hover:bg-error-500/10 hover:text-error-400"
+                        className="text-muted-foreground hover:bg-error-500/10 hover:text-error-400"
                         title={t('admin.partnerDetail.campaigns.unassign')}
                       >
                         <svg
@@ -272,33 +281,33 @@ export default function AdminPartnerDetail() {
                             d="M6 18L18 6M6 6l12 12"
                           />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   </div>
-                  <div className="mt-2 grid grid-cols-3 gap-2 border-t border-dark-600/50 pt-2">
+                  <div className="border-border/50 mt-2 grid grid-cols-3 gap-2 border-t pt-2">
                     <div className="text-center">
-                      <div className="text-sm font-medium text-dark-200">
+                      <div className="text-foreground text-sm font-medium">
                         {campaign.registrations_count}
                       </div>
-                      <div className="text-[10px] text-dark-500">
+                      <div className="text-muted-foreground text-[10px]">
                         {t('admin.partnerDetail.campaigns.registrations', 'Регистрации')}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-medium text-dark-200">
+                      <div className="text-foreground text-sm font-medium">
                         {campaign.referrals_count}
                       </div>
-                      <div className="text-[10px] text-dark-500">
+                      <div className="text-muted-foreground text-[10px]">
                         {t('admin.partnerDetail.campaigns.referrals', 'Рефералы')}
                       </div>
                     </div>
                     <div className="text-center">
                       <div
-                        className={`text-sm font-medium ${campaign.earnings_kopeks > 0 ? 'text-success-400' : 'text-dark-400'}`}
+                        className={`text-sm font-medium ${campaign.earnings_kopeks > 0 ? 'text-success-400' : 'text-muted-foreground'}`}
                       >
                         {formatWithCurrency(campaign.earnings_kopeks / 100)}
                       </div>
-                      <div className="text-[10px] text-dark-500">
+                      <div className="text-muted-foreground text-[10px]">
                         {t('admin.partnerDetail.campaigns.earnings', 'Доход')}
                       </div>
                     </div>
@@ -310,16 +319,17 @@ export default function AdminPartnerDetail() {
         </div>
 
         {/* Actions */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-          <h3 className="mb-4 font-medium text-dark-200">
+        <div className="border-border bg-card rounded-xl border p-4">
+          <h3 className="text-foreground mb-4 font-medium">
             {t('admin.partnerDetail.dangerZone.title')}
           </h3>
-          <button
+          <Button
+            variant="destructive"
             onClick={() => navigate(`/admin/partners/${userId}/revoke`)}
-            className="w-full rounded-lg bg-error-500/20 px-4 py-3 text-sm font-medium text-error-400 transition-colors hover:bg-error-500/30"
+            className="w-full"
           >
             {t('admin.partnerDetail.dangerZone.revokeButton')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

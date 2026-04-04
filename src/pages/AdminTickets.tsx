@@ -5,6 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { adminApi, AdminTicket, AdminTicketDetail, AdminTicketMessage } from '../api/admin';
 import { ticketsApi } from '../api/tickets';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface MediaAttachment {
   file: File;
@@ -55,12 +66,12 @@ function AdminMessageMedia({
     return (
       <div className="mt-3">
         {!imageLoaded && !imageError && (
-          <div className="flex h-40 w-full animate-pulse items-center justify-center rounded-lg bg-dark-800">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="bg-card flex h-40 w-full animate-pulse items-center justify-center rounded-lg">
+            <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         )}
         {imageError ? (
-          <div className="flex h-32 w-full items-center justify-center rounded-lg bg-dark-800 text-sm text-dark-400">
+          <div className="bg-card text-muted-foreground flex h-32 w-full items-center justify-center rounded-lg text-sm">
             {t('support.imageLoadFailed')}
           </div>
         ) : (
@@ -76,34 +87,17 @@ function AdminMessageMedia({
           />
         )}
         {message.media_caption && (
-          <p className="mt-1 text-xs text-dark-400">{message.media_caption}</p>
+          <p className="text-muted-foreground mt-1 text-xs">{message.media_caption}</p>
         )}
-        {showFullImage && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={() => setShowFullImage(false)}
-          >
-            <button
-              className="absolute right-4 top-4 text-white/70 hover:text-white"
-              onClick={() => setShowFullImage(false)}
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        <Dialog open={showFullImage} onOpenChange={setShowFullImage}>
+          <DialogContent className="max-w-[95vw] bg-black/90 p-4" showCloseButton={true}>
             <img
               src={mediaUrl}
               alt={message.media_caption || 'Attached image'}
-              className="max-h-full max-w-full object-contain"
+              className="max-h-[85vh] max-w-full object-contain"
             />
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -118,7 +112,7 @@ function AdminMessageMedia({
           preload="metadata"
         />
         {message.media_caption && (
-          <p className="mt-1 text-xs text-dark-400">{message.media_caption}</p>
+          <p className="text-muted-foreground mt-1 text-xs">{message.media_caption}</p>
         )}
       </div>
     );
@@ -130,7 +124,7 @@ function AdminMessageMedia({
         href={mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-2 text-sm text-dark-200 transition-colors hover:bg-dark-600"
+        className="bg-muted text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
       >
         <svg
           className="h-4 w-4"
@@ -154,7 +148,7 @@ function AdminMessageMedia({
 // BackIcon
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -372,20 +366,23 @@ export default function AdminTickets() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+              className="rounded-xl"
             >
               <BackIcon />
-            </button>
+            </Button>
           )}
-          <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
+          <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
             {t('admin.tickets.title')}
           </h1>
         </div>
-        <button
+        <Button
+          variant="secondary"
           onClick={() => navigate('/admin/tickets/settings')}
-          className="btn-secondary flex items-center gap-2"
+          className="flex items-center gap-2"
         >
           <svg
             className="h-5 w-5"
@@ -406,80 +403,87 @@ export default function AdminTickets() {
             />
           </svg>
           {t('admin.tickets.settings')}
-        </button>
+        </Button>
       </div>
 
       {/* Stats */}
       {stats && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="card text-center">
+          <Card className="text-center">
             <div className="stat-value">{stats.total}</div>
             <div className="stat-label">{t('admin.tickets.total')}</div>
-          </div>
-          <div className="card text-center">
-            <div className="stat-value text-accent-400">{stats.open}</div>
+          </Card>
+          <Card className="text-center">
+            <div className="stat-value text-primary">{stats.open}</div>
             <div className="stat-label">{t('admin.tickets.statusOpen')}</div>
-          </div>
-          <div className="card text-center">
+          </Card>
+          <Card className="text-center">
             <div className="stat-value text-warning-400">{stats.pending}</div>
             <div className="stat-label">{t('admin.tickets.statusPending')}</div>
-          </div>
-          <div className="card text-center">
+          </Card>
+          <Card className="text-center">
             <div className="stat-value text-success-400">{stats.answered}</div>
             <div className="stat-label">{t('admin.tickets.statusAnswered')}</div>
-          </div>
-          <div className="card col-span-2 text-center sm:col-span-1">
-            <div className="stat-value text-dark-400">{stats.closed}</div>
+          </Card>
+          <Card className="col-span-2 text-center sm:col-span-1">
+            <div className="stat-value text-muted-foreground">{stats.closed}</div>
             <div className="stat-label">{t('admin.tickets.statusClosed')}</div>
-          </div>
+          </Card>
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Ticket List */}
-        <div className="card lg:col-span-1">
+        <Card className="lg:col-span-1">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-dark-100">{t('admin.tickets.list')}</h2>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
+            <h2 className="text-foreground text-lg font-semibold">{t('admin.tickets.list')}</h2>
+            <Select
+              value={statusFilter || '__all__'}
+              onValueChange={(v) => {
+                setStatusFilter(v === '__all__' ? '' : v);
                 setPage(1);
               }}
-              className="input w-auto px-3 py-1.5 text-sm"
             >
-              <option value="">{t('admin.tickets.allStatuses')}</option>
-              <option value="open">{t('admin.tickets.statusOpen')}</option>
-              <option value="pending">{t('admin.tickets.statusPending')}</option>
-              <option value="answered">{t('admin.tickets.statusAnswered')}</option>
-              <option value="closed">{t('admin.tickets.statusClosed')}</option>
-            </select>
+              <SelectTrigger className="w-auto px-3 py-1.5 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">{t('admin.tickets.allStatuses')}</SelectItem>
+                <SelectItem value="open">{t('admin.tickets.statusOpen')}</SelectItem>
+                <SelectItem value="pending">{t('admin.tickets.statusPending')}</SelectItem>
+                <SelectItem value="answered">{t('admin.tickets.statusAnswered')}</SelectItem>
+                <SelectItem value="closed">{t('admin.tickets.statusClosed')}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {ticketsLoading ? (
             <div className="flex justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           ) : ticketsData?.items.length === 0 ? (
-            <div className="py-12 text-center text-dark-500">{t('admin.tickets.noTickets')}</div>
+            <div className="text-muted-foreground py-12 text-center">
+              {t('admin.tickets.noTickets')}
+            </div>
           ) : (
-            <div className="scrollbar-hide max-h-[500px] space-y-2 overflow-y-auto">
+            <div className="scrollbar-hide max-h-125 space-y-2 overflow-y-auto">
               {ticketsData?.items.map((ticket) => (
-                <button
+                <Button
                   key={ticket.id}
+                  variant="ghost"
                   onClick={() => {
                     setSelectedTicketId(ticket.id);
                     setReplyText('');
                     clearAttachment();
                   }}
-                  className={`w-full rounded-xl border p-4 text-left transition-all ${
+                  className={`h-auto w-full justify-start rounded-xl border p-4 text-left ${
                     selectedTicketId === ticket.id
-                      ? 'border-accent-500 bg-accent-500/10'
-                      : 'border-dark-700/50 bg-dark-800/30 hover:border-dark-600'
+                      ? 'border-primary bg-primary/10 hover:bg-primary/10'
+                      : 'border-border/50 bg-card/30 hover:border-border'
                   }`}
                 >
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <span className="truncate font-medium text-dark-100">
+                    <span className="text-foreground truncate font-medium">
                       #{ticket.id} {ticket.title}
                     </span>
                     <span className={getStatusBadge(ticket.status)}>
@@ -488,24 +492,26 @@ export default function AdminTickets() {
                       )}
                     </span>
                   </div>
-                  <div className="text-xs text-dark-500">
+                  <div className="text-muted-foreground text-xs">
                     {formatUser(ticket)}
                     {ticket.user?.telegram_id && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           copyToClipboard(String(ticket.user!.telegram_id));
                         }}
-                        className="ml-1 text-dark-600 transition-colors hover:text-accent-400"
+                        className="text-muted-foreground hover:text-primary ml-1 h-auto p-0"
                         title={t('admin.tickets.copyTelegramId')}
                       >
                         (TG: {ticket.user!.telegram_id})
-                      </button>
+                      </Button>
                     )}{' '}
                     | {new Date(ticket.updated_at).toLocaleDateString()}
                   </div>
                   {ticket.last_message && (
-                    <div className="mt-1 truncate text-xs text-dark-600">
+                    <div className="text-muted-foreground mt-1 truncate text-xs">
                       {ticket.last_message.is_from_admin
                         ? t('admin.tickets.you')
                         : t('admin.tickets.user')}
@@ -517,41 +523,43 @@ export default function AdminTickets() {
                           : '...'}
                     </div>
                   )}
-                </button>
+                </Button>
               ))}
             </div>
           )}
 
           {ticketsData && ticketsData.pages > 1 && (
-            <div className="mt-4 flex items-center justify-center gap-3 border-t border-dark-800/50 pt-4">
-              <button
+            <div className="border-border/50 mt-4 flex items-center justify-center gap-3 border-t pt-4">
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
               >
                 {t('common.back')}
-              </button>
-              <span className="text-sm text-dark-400">
+              </Button>
+              <span className="text-muted-foreground text-sm">
                 {page} / {ticketsData.pages}
               </span>
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(ticketsData.pages, p + 1))}
                 disabled={page === ticketsData.pages}
-                className="btn-secondary px-3 py-1.5 text-sm disabled:opacity-50"
               >
                 {t('common.next')}
-              </button>
+              </Button>
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Ticket Detail */}
-        <div className="card lg:col-span-2">
+        <Card className="lg:col-span-2">
           {!selectedTicketId ? (
             <div className="flex h-64 flex-col items-center justify-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+              <div className="bg-card mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
                 <svg
-                  className="h-8 w-8 text-dark-500"
+                  className="text-muted-foreground h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -564,18 +572,18 @@ export default function AdminTickets() {
                   />
                 </svg>
               </div>
-              <div className="text-dark-400">{t('admin.tickets.selectTicket')}</div>
+              <div className="text-muted-foreground">{t('admin.tickets.selectTicket')}</div>
             </div>
           ) : ticketLoading ? (
             <div className="flex justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           ) : selectedTicket ? (
             <div className="flex h-full flex-col">
               {/* Header */}
-              <div className="mb-4 border-b border-dark-800/50 pb-4">
+              <div className="border-border/50 mb-4 border-b pb-4">
                 <div className="mb-3 flex items-start justify-between">
-                  <h3 className="text-lg font-semibold text-dark-100">
+                  <h3 className="text-foreground text-lg font-semibold">
                     #{selectedTicket.id} {selectedTicket.title}
                   </h3>
                   <div className="flex gap-2">
@@ -589,75 +597,81 @@ export default function AdminTickets() {
                     </span>
                   </div>
                 </div>
-                <div className="mb-4 flex items-center gap-2 text-sm text-dark-500">
+                <div className="text-muted-foreground mb-4 flex items-center gap-2 text-sm">
                   <span>
                     {t('admin.tickets.from')}: {formatUser(selectedTicket)}
                     {selectedTicket.user?.telegram_id && (
-                      <button
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={() => copyToClipboard(String(selectedTicket.user!.telegram_id))}
-                        className="ml-1 rounded bg-dark-700 px-2 py-0.5 text-xs transition-colors hover:bg-dark-600"
+                        className="ml-1 h-auto px-2 py-0.5 text-xs"
                         title={t('admin.tickets.copyTelegramId')}
                       >
                         TG: {selectedTicket.user!.telegram_id}
-                      </button>
+                      </Button>
                     )}{' '}
                     | {t('admin.tickets.created')}:{' '}
                     {new Date(selectedTicket.created_at).toLocaleString()}
                   </span>
                   {selectedTicket.user && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => navigate(`/admin/users/${selectedTicket.user!.id}`)}
-                      className="shrink-0 rounded-lg border border-accent-500/30 bg-accent-500/10 px-2 py-0.5 text-xs text-accent-400 transition-colors hover:bg-accent-500/20"
+                      className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 h-auto shrink-0 border px-2 py-0.5 text-xs"
                     >
                       {t('admin.tickets.viewUser')}
-                    </button>
+                    </Button>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {['open', 'pending', 'answered', 'closed'].map((s) => (
-                    <button
+                    <Button
                       key={s}
+                      variant="outline"
+                      size="sm"
                       onClick={() =>
                         statusMutation.mutate({ ticketId: selectedTicket.id, status: s })
                       }
                       disabled={selectedTicket.status === s || statusMutation.isPending}
-                      className={`rounded-lg border px-3 py-1.5 text-xs transition-all ${
+                      className={`h-auto px-3 py-1.5 text-xs ${
                         selectedTicket.status === s
-                          ? 'border-accent-500/50 bg-accent-500/20 text-accent-400'
-                          : 'border-dark-700/50 text-dark-400 hover:border-dark-600 hover:text-dark-200'
-                      } disabled:opacity-50`}
+                          ? 'border-primary/50 bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                          : 'border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
+                      }`}
                     >
                       {t(`admin.tickets.status${s.charAt(0).toUpperCase() + s.slice(1)}`)}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
               {/* Messages */}
-              <div className="scrollbar-hide mb-4 max-h-[400px] flex-1 space-y-4 overflow-y-auto">
+              <div className="scrollbar-hide mb-4 max-h-100 flex-1 space-y-4 overflow-y-auto">
                 {selectedTicket.messages.map((msg) => (
                   <div
                     key={msg.id}
                     className={`rounded-xl p-4 ${
                       msg.is_from_admin
-                        ? 'ml-4 border border-accent-500/20 bg-accent-500/10'
-                        : 'mr-4 border border-dark-700/30 bg-dark-800/50'
+                        ? 'border-primary/20 bg-primary/10 ml-4 border'
+                        : 'border-border/30 bg-card/50 mr-4 border'
                     }`}
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span
-                        className={`text-xs font-medium ${msg.is_from_admin ? 'text-accent-400' : 'text-dark-400'}`}
+                        className={`text-xs font-medium ${msg.is_from_admin ? 'text-primary' : 'text-muted-foreground'}`}
                       >
                         {msg.is_from_admin
                           ? t('admin.tickets.adminLabel')
                           : t('admin.tickets.userLabel')}
                       </span>
-                      <span className="text-xs text-dark-500">
+                      <span className="text-muted-foreground text-xs">
                         {new Date(msg.created_at).toLocaleString()}
                       </span>
                     </div>
                     {msg.message_text && (
-                      <p className="whitespace-pre-wrap text-dark-200">{msg.message_text}</p>
+                      <p className="text-foreground whitespace-pre-wrap">{msg.message_text}</p>
                     )}
                     <AdminMessageMedia message={msg} t={t} />
                   </div>
@@ -666,18 +680,18 @@ export default function AdminTickets() {
 
               {/* Reply form */}
               {selectedTicket.status !== 'closed' && (
-                <form onSubmit={handleReply} className="border-t border-dark-800/50 pt-4">
-                  <textarea
+                <form onSubmit={handleReply} className="border-border/50 border-t pt-4">
+                  <Textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder={t('admin.tickets.replyPlaceholder')}
                     rows={3}
-                    className="input resize-none"
+                    className="resize-none"
                   />
 
                   {/* Attachment preview */}
                   {attachment && (
-                    <div className="mt-2 flex items-center gap-3 rounded-lg border border-dark-700/50 bg-dark-800/50 p-2">
+                    <div className="border-border/50 bg-card/50 mt-2 flex items-center gap-3 rounded-lg border p-2">
                       {attachment.mediaType === 'photo' && attachment.preview ? (
                         <img
                           src={attachment.preview}
@@ -685,9 +699,9 @@ export default function AdminTickets() {
                           className="h-12 w-12 rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-dark-700">
+                        <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-lg">
                           <svg
-                            className="h-6 w-6 text-dark-400"
+                            className="text-muted-foreground h-6 w-6"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -710,10 +724,12 @@ export default function AdminTickets() {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm text-dark-200">{attachment.file.name}</div>
+                        <div className="text-foreground truncate text-sm">
+                          {attachment.file.name}
+                        </div>
                         {attachment.uploading && (
-                          <div className="flex items-center gap-1.5 text-xs text-accent-400">
-                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                          <div className="text-primary flex items-center gap-1.5 text-xs">
+                            <span className="border-primary h-3 w-3 animate-spin rounded-full border-2 border-t-transparent" />
                             {t('admin.tickets.uploading')}
                           </div>
                         )}
@@ -721,15 +737,17 @@ export default function AdminTickets() {
                           <div className="text-xs text-red-400">{attachment.error}</div>
                         )}
                         {attachment.fileId && !attachment.uploading && (
-                          <div className="text-xs text-success-400">
+                          <div className="text-success-400 text-xs">
                             {t('admin.tickets.uploadComplete')}
                           </div>
                         )}
                       </div>
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={clearAttachment}
-                        className="shrink-0 rounded-lg p-1 text-dark-500 transition-colors hover:bg-dark-700 hover:text-dark-200"
+                        className="text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-lg"
                       >
                         <svg
                           className="h-4 w-4"
@@ -744,7 +762,7 @@ export default function AdminTickets() {
                             d="M6 18L18 6M6 6l12 12"
                           />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   )}
 
@@ -757,11 +775,13 @@ export default function AdminTickets() {
                   />
 
                   <div className="mt-3 flex items-center justify-between">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={!!attachment?.uploading}
-                      className="flex items-center gap-2 rounded-lg border border-dark-700/50 px-3 py-2 text-sm text-dark-400 transition-colors hover:border-dark-600 hover:text-dark-200 disabled:opacity-50"
+                      className="border-border/50 text-muted-foreground hover:border-border hover:text-foreground gap-2"
                     >
                       <svg
                         className="h-4 w-4"
@@ -777,8 +797,8 @@ export default function AdminTickets() {
                         />
                       </svg>
                       {t('admin.tickets.attachMedia')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="submit"
                       disabled={
                         !replyText.trim() ||
@@ -786,7 +806,6 @@ export default function AdminTickets() {
                         !!attachment?.uploading ||
                         !!attachment?.error
                       }
-                      className="btn-primary"
                     >
                       {replyMutation.isPending ? (
                         <span className="flex items-center gap-2">
@@ -796,13 +815,13 @@ export default function AdminTickets() {
                       ) : (
                         t('admin.tickets.sendReply')
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </form>
               )}
             </div>
           ) : null}
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 import { balanceApi } from '../api/balance';
 import { useCurrency } from '../hooks/useCurrency';
@@ -242,7 +243,7 @@ export default function TopUpAmount() {
   if (!method) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -330,14 +331,14 @@ export default function TopUpAmount() {
           className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
             isStarsMethod
               ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 text-yellow-400'
-              : 'bg-gradient-to-br from-accent-500/20 to-accent-600/20 text-accent-400'
+              : 'from-primary/20 to-primary/20 text-primary bg-gradient-to-br'
           }`}
         >
           <div className="flex h-7 w-7 items-center justify-center">{getMethodIcon(method.id)}</div>
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-dark-100">{methodName}</h3>
-          <p className="text-sm text-dark-400">
+          <h3 className="text-foreground text-lg font-bold">{methodName}</h3>
+          <p className="text-muted-foreground text-sm">
             {formatAmount(minRubles, 0)} – {formatAmount(maxRubles, 0)} {currencySymbol}
           </p>
         </div>
@@ -346,26 +347,29 @@ export default function TopUpAmount() {
       {/* Payment options (if any) */}
       {hasOptions && method.options && (
         <motion.div variants={staggerItem} className="space-y-2">
-          <label className="text-sm font-medium text-dark-400">{t('balance.paymentMethod')}</label>
+          <label className="text-muted-foreground text-sm font-medium">
+            {t('balance.paymentMethod')}
+          </label>
           <div className="grid grid-cols-2 gap-2">
             {method.options.map((opt) => (
-              <button
+              <Button
                 key={opt.id}
                 type="button"
                 onClick={() => setSelectedOption(opt.id)}
-                className={`relative rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                variant={selectedOption === opt.id ? 'default' : 'outline'}
+                className={`relative h-auto rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                   selectedOption === opt.id
-                    ? 'bg-accent-500/15 text-accent-400 ring-2 ring-accent-500/40'
-                    : 'border border-dark-700/50 bg-dark-800/70 text-dark-300 hover:bg-dark-700/70'
+                    ? 'bg-primary/15 text-primary ring-ring/40 ring-2'
+                    : 'border-border/50 bg-card/70 text-muted-foreground hover:bg-muted/70'
                 }`}
               >
                 {opt.name}
                 {selectedOption === opt.id && (
-                  <span className="absolute right-1.5 top-1.5">
-                    <span className="block h-2 w-2 rounded-full bg-accent-500" />
+                  <span className="absolute top-1.5 right-1.5">
+                    <span className="bg-primary block h-2 w-2 rounded-full" />
                   </span>
                 )}
-              </button>
+              </Button>
             ))}
           </div>
         </motion.div>
@@ -373,13 +377,13 @@ export default function TopUpAmount() {
 
       {/* Amount input + Submit button - inline */}
       <motion.div variants={staggerItem} className="space-y-2">
-        <label className="text-sm font-medium text-dark-400">{t('balance.enterAmount')}</label>
+        <label className="text-muted-foreground text-sm font-medium">
+          {t('balance.enterAmount')}
+        </label>
         <div className="flex gap-2">
           <div
             className={`relative flex-1 rounded-2xl transition-all duration-200 ${
-              isInputFocused
-                ? 'bg-dark-800 ring-2 ring-accent-500/50'
-                : 'border border-dark-700/50 bg-dark-800/70'
+              isInputFocused ? 'bg-card ring-ring/50 ring-2' : 'border-border/50 bg-card/70 border'
             }`}
           >
             <input
@@ -398,23 +402,23 @@ export default function TopUpAmount() {
                 }
               }}
               placeholder="0"
-              className="h-14 w-full bg-transparent px-4 pr-12 text-xl font-bold text-dark-100 placeholder:text-dark-600 focus:outline-none"
+              className="text-foreground placeholder:text-muted-foreground h-14 w-full bg-transparent px-4 pr-12 text-xl font-bold focus:outline-none"
               autoComplete="off"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base font-semibold text-dark-500">
+            <span className="text-muted-foreground absolute top-1/2 right-4 -translate-y-1/2 text-base font-semibold">
               {currencySymbol}
             </span>
           </div>
-          <button
+          <Button
             type="button"
             onClick={handleSubmit}
             disabled={isPending || !amount || parseFloat(amount) <= 0}
-            className={`flex h-14 shrink-0 items-center justify-center gap-2 overflow-hidden rounded-2xl px-6 text-base font-bold transition-colors duration-200 ${
+            className={`h-14 shrink-0 gap-2 overflow-hidden rounded-2xl px-6 text-base font-bold transition-colors duration-200 ${
               isPending || !amount || parseFloat(amount) <= 0
-                ? 'cursor-not-allowed bg-dark-700 text-dark-500'
+                ? 'bg-muted text-muted-foreground cursor-not-allowed'
                 : isStarsMethod
                   ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg shadow-yellow-500/25 hover:from-yellow-400 hover:to-orange-400 active:from-yellow-600 active:to-orange-600'
-                  : 'bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-lg shadow-accent-500/25 hover:from-accent-400 hover:to-accent-500 active:from-accent-600 active:to-accent-700'
+                  : 'from-primary to-primary/80 shadow-primary/25 hover:from-primary/80 hover:to-primary active:from-primary/90 active:to-primary/90 bg-gradient-to-r text-white shadow-lg'
             }`}
           >
             {isPending ? (
@@ -425,7 +429,7 @@ export default function TopUpAmount() {
                 <span>{t('balance.topUp')}</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </motion.div>
 
@@ -447,16 +451,16 @@ export default function TopUpAmount() {
                 hover
                 glow={isSelected}
                 className={`flex flex-col items-center justify-center px-2 py-3 ${
-                  isSelected ? 'border-accent-500/50 bg-accent-500/10' : ''
+                  isSelected ? 'border-primary/50 bg-primary/10' : ''
                 }`}
               >
                 <span
-                  className={`text-base font-bold ${isSelected ? 'text-accent-400' : 'text-dark-200'}`}
+                  className={`text-base font-bold ${isSelected ? 'text-primary' : 'text-foreground'}`}
                 >
                   {formatAmount(a, 0)}
                 </span>
                 <span
-                  className={`mt-0.5 text-xs ${isSelected ? 'text-accent-400/70' : 'text-dark-500'}`}
+                  className={`mt-0.5 text-xs ${isSelected ? 'text-primary/70' : 'text-muted-foreground'}`}
                 >
                   {currencySymbol}
                 </span>
@@ -470,10 +474,10 @@ export default function TopUpAmount() {
       {error && (
         <motion.div
           variants={staggerItem}
-          className="flex items-center gap-2 rounded-xl border border-error-500/20 bg-error-500/10 p-3"
+          className="border-error-500/20 bg-error-500/10 flex items-center gap-2 rounded-xl border p-3"
         >
           <svg
-            className="h-5 w-5 shrink-0 text-error-400"
+            className="text-error-400 h-5 w-5 shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -485,7 +489,7 @@ export default function TopUpAmount() {
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-sm text-error-400">{error}</span>
+          <span className="text-error-400 text-sm">{error}</span>
         </motion.div>
       )}
 
@@ -493,40 +497,42 @@ export default function TopUpAmount() {
       {paymentUrl && (
         <motion.div
           variants={staggerItem}
-          className="space-y-3 rounded-2xl border border-success-500/20 bg-success-500/10 p-4"
+          className="border-success-500/20 bg-success-500/10 space-y-3 rounded-2xl border p-4"
         >
-          <div className="flex items-center gap-2 text-success-400">
+          <div className="text-success-400 flex items-center gap-2">
             <CheckIcon />
             <span className="font-semibold">{t('balance.paymentReady')}</span>
           </div>
 
-          <p className="text-sm text-dark-400">{t('balance.clickToOpenPayment')}</p>
+          <p className="text-muted-foreground text-sm">{t('balance.clickToOpenPayment')}</p>
 
-          <button
+          <Button
             type="button"
             onClick={handleOpenPayment}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-success-500 font-bold text-white transition-colors hover:bg-success-400 active:bg-success-600"
+            className="bg-success-500 hover:bg-success-400 active:bg-success-600 h-12 w-full gap-2 font-bold text-white"
           >
             <ExternalLinkIcon />
             <span>{t('balance.openPaymentPage')}</span>
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2">
-            <div className="min-w-0 flex-1 rounded-lg border border-dark-700/50 bg-dark-800/70 px-3 py-2">
-              <p className="truncate text-xs text-dark-500">{paymentUrl}</p>
+            <div className="border-border/50 bg-card/70 min-w-0 flex-1 rounded-lg border px-3 py-2">
+              <p className="text-muted-foreground truncate text-xs">{paymentUrl}</p>
             </div>
-            <button
+            <Button
               type="button"
               onClick={handleCopyUrl}
-              className={`shrink-0 rounded-lg p-2.5 transition-colors ${
+              variant={copied ? 'ghost' : 'secondary'}
+              size="icon"
+              className={`shrink-0 rounded-lg ${
                 copied
-                  ? 'bg-success-500/20 text-success-400'
-                  : 'bg-dark-800/70 text-dark-400 hover:bg-dark-700 hover:text-dark-200'
+                  ? 'bg-success-500/20 text-success-400 hover:bg-success-500/20 hover:text-success-400'
+                  : ''
               }`}
               title={t('common.copy')}
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
-            </button>
+            </Button>
           </div>
         </motion.div>
       )}

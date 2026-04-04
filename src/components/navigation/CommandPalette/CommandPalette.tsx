@@ -136,8 +136,8 @@ export function CommandPalette({
               <DialogPrimitive.Content asChild>
                 <motion.div
                   className={cn(
-                    'fixed left-1/2 top-[15%] z-50 w-full max-w-lg -translate-x-1/2',
-                    'overflow-hidden rounded-linear-lg border border-dark-700/50 bg-dark-900/95 backdrop-blur-linear',
+                    'fixed top-[15%] left-1/2 z-50 w-full max-w-lg -translate-x-1/2',
+                    'rounded-linear-lg border-border/50 bg-background/95 backdrop-blur-linear overflow-hidden border',
                     'shadow-2xl',
                     'focus:outline-none',
                   )}
@@ -164,7 +164,7 @@ export function CommandPalette({
                             value={item.label}
                             onSelect={() => runCommand(() => navigate(item.path))}
                           >
-                            <item.icon className="mr-2 h-4 w-4 text-dark-400" />
+                            <item.icon className="text-muted-foreground mr-2 h-4 w-4" />
                             <span>{item.label}</span>
                           </CommandItem>
                         ))}
@@ -178,7 +178,7 @@ export function CommandPalette({
                             value={item.label}
                             onSelect={() => runCommand(item.action)}
                           >
-                            <item.icon className="mr-2 h-4 w-4 text-dark-400" />
+                            <item.icon className="text-muted-foreground mr-2 h-4 w-4" />
                             <span>{item.label}</span>
                           </CommandItem>
                         ))}
@@ -186,21 +186,21 @@ export function CommandPalette({
                     </CommandList>
 
                     {/* Footer with keyboard hints */}
-                    <div className="flex items-center justify-between border-t border-dark-700/50 px-3 py-2 text-xs text-dark-500">
+                    <div className="border-border/50 text-muted-foreground flex items-center justify-between border-t px-3 py-2 text-xs">
                       <div className="flex items-center gap-2">
-                        <kbd className="rounded bg-dark-800 px-1.5 py-0.5 font-mono text-dark-400">
+                        <kbd className="bg-card text-muted-foreground rounded px-1.5 py-0.5 font-mono">
                           ↑↓
                         </kbd>
                         <span>navigate</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <kbd className="rounded bg-dark-800 px-1.5 py-0.5 font-mono text-dark-400">
+                        <kbd className="bg-card text-muted-foreground rounded px-1.5 py-0.5 font-mono">
                           ↵
                         </kbd>
                         <span>select</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <kbd className="rounded bg-dark-800 px-1.5 py-0.5 font-mono text-dark-400">
+                        <kbd className="bg-card text-muted-foreground rounded px-1.5 py-0.5 font-mono">
                           esc
                         </kbd>
                         <span>close</span>

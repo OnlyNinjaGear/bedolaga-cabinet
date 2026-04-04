@@ -5,6 +5,7 @@ import { StarIcon, SearchIcon, CloseIcon, ChevronDownIcon } from './icons';
 import { SettingDefinition } from '../../api/adminSettings';
 import { formatSettingKey } from './utils';
 import { cn } from '../../lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface SettingsTreeSidebarProps {
   activeSection: string;
@@ -139,7 +140,7 @@ export function SettingsTreeSidebar({
   return (
     <nav className={cn('flex flex-col', className)}>
       {/* Search bar */}
-      <div ref={searchContainerRef} className="relative px-3 pb-2 pt-3">
+      <div ref={searchContainerRef} className="relative px-3 pt-3 pb-2">
         <input
           ref={inputRef}
           type="text"
@@ -151,43 +152,46 @@ export function SettingsTreeSidebar({
           onFocus={() => setIsSearchOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={t('admin.settings.searchPlaceholder')}
-          className="w-full rounded-lg border border-dark-700/50 bg-dark-800/50 py-2 pl-9 pr-8 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+          className="border-border/50 bg-card/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border py-2 pr-8 pl-9 text-sm transition-colors focus:outline-none"
         />
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-dark-500">
+        <div className="text-muted-foreground absolute top-1/2 left-6 -translate-y-1/2">
           <SearchIcon className="h-4 w-4" />
         </div>
         {searchQuery && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => {
               onSearchChange('');
               setIsSearchOpen(false);
             }}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-dark-500 transition-colors hover:text-dark-300"
+            className="text-muted-foreground hover:text-muted-foreground absolute top-1/2 right-6 h-auto w-auto -translate-y-1/2 p-0"
           >
             <CloseIcon className="h-4 w-4" />
-          </button>
+          </Button>
         )}
 
         {/* Autocomplete dropdown */}
         {isSearchOpen && suggestions.length > 0 && (
-          <div className="absolute left-3 right-3 top-full z-50 mt-1 max-h-72 overflow-y-auto rounded-lg border border-dark-700 bg-dark-800 py-1 shadow-xl">
+          <div className="border-border bg-card absolute top-full right-3 left-3 z-50 mt-1 max-h-72 overflow-y-auto rounded-lg border py-1 shadow-xl">
             {suggestions.map((setting, index) => (
-              <button
+              <Button
                 key={setting.key}
+                variant="ghost"
                 onClick={() => handleSelectSuggestion(setting)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={cn(
-                  'flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors',
-                  index === highlightedIndex ? 'bg-accent-500/20' : 'hover:bg-dark-700/50',
+                  'flex h-auto w-full flex-col items-start gap-0.5 px-3 py-2 text-left',
+                  index === highlightedIndex ? 'bg-primary/20' : '',
                 )}
               >
-                <span className="truncate text-sm font-medium text-dark-100">
+                <span className="text-foreground truncate text-sm font-medium">
                   {getSettingDisplayName(setting)}
                 </span>
-                <span className="truncate text-xs text-dark-500">
+                <span className="text-muted-foreground truncate text-xs">
                   {t(`admin.settings.categories.${setting.category.key}`, setting.category.key)}
                 </span>
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -195,13 +199,14 @@ export function SettingsTreeSidebar({
 
       {/* Favorites button */}
       <div className="px-3 pb-1">
-        <button
+        <Button
+          variant="ghost"
           onClick={() => onSectionChange('favorites')}
           className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-all',
+            'flex h-auto w-full items-center gap-3 px-3 py-2',
             activeSection === 'favorites'
-              ? 'bg-accent-500/10 text-accent-400'
-              : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+              ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+              : 'text-muted-foreground hover:bg-card/50 hover:text-foreground',
           )}
         >
           <StarIcon className="h-4 w-4" filled={activeSection === 'favorites'} />
@@ -211,22 +216,22 @@ export function SettingsTreeSidebar({
               className={cn(
                 'ml-auto rounded-full px-2 py-0.5 text-xs',
                 activeSection === 'favorites'
-                  ? 'bg-accent-500/20 text-accent-400'
+                  ? 'bg-primary/20 text-primary'
                   : 'bg-warning-500/20 text-warning-400',
               )}
             >
               {favoritesCount}
             </span>
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Divider */}
-      <div className="mx-3 border-t border-dark-700/50" />
+      <div className="border-border/50 mx-3 border-t" />
 
       {/* Customization section label */}
-      <div className="px-6 pb-1 pt-3">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-dark-500">
+      <div className="px-6 pt-3 pb-1">
+        <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
           {t('admin.settings.customization', 'Customization')}
         </span>
       </div>
@@ -236,29 +241,30 @@ export function SettingsTreeSidebar({
         {customizationItems.map((item) => {
           const isActive = activeSection === item.id;
           return (
-            <button
+            <Button
               key={item.id}
+              variant="ghost"
               onClick={() => onSectionChange(item.id)}
               className={cn(
-                'flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-all',
+                'flex h-auto w-full items-center gap-3 px-3 py-2',
                 isActive
-                  ? 'bg-accent-500/10 text-accent-400'
-                  : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                  ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                  : 'text-muted-foreground hover:bg-card/50 hover:text-foreground',
               )}
             >
               {item.icon && <span className="text-sm">{item.icon}</span>}
               <span className="text-sm font-medium">{t(`admin.settings.${item.id}`, item.id)}</span>
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {/* Divider */}
-      <div className="mx-3 border-t border-dark-700/50" />
+      <div className="border-border/50 mx-3 border-t" />
 
       {/* Settings section label */}
-      <div className="px-6 pb-1 pt-3">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-dark-500">
+      <div className="px-6 pt-3 pb-1">
+        <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
           {t('admin.settings.settingsLabel', 'Settings')}
         </span>
       </div>
@@ -272,13 +278,14 @@ export function SettingsTreeSidebar({
           return (
             <div key={group.id}>
               {/* Group header */}
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => handleGroupToggle(group.id)}
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-all',
+                  'flex h-auto w-full items-center gap-3 px-3 py-2',
                   hasActiveChild
-                    ? 'text-accent-300'
-                    : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                    ? 'text-primary/70 hover:text-primary/70'
+                    : 'text-muted-foreground hover:bg-card/50 hover:text-foreground',
                 )}
               >
                 <span className="text-sm">{group.icon}</span>
@@ -291,26 +298,27 @@ export function SettingsTreeSidebar({
                     isExpanded && 'rotate-180',
                   )}
                 />
-              </button>
+              </Button>
 
               {/* Children */}
               {isExpanded && (
-                <div className="relative ml-5 mt-0.5 space-y-0.5 border-l border-dark-700/50 pl-3">
+                <div className="border-border/50 relative mt-0.5 ml-5 space-y-0.5 border-l pl-3">
                   {group.children.map((child) => {
                     const isActive = activeSection === child.id;
                     return (
-                      <button
+                      <Button
                         key={child.id}
+                        variant="ghost"
                         onClick={() => onSectionChange(child.id)}
                         className={cn(
-                          'flex w-full items-center rounded-lg px-3 py-1.5 text-left text-sm transition-all',
+                          'flex h-auto w-full items-center px-3 py-1.5 text-left text-sm',
                           isActive
-                            ? 'bg-accent-500/10 text-accent-400'
-                            : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-200',
+                            ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                            : 'text-muted-foreground hover:bg-card/50 hover:text-foreground',
                         )}
                       >
                         {t(`admin.settings.tree.${child.id}`, child.id)}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>

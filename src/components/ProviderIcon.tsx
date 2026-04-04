@@ -42,7 +42,7 @@ export default function ProviderIcon({
     case 'telegram':
       return <TelegramIcon className={className ?? 'h-6 w-6'} />;
     case 'email':
-      return <EmailIcon className={cn('text-dark-300', className ?? 'h-6 w-6')} />;
+      return <EmailIcon className={cn('text-muted-foreground', className ?? 'h-6 w-6')} />;
     default:
       return <OAuthProviderIcon provider={provider} className={className ?? 'h-6 w-6'} />;
   }

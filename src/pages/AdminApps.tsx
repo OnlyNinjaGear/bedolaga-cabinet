@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { adminAppsApi } from '../api/adminApps';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function AdminApps() {
   const { t } = useTranslation();
@@ -41,12 +43,9 @@ export default function AdminApps() {
       {/* Header */}
       <div className="flex items-center gap-3">
         {!capabilities.hasBackButton && (
-          <button
-            onClick={() => navigate('/admin')}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-          >
+          <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
             <svg
-              className="h-5 w-5 text-dark-400"
+              className="text-muted-foreground h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -54,64 +53,63 @@ export default function AdminApps() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
-          </button>
+          </Button>
         )}
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('admin.apps.title')}</h1>
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">{t('admin.apps.title')}</h1>
       </div>
 
       {/* Status card */}
-      <div className="card p-4">
+      <Card className="p-4">
         <div className="flex items-center gap-3">
           <div
-            className={`h-3 w-3 rounded-full ${status?.enabled ? 'bg-success-400' : 'bg-dark-600'}`}
+            className={`h-3 w-3 rounded-full ${status?.enabled ? 'bg-success-400' : 'bg-muted'}`}
           />
-          <span className="text-sm font-medium text-dark-200">
+          <span className="text-foreground text-sm font-medium">
             {status?.enabled
               ? t('admin.apps.remnaWaveConnected', 'RemnaWave connected')
               : t('admin.apps.remnaWaveDisconnected', 'RemnaWave not connected')}
           </span>
         </div>
         {status?.config_uuid && (
-          <div className="mt-2 truncate font-mono text-xs text-dark-500">
+          <div className="text-muted-foreground mt-2 truncate font-mono text-xs">
             UUID: {status.config_uuid}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Available configs */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-dark-300">
+        <h2 className="text-muted-foreground text-sm font-semibold">
           {t('admin.apps.availableConfigs', 'Available configs')}
         </h2>
         {isLoadingConfigs ? (
           <div className="flex items-center justify-center py-8">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         ) : configs && configs.length > 0 ? (
           <div className="space-y-2">
             {configs.map((config) => (
-              <button
+              <Button
                 key={config.uuid}
+                variant="outline"
                 onClick={() => {
                   if (config.uuid !== currentUuid) {
                     setUuidMutation.mutate(config.uuid);
                   }
                 }}
-                className={`w-full rounded-lg border p-4 text-left transition-colors ${
-                  currentUuid === config.uuid
-                    ? 'border-accent-500 bg-accent-500/10'
-                    : 'border-dark-700 bg-dark-800/50 hover:border-dark-600'
+                className={`w-full p-4 text-left ${
+                  currentUuid === config.uuid ? 'border-primary bg-primary/10' : 'bg-card/50'
                 }`}
               >
-                <div className="font-medium text-dark-100">{config.name}</div>
-                <div className="mt-1 font-mono text-xs text-dark-500">{config.uuid}</div>
-              </button>
+                <div className="text-foreground font-medium">{config.name}</div>
+                <div className="text-muted-foreground mt-1 font-mono text-xs">{config.uuid}</div>
+              </Button>
             ))}
           </div>
         ) : (
-          <div className="card py-8 text-center text-sm text-dark-500">
+          <Card className="text-muted-foreground py-8 text-center text-sm">
             {t('admin.apps.noConfigs', 'No configs available')}
-          </div>
+          </Card>
         )}
       </div>
     </div>

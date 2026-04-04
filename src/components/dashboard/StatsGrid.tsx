@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useCurrency } from '../../hooks/useCurrency';
-import { useTheme } from '../../hooks/useTheme';
-import { getGlassColors } from '../../utils/glassTheme';
 
 interface StatsGridProps {
   balanceRubles: number;
@@ -38,11 +36,9 @@ export default function StatsGrid({
 }: StatsGridProps) {
   const { t } = useTranslation();
   const { formatAmount, currencySymbol } = useCurrency();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
 
-  const accentColor = 'rgb(var(--color-accent-400))';
-  const accentBg = 'rgba(var(--color-accent-400), 0.07)';
+  const accentColor = 'var(--primary)';
+  const accentBg = 'color-mix(in srgb, var(--primary) 7%, transparent)';
 
   const cards = [
     {
@@ -75,7 +71,7 @@ export default function StatsGrid({
     {
       label: t('dashboard.stats.referrals'),
       value: `${referralCount}`,
-      valueColor: g.text,
+      valueColor: 'var(--foreground)',
       subtitle: `+${formatAmount(earningsRubles)} ${currencySymbol}`,
       subtitleColor: accentColor,
       to: '/referral',
@@ -96,8 +92,8 @@ export default function StatsGrid({
           <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
         </svg>
       ),
-      iconBg: g.trackBg,
-      iconColor: g.textSecondary,
+      iconBg: 'color-mix(in srgb, var(--muted-foreground) 30%, transparent)',
+      iconColor: 'var(--muted-foreground)',
       loading: refLoading,
     },
   ];
@@ -108,11 +104,8 @@ export default function StatsGrid({
         <Link
           key={i}
           to={card.to}
-          className="group relative overflow-hidden rounded-[18px] transition-all duration-200"
+          className="group border-border bg-card relative overflow-hidden rounded-[18px] border shadow-sm transition-all duration-200"
           style={{
-            background: g.cardBg,
-            border: `1px solid ${g.cardBorder}`,
-            boxShadow: g.shadow,
             padding: '18px 20px 20px',
           }}
           data-onboarding={card.onboarding}
@@ -121,14 +114,14 @@ export default function StatsGrid({
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
-                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-[9px] transition-colors duration-500"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] transition-colors duration-500"
                 style={{ background: card.iconBg }}
               >
                 {card.icon(card.iconColor)}
               </div>
-              <span className="text-[13px] font-medium text-dark-50/45">{card.label}</span>
+              <span className="text-foreground/45 text-[13px] font-medium">{card.label}</span>
             </div>
-            <ChevronIcon color={g.textFaint} />
+            <ChevronIcon color="var(--muted-foreground)" />
           </div>
 
           {/* Value */}
@@ -137,7 +130,7 @@ export default function StatsGrid({
           ) : (
             <>
               <div
-                className="text-[28px] font-bold leading-tight tracking-tight transition-colors duration-500"
+                className="text-[28px] leading-tight font-bold tracking-tight transition-colors duration-500"
                 style={{ color: card.valueColor }}
               >
                 {card.value}

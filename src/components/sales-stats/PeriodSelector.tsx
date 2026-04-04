@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SALES_STATS } from '../../constants/salesStats';
+import { Button } from '@/components/ui/button';
 
 interface PeriodSelectorProps {
   value: { days?: number; startDate?: string; endDate?: string };
@@ -41,31 +42,33 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {SALES_STATS.PERIOD_PRESETS.map((days) => (
-        <button
+        <Button
           key={days}
           type="button"
+          variant="ghost"
           onClick={() => handlePreset(days)}
-          className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+          className={`h-auto rounded-lg px-3 py-1.5 text-sm font-medium ${
             isPresetActive(days)
-              ? 'bg-accent-500/20 text-accent-400'
-              : 'bg-dark-800/50 text-dark-400 hover:bg-dark-700/50 hover:text-dark-300'
+              ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+              : 'bg-card/50 text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground'
           }`}
         >
           {presetLabels[days]}
-        </button>
+        </Button>
       ))}
 
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={handleCustomToggle}
-        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+        className={`h-auto rounded-lg px-3 py-1.5 text-sm font-medium ${
           showCustom
-            ? 'bg-accent-500/20 text-accent-400'
-            : 'bg-dark-800/50 text-dark-400 hover:bg-dark-700/50 hover:text-dark-300'
+            ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+            : 'bg-card/50 text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground'
         }`}
       >
         {t('admin.salesStats.period.custom')}
-      </button>
+      </Button>
 
       {showCustom && (
         <div className="flex items-center gap-2">
@@ -73,14 +76,14 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
             type="date"
             value={value.startDate || ''}
             onChange={(e) => handleDateChange('startDate', e.target.value)}
-            className="rounded-lg border border-dark-600 bg-dark-800 px-2 py-1 text-sm text-dark-200"
+            className="border-border bg-card text-foreground rounded-lg border px-2 py-1 text-sm"
           />
-          <span className="text-dark-500">{'\u2014'}</span>
+          <span className="text-muted-foreground">{'\u2014'}</span>
           <input
             type="date"
             value={value.endDate || ''}
             onChange={(e) => handleDateChange('endDate', e.target.value)}
-            className="rounded-lg border border-dark-600 bg-dark-800 px-2 py-1 text-sm text-dark-200"
+            className="border-border bg-card text-foreground rounded-lg border px-2 py-1 text-sm"
           />
         </div>
       )}

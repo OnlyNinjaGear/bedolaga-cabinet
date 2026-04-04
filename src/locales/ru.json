@@ -235,7 +235,7 @@
   "dashboard": {
     "title": "Личный кабинет",
     "welcome": "Добро пожаловать, {{name}}!",
-    "yourSubscription": "Ваша подписка",
+    "yourSubscription": "Ваш статус",
     "quickActions": "Быстрые действия",
     "viewSubscription": "Управление подпиской",
     "topUpBalance": "Пополнить баланс",
@@ -1133,7 +1133,10 @@
       "salesStats": "Статистика продаж",
       "landings": "Лендинги",
       "referralNetwork": "Реферальная сеть",
-      "news": "Новости"
+      "news": "Новости",
+      "health": "Состояние системы",
+      "notifications": "Уведомления",
+      "seo": "SEO / Open Graph"
     },
     "panel": {
       "title": "Панель администратора",
@@ -1180,7 +1183,30 @@
       "salesStatsDesc": "Аналитика продаж и тренды",
       "landingsDesc": "Страницы быстрой покупки",
       "referralNetworkDesc": "Визуализация графа рефералов и РК",
-      "newsDesc": "Управление новостями и статьями"
+      "newsDesc": "Управление новостями и статьями",
+      "healthDesc": "Мониторинг работоспособности сервисов"
+    },
+    "health": {
+      "title": "Состояние системы",
+      "subtitle": "Мониторинг работоспособности сервисов",
+      "overall": "Общий статус",
+      "services": "Сервисы",
+      "metrics": "Метрики системы",
+      "database": "База данных",
+      "redis": "Redis",
+      "api": "API",
+      "bot": "Бот",
+      "uptime": "Время работы",
+      "memory": "Память",
+      "cpu": "CPU",
+      "version": "Версия",
+      "lastChecked": "Последняя проверка",
+      "notConfigured": "Эндпоинт мониторинга не настроен",
+      "status": {
+        "healthy": "Работает",
+        "degraded": "Деградация",
+        "down": "Недоступен"
+      }
     },
     "salesStats": {
       "title": "Статистика продаж",
@@ -1894,6 +1920,7 @@
       "branding": "Брендинг",
       "theme": "Тема",
       "analytics": "Аналитика",
+      "seo": "SEO / OG",
       "buttons": "Кнопки",
       "payments": "Платежи",
       "subscriptions": "Подписки",
@@ -2008,14 +2035,14 @@
         "sys_logging": "Логи"
       },
       "presets": {
-        "standard": "Стандарт",
-        "ocean": "Океан",
-        "forest": "Лес",
-        "sunset": "Закат",
-        "violet": "Фиолет",
+        "zinc": "Цинк",
+        "slate": "Сланец",
+        "stone": "Камень",
+        "neutral": "Нейтрал",
+        "blue": "Синий",
+        "green": "Зелёный",
         "rose": "Роза",
-        "midnight": "Полночь",
-        "turquoise": "Бирюза"
+        "violet": "Фиолет"
       },
       "colors": {
         "background": "Фон",
@@ -3455,7 +3482,8 @@
           "sync": "Синхронизация",
           "tickets": "Тикеты",
           "gifts": "Подарки",
-          "referrals": "Рефералы"
+          "referrals": "Рефералы",
+          "timeline": "Таймлайн"
         },
         "noTickets": "У пользователя нет тикетов",
         "ticketsCount": "тикетов",
@@ -3636,6 +3664,10 @@
           "searchPlaceholder": "Поиск по имени, email или Telegram ID...",
           "alreadyReferred": "уже чей-то реферал",
           "noUsersFound": "Пользователи не найдены"
+        },
+        "timeline": {
+          "title": "Таймлайн активности",
+          "empty": "Нет событий активности"
         }
       }
     },
@@ -4225,6 +4257,17 @@
         "page": "Стр. {{current}} из {{total}}",
         "prev": "Назад",
         "next": "Далее"
+      }
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "subtitle": "Системные уведомления и оповещения",
+      "markAllRead": "Отметить все прочитанными",
+      "noNotifications": "Нет уведомлений",
+      "noUnread": "Нет непрочитанных уведомлений",
+      "tabs": {
+        "all": "Все",
+        "unread": "Непрочитанные"
       }
     }
   },

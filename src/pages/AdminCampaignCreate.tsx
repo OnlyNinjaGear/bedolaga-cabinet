@@ -12,6 +12,16 @@ import {
 import { partnerApi } from '../api/partners';
 import { AdminBackButton } from '../components/admin';
 import { createNumberInputHandler, toNumber } from '../utils/inputHelpers';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 // Icons
 const CampaignIcon = () => (
   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -52,21 +62,21 @@ const bonusTypeConfig: Record<
   },
   subscription: {
     labelKey: 'admin.campaigns.bonusType.subscription',
-    color: 'text-accent-400',
-    bgColor: 'bg-accent-500/10',
-    borderColor: 'border-accent-500/30',
+    color: 'text-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/30',
   },
   tariff: {
     labelKey: 'admin.campaigns.bonusType.tariff',
-    color: 'text-accent-400',
-    bgColor: 'bg-accent-500/10',
-    borderColor: 'border-accent-500/30',
+    color: 'text-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary/30',
   },
   none: {
     labelKey: 'admin.campaigns.bonusType.none',
-    color: 'text-dark-400',
-    bgColor: 'bg-dark-500/10',
-    borderColor: 'border-dark-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border/30',
   },
 };
 
@@ -86,30 +96,31 @@ function ServerSelector({
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-dark-300">
+      <label className="text-muted-foreground mb-2 block text-sm font-medium">
         {t('admin.campaigns.form.servers')}
       </label>
-      <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border border-dark-700 bg-dark-800 p-3">
+      <div className="border-border bg-card max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
         {servers.map((server) => (
-          <button
+          <Button
             key={server.id}
             type="button"
+            variant="ghost"
             onClick={() => onToggle(server.squad_uuid)}
-            className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors ${
+            className={`flex w-full items-center gap-3 p-3 text-left ${
               selected.includes(server.squad_uuid)
-                ? 'bg-accent-500/20 text-accent-300'
-                : 'bg-dark-700 text-dark-300 hover:bg-dark-600'
+                ? 'bg-primary/20 text-primary/70 hover:bg-primary/20 hover:text-primary/70'
+                : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
             <div
               className={`flex h-5 w-5 items-center justify-center rounded ${
-                selected.includes(server.squad_uuid) ? 'bg-accent-500 text-white' : 'bg-dark-600'
+                selected.includes(server.squad_uuid) ? 'bg-primary text-white' : 'bg-muted'
               }`}
             >
               {selected.includes(server.squad_uuid) && <CheckIcon />}
             </div>
             <span className="text-sm font-medium">{server.display_name}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -130,22 +141,26 @@ function TariffSelector({
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-dark-300">
+      <label className="text-muted-foreground mb-2 block text-sm font-medium">
         {t('admin.campaigns.form.selectTariff')}
       </label>
-      <select
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value ? parseInt(e.target.value) : null)}
-        className="input"
+      <Select
+        value={value != null ? String(value) : '__none__'}
+        onValueChange={(v) => onChange(v === '__none__' ? null : parseInt(v))}
       >
-        <option value="">{t('admin.campaigns.form.notSelected')}</option>
-        {tariffs.map((tariff) => (
-          <option key={tariff.id} value={tariff.id}>
-            {tariff.name} ({tariff.traffic_limit_gb} GB, {tariff.device_limit}{' '}
-            {t('admin.campaigns.form.devices')})
-          </option>
-        ))}
-      </select>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__none__">{t('admin.campaigns.form.notSelected')}</SelectItem>
+          {tariffs.map((tariff) => (
+            <SelectItem key={tariff.id} value={String(tariff.id)}>
+              {tariff.name} ({tariff.traffic_limit_gb} GB, {tariff.device_limit}{' '}
+              {t('admin.campaigns.form.devices')})
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -273,24 +288,24 @@ export default function AdminCampaignCreate() {
       <div className="flex items-center gap-3">
         <AdminBackButton />
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+          <div className="bg-primary/20 text-primary rounded-lg p-2">
             <CampaignIcon />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-dark-100">
+            <h1 className="text-foreground text-xl font-bold">
               {t('admin.campaigns.modal.createTitle')}
             </h1>
-            <p className="text-sm text-dark-400">{t('admin.campaigns.subtitle')}</p>
+            <p className="text-muted-foreground text-sm">{t('admin.campaigns.subtitle')}</p>
           </div>
         </div>
       </div>
 
       {/* Partner info banner */}
       {partnerId && partner && (
-        <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-4">
+        <div className="border-primary/20 bg-primary/5 rounded-xl border p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="mt-0.5 h-5 w-5 shrink-0 text-accent-400"
+              className="text-primary mt-0.5 h-5 w-5 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -302,7 +317,7 @@ export default function AdminCampaignCreate() {
                 d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
               />
             </svg>
-            <p className="text-sm text-accent-300">
+            <p className="text-primary/70 text-sm">
               {t('admin.campaigns.form.partnerAutoAssign', {
                 name: partner.first_name || partner.username || `#${partnerId}`,
               })}
@@ -312,23 +327,23 @@ export default function AdminCampaignCreate() {
       )}
 
       {/* Basic Info */}
-      <div className="card space-y-4">
+      <Card className="space-y-4">
         {/* Name */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.campaigns.form.name')}
             <span className="text-error-400">*</span>
           </label>
-          <input
+          <Input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={`input ${name.length > 0 && !isNameValid ? 'border-error-500/50' : ''}`}
+            className={`${name.length > 0 && !isNameValid ? 'border-error-500/50' : ''}`}
             placeholder={t('admin.campaigns.form.namePlaceholder')}
             maxLength={255}
           />
           {name.length > 0 && !isNameValid && (
-            <p className="mt-1 text-xs text-error-400">
+            <p className="text-error-400 mt-1 text-xs">
               {t('admin.campaigns.validation.nameRequired')}
             </p>
           )}
@@ -336,7 +351,7 @@ export default function AdminCampaignCreate() {
 
         {/* Start Parameter */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.campaigns.form.startParameter')}
             <span className="text-error-400">*</span>
           </label>
@@ -348,21 +363,21 @@ export default function AdminCampaignCreate() {
             placeholder="instagram_jan2024"
             maxLength={100}
           />
-          <p className="mt-1 text-xs text-dark-500">
+          <p className="text-muted-foreground mt-1 text-xs">
             {t('admin.campaigns.form.startParameterHint')}
           </p>
         </div>
 
         {/* Active toggle */}
-        <div className="flex items-center justify-between rounded-lg border border-dark-700 bg-dark-800 p-4">
-          <span className="text-sm font-medium text-dark-300">
+        <div className="border-border bg-card flex items-center justify-between rounded-lg border p-4">
+          <span className="text-muted-foreground text-sm font-medium">
             {t('admin.campaigns.form.active')}
           </span>
-          <button
+          <Button
             type="button"
             onClick={() => setIsActive(!isActive)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
-              isActive ? 'bg-accent-500' : 'bg-dark-600'
+            className={`relative h-6 w-11 rounded-full p-0 transition-colors ${
+              isActive ? 'bg-primary' : 'bg-muted'
             }`}
           >
             <span
@@ -370,33 +385,34 @@ export default function AdminCampaignCreate() {
                 isActive ? 'left-6' : 'left-1'
               }`}
             />
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {/* Bonus Type */}
-      <div className="card space-y-4">
-        <h2 className="text-lg font-semibold text-dark-100">
+      <Card className="space-y-4">
+        <h2 className="text-foreground text-lg font-semibold">
           {t('admin.campaigns.form.bonusType')}
         </h2>
 
         <div className="grid grid-cols-2 gap-3">
           {(Object.keys(bonusTypeConfig) as CampaignBonusType[]).map((type) => (
-            <button
+            <Button
               key={type}
               type="button"
+              variant="outline"
               onClick={() => setBonusType(type)}
-              className={`rounded-lg border p-4 text-left transition-all ${
+              className={`p-4 text-left ${
                 bonusType === type
                   ? `${bonusTypeConfig[type].bgColor} ${bonusTypeConfig[type].borderColor} ${bonusTypeConfig[type].color}`
-                  : 'border-dark-700 bg-dark-800 text-dark-300 hover:border-dark-600'
+                  : 'text-muted-foreground'
               }`}
             >
               <span className="text-sm font-medium">{t(bonusTypeConfig[type].labelKey)}</span>
-            </button>
+            </Button>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Bonus Settings */}
       {bonusType === 'balance' && (
@@ -407,15 +423,15 @@ export default function AdminCampaignCreate() {
             {t('admin.campaigns.form.balanceBonus')}
           </h2>
           <div className="flex items-center gap-3">
-            <input
+            <Input
               type="number"
               value={balanceBonusRubles}
               onChange={createNumberInputHandler(setBalanceBonusRubles, 0)}
-              className="input w-32"
+              className="w-32"
               min={0}
               step={1}
             />
-            <span className="text-dark-300">₽</span>
+            <span className="text-muted-foreground">₽</span>
           </div>
         </div>
       )}
@@ -430,38 +446,35 @@ export default function AdminCampaignCreate() {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.campaigns.form.days')}
               </label>
-              <input
+              <Input
                 type="number"
                 value={subscriptionDays}
                 onChange={createNumberInputHandler(setSubscriptionDays, 1)}
-                className="input"
                 min={1}
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.campaigns.form.trafficGb')}
               </label>
-              <input
+              <Input
                 type="number"
                 value={subscriptionTraffic}
                 onChange={createNumberInputHandler(setSubscriptionTraffic, 0)}
-                className="input"
                 min={0}
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.campaigns.form.devices')}
               </label>
-              <input
+              <Input
                 type="number"
                 value={subscriptionDevices}
                 onChange={createNumberInputHandler(setSubscriptionDevices, 1)}
-                className="input"
                 min={1}
               />
             </div>
@@ -482,14 +495,14 @@ export default function AdminCampaignCreate() {
           <TariffSelector tariffs={tariffs} value={tariffId} onChange={setTariffId} />
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.campaigns.form.durationDays')}
             </label>
-            <input
+            <Input
               type="number"
               value={tariffDays}
               onChange={createNumberInputHandler(setTariffDays, 1)}
-              className="input w-32"
+              className="w-32"
               min={1}
             />
           </div>
@@ -500,27 +513,29 @@ export default function AdminCampaignCreate() {
         <div
           className={`card border ${bonusTypeConfig.none.borderColor} ${bonusTypeConfig.none.bgColor}`}
         >
-          <p className="text-sm text-dark-400">{t('admin.campaigns.form.noBonusDescription')}</p>
+          <p className="text-muted-foreground text-sm">
+            {t('admin.campaigns.form.noBonusDescription')}
+          </p>
         </div>
       )}
 
       {/* Footer */}
-      <div className="card flex items-center justify-end gap-3">
-        <button
+      <Card className="flex items-center justify-end gap-3">
+        <Button
+          variant="secondary"
           onClick={() => navigate(partnerId ? `/admin/partners/${partnerId}` : '/admin/campaigns')}
-          className="btn-secondary"
         >
           {t('common.cancel')}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleSubmit}
           disabled={!isValid || createMutation.isPending}
-          className="btn-primary flex items-center gap-2"
+          className="flex items-center gap-2"
         >
           {createMutation.isPending ? <RefreshIcon /> : <CampaignIcon />}
           {t('admin.campaigns.form.save')}
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 }

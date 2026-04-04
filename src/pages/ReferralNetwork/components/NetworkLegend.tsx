@@ -27,10 +27,10 @@ export function NetworkLegend({ className }: NetworkLegendProps) {
 
   return (
     <div
-      className={`rounded-xl border border-dark-700/50 bg-dark-900/80 p-3 backdrop-blur-md ${className ?? ''}`}
+      className={`border-border/50 bg-background/80 rounded-xl border p-3 backdrop-blur-md ${className ?? ''}`}
     >
       {/* Fill = Subscription status */}
-      <h4 className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-dark-500">
+      <h4 className="text-muted-foreground mb-1.5 text-[10px] font-medium tracking-wider uppercase">
         {t('admin.referralNetwork.legend.fillTitle')}
       </h4>
       <div className="space-y-1">
@@ -40,7 +40,7 @@ export function NetworkLegend({ className }: NetworkLegendProps) {
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: item.color }}
             />
-            <span className="text-xs text-dark-300">{t(item.labelKey)}</span>
+            <span className="text-muted-foreground text-xs">{t(item.labelKey)}</span>
           </div>
         ))}
       </div>
@@ -49,13 +49,13 @@ export function NetworkLegend({ className }: NetworkLegendProps) {
       <div className="mt-2.5 space-y-1">
         <div className="flex items-center gap-2">
           <div className="h-0.5 w-4 shrink-0 rounded-full" style={{ backgroundColor: '#ff8a65' }} />
-          <span className="text-xs text-dark-300">
+          <span className="text-muted-foreground text-xs">
             {t('admin.referralNetwork.legend.partnerCampaignEdge')}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={gradientStyle} />
-          <span className="text-xs text-dark-300">
+          <span className="text-muted-foreground text-xs">
             {t('admin.referralNetwork.legend.campaignNode')}
           </span>
         </div>

@@ -4,7 +4,7 @@ interface BentoSkeletonProps {
 }
 
 export default function BentoSkeleton({ className = '', count = 1 }: BentoSkeletonProps) {
-  const baseClasses = `animate-pulse bg-dark-800/50 border border-dark-700/30 rounded-[var(--bento-radius,24px)] min-h-[160px] w-full ${className}`;
+  const baseClasses = `animate-pulse bg-card/50 border border-border/30 rounded-[var(--bento-radius,24px)] min-h-40 w-full ${className}`;
 
   if (count > 1) {
     return (

@@ -28,14 +28,16 @@ export function RenewalsTab({ params }: RenewalsTabProps) {
     return (
       <div className="animate-pulse space-y-4">
         {Array.from({ length: 3 }, (_, i) => (
-          <div key={i} className="h-24 rounded-xl bg-dark-800/30" />
+          <div key={i} className="bg-card/30 h-24 rounded-xl" />
         ))}
       </div>
     );
   }
 
   if (isError || !data) {
-    return <div className="py-8 text-center text-red-400">{t('admin.salesStats.loadError')}</div>;
+    return (
+      <div className="text-destructive py-8 text-center">{t('admin.salesStats.loadError')}</div>
+    );
   }
 
   const dailyData = data.daily.map((item) => ({
@@ -62,16 +64,16 @@ export function RenewalsTab({ params }: RenewalsTabProps) {
       </div>
 
       <div className="bento-card">
-        <h4 className="mb-3 text-sm font-semibold text-dark-200">
+        <h4 className="text-foreground mb-3 text-sm font-semibold">
           {t('admin.salesStats.renewals.comparison')}
         </h4>
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-dark-800/30 p-3">
-            <div className="text-xs text-dark-500">
+          <div className="bg-card/30 rounded-xl p-3">
+            <div className="text-muted-foreground text-xs">
               {t('admin.salesStats.renewals.currentPeriod')}
             </div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-base font-semibold text-dark-100 sm:text-lg">
+              <span className="text-foreground text-base font-semibold sm:text-lg">
                 {data.current_period.count}
               </span>
               <span className={`text-sm font-medium ${trendStyle.className}`}>
@@ -79,11 +81,11 @@ export function RenewalsTab({ params }: RenewalsTabProps) {
               </span>
             </div>
           </div>
-          <div className="rounded-xl bg-dark-800/30 p-3">
-            <div className="text-xs text-dark-500">
+          <div className="bg-card/30 rounded-xl p-3">
+            <div className="text-muted-foreground text-xs">
               {t('admin.salesStats.renewals.previousPeriod')}
             </div>
-            <div className="mt-1 text-base font-semibold text-dark-400 sm:text-lg">
+            <div className="text-muted-foreground mt-1 text-base font-semibold sm:text-lg">
               {data.previous_period.count}
             </div>
           </div>

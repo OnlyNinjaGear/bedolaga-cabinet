@@ -23,9 +23,11 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { adminPaymentMethodsApi } from '../api/adminPaymentMethods';
 import type { PaymentMethodConfig } from '../types';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -112,10 +114,10 @@ function SortablePaymentCard({ config, onClick }: SortableCardProps) {
       style={style}
       className={`group flex items-center gap-3 rounded-xl border p-4 ${
         isDragging
-          ? 'border-accent-500/50 bg-dark-800 shadow-xl shadow-accent-500/20'
+          ? 'border-primary/50 bg-card shadow-primary/20 shadow-xl'
           : config.is_enabled
-            ? 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600'
-            : 'border-dark-800/50 bg-dark-900/30 opacity-60'
+            ? 'border-border/50 bg-card/50 hover:border-border'
+            : 'border-border/50 bg-background/30 opacity-60'
       }`}
     >
       {/* Drag handle */}
@@ -123,7 +125,7 @@ function SortablePaymentCard({ config, onClick }: SortableCardProps) {
       <button
         {...attributes}
         {...listeners}
-        className="flex-shrink-0 cursor-grab touch-none rounded-lg p-2.5 text-dark-500 hover:bg-dark-700/50 hover:text-dark-300 active:cursor-grabbing sm:p-1.5"
+        className="text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground shrink-0 cursor-grab touch-none rounded-lg p-2.5 active:cursor-grabbing sm:p-1.5"
         title={t('admin.paymentMethods.dragToReorder')}
       >
         <GripIcon />
@@ -132,23 +134,23 @@ function SortablePaymentCard({ config, onClick }: SortableCardProps) {
       {/* Content */}
       <div className="min-w-0 flex-1 cursor-pointer" onClick={onClick}>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="truncate font-semibold text-dark-100">{displayName}</span>
+          <span className="text-foreground truncate font-semibold">{displayName}</span>
           {config.is_enabled ? (
-            <span className="flex-shrink-0 rounded-full border border-success-500/20 bg-success-500/15 px-2 py-0.5 text-xs text-success-400">
+            <span className="border-success-500/20 bg-success-500/15 text-success-400 shrink-0 rounded-full border px-2 py-0.5 text-xs">
               {t('admin.paymentMethods.enabled')}
             </span>
           ) : (
-            <span className="flex-shrink-0 rounded-full border border-dark-700/30 bg-dark-700/50 px-2 py-0.5 text-xs text-dark-500">
+            <span className="border-border/30 bg-muted/50 text-muted-foreground shrink-0 rounded-full border px-2 py-0.5 text-xs">
               {t('admin.paymentMethods.disabled')}
             </span>
           )}
           {!config.is_provider_configured && (
-            <span className="flex-shrink-0 rounded-full border border-warning-500/20 bg-warning-500/15 px-2 py-0.5 text-xs text-warning-400">
+            <span className="border-warning-500/20 bg-warning-500/15 text-warning-400 shrink-0 rounded-full border px-2 py-0.5 text-xs">
               {t('admin.paymentMethods.notConfigured')}
             </span>
           )}
           {subOptionsInfo && (
-            <span className="flex-shrink-0 rounded-full bg-dark-700/50 px-2 py-0.5 text-xs text-dark-400">
+            <span className="bg-muted/50 text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs">
               {subOptionsInfo}
             </span>
           )}
@@ -160,7 +162,7 @@ function SortablePaymentCard({ config, onClick }: SortableCardProps) {
             {chips.map((chip, i) => (
               <span
                 key={i}
-                className="rounded-md border border-accent-500/15 bg-accent-500/10 px-2 py-0.5 text-xs text-accent-400"
+                className="border-primary/15 bg-primary/10 text-primary rounded-md border px-2 py-0.5 text-xs"
               >
                 {chip}
               </span>
@@ -170,12 +172,14 @@ function SortablePaymentCard({ config, onClick }: SortableCardProps) {
       </div>
 
       {/* Chevron */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onClick}
-        className="flex-shrink-0 p-1 text-dark-500 transition-colors hover:text-dark-300"
+        className="text-muted-foreground hover:text-muted-foreground shrink-0"
       >
         <ChevronRightIcon />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -246,23 +250,22 @@ export default function AdminPaymentMethods() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-dark-50">{t('admin.paymentMethods.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.paymentMethods.description')}</p>
+            <h1 className="text-foreground text-2xl font-bold">
+              {t('admin.paymentMethods.title')}
+            </h1>
+            <p className="text-muted-foreground text-sm">{t('admin.paymentMethods.description')}</p>
           </div>
         </div>
         {orderChanged && (
-          <button
+          <Button
             onClick={handleSaveOrder}
             disabled={saveOrderMutation.isPending}
-            className="btn-primary flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             {saveOrderMutation.isPending ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -270,21 +273,21 @@ export default function AdminPaymentMethods() {
               <SaveIcon />
             )}
             {t('admin.paymentMethods.saveOrder')}
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Drag hint */}
-      <div className="flex items-center gap-2 text-sm text-dark-500">
+      <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <GripIcon />
         {t('admin.paymentMethods.dragHint')}
       </div>
 
       {/* Methods list */}
-      <div className="card">
+      <Card>
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         ) : methods.length > 0 ? (
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
@@ -305,10 +308,10 @@ export default function AdminPaymentMethods() {
           </DndContext>
         ) : (
           <div className="py-12 text-center">
-            <div className="text-dark-400">{t('admin.paymentMethods.noMethods')}</div>
+            <div className="text-muted-foreground">{t('admin.paymentMethods.noMethods')}</div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

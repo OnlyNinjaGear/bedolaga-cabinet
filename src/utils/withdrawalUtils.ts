@@ -29,8 +29,8 @@ export const withdrawalStatusBadgeConfig: Record<string, StatusBadge> = {
   },
   approved: {
     labelKey: 'admin.withdrawals.status.approved',
-    color: 'text-accent-400',
-    bgColor: 'bg-accent-500/20',
+    color: 'text-primary',
+    bgColor: 'bg-primary/20',
   },
   rejected: {
     labelKey: 'admin.withdrawals.status.rejected',
@@ -44,15 +44,15 @@ export const withdrawalStatusBadgeConfig: Record<string, StatusBadge> = {
   },
   cancelled: {
     labelKey: 'admin.withdrawals.status.cancelled',
-    color: 'text-dark-400',
-    bgColor: 'bg-dark-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
   },
 };
 
 const unknownBadge: StatusBadge = {
   labelKey: 'admin.withdrawals.status.unknown',
-  color: 'text-dark-400',
-  bgColor: 'bg-dark-600',
+  color: 'text-muted-foreground',
+  bgColor: 'bg-muted',
 };
 
 export function getWithdrawalStatusBadge(status: string): StatusBadge {
@@ -78,6 +78,6 @@ export function getRiskLevelColor(level: string): { text: string; bg: string } {
     case 'critical':
       return { text: 'text-error-400', bg: 'bg-error-500/20' };
     default:
-      return { text: 'text-dark-400', bg: 'bg-dark-500/20' };
+      return { text: 'text-muted-foreground', bg: 'bg-muted/20' };
   }
 }

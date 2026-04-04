@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { AnimatedCheckmark } from '@/components/ui/AnimatedCheckmark';
 import { AnimatedCrossmark } from '@/components/ui/AnimatedCrossmark';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const MAX_POLL_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -26,12 +27,12 @@ function PendingState() {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <Spinner className="h-16 w-16 border-[3px]" />
+      <Spinner className="h-16 w-16 border-3" />
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.processing', 'Processing your gift...')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t('gift.pendingDesc', 'Please wait while we process your payment')}
         </p>
       </div>
@@ -88,60 +89,59 @@ function CodeOnlySuccessState({
       <AnimatedCheckmark />
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.codeReadyTitle', 'Gift code is ready!')}
         </h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('gift.days', 'days')}
           </p>
         )}
       </div>
 
       {/* Gift code display */}
-      <div className="w-full rounded-xl border border-accent-500/20 bg-accent-500/5 p-4">
-        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-dark-400">
+      <div className="border-primary/20 bg-primary/5 w-full rounded-xl border p-4">
+        <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wider uppercase">
           {t('gift.codeLabel', 'Gift code')}
         </p>
-        <p className="select-all font-mono text-lg font-bold text-accent-400">{giftCode}</p>
+        <p className="text-primary font-mono text-lg font-bold select-all">{giftCode}</p>
       </div>
 
       {/* Share message preview */}
-      <div className="w-full rounded-xl border border-dark-700/30 bg-dark-800/40 p-4 text-left">
-        <p className="mb-3 text-sm font-medium text-dark-100">
+      <div className="border-border/30 bg-card/40 w-full rounded-xl border p-4 text-left">
+        <p className="text-foreground mb-3 text-sm font-medium">
           {t('gift.shareText', 'I have a gift for you! Activate it here:')}
         </p>
 
         {botLink && (
           <div className="mb-2">
-            <p className="mb-1 text-xs font-medium text-dark-400">
+            <p className="text-muted-foreground mb-1 text-xs font-medium">
               {t('gift.shareModalActivateVia', 'Activate via bot:')}
             </p>
-            <p className="truncate rounded-lg bg-dark-900/60 px-3 py-2 text-sm text-accent-400">
+            <p className="bg-background/60 text-primary truncate rounded-lg px-3 py-2 text-sm">
               {botLink}
             </p>
           </div>
         )}
 
         <div>
-          <p className="mb-1 text-xs font-medium text-dark-400">
+          <p className="text-muted-foreground mb-1 text-xs font-medium">
             {t('gift.shareModalActivateViaCabinet', 'Or via website:')}
           </p>
-          <p className="truncate rounded-lg bg-dark-900/60 px-3 py-2 text-sm text-accent-400">
+          <p className="bg-background/60 text-primary truncate rounded-lg px-3 py-2 text-sm">
             {cabinetLink}
           </p>
         </div>
       </div>
 
       {/* Copy button */}
-      <button
+      <Button
         type="button"
         onClick={handleCopy}
+        variant={copied ? 'ghost' : 'default'}
         className={cn(
-          'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold transition-all duration-200 active:scale-[0.98]',
-          copied
-            ? 'bg-success-500/20 text-success-400'
-            : 'bg-accent-500 text-white shadow-lg shadow-accent-500/25 hover:bg-accent-400',
+          'w-full',
+          copied && 'bg-success-500/20 text-success-400 hover:bg-success-500/20',
         )}
       >
         {copied ? (
@@ -175,15 +175,16 @@ function CodeOnlySuccessState({
             {t('gift.copyMessage', 'Copy message')}
           </>
         )}
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={() => navigate('/gift?tab=myGifts')}
-        className="w-full rounded-xl border border-dark-700/50 px-6 py-3 text-sm font-medium text-dark-300 transition-colors hover:bg-dark-800/50"
+        className="w-full"
       >
         {t('gift.tabMyGifts', 'My Gifts')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -213,14 +214,16 @@ function DeliveredState({
       <AnimatedCheckmark />
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('gift.successTitle', 'Gift sent!')}</h1>
+        <h1 className="text-foreground text-xl font-bold">
+          {t('gift.successTitle', 'Gift sent!')}
+        </h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('gift.days', 'days')}
           </p>
         )}
         {recipientContact && (
-          <p className="mt-2 text-sm text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm">
             {t('gift.successDesc', {
               contact: recipientContact,
               defaultValue: `Sent to ${recipientContact}`,
@@ -228,23 +231,19 @@ function DeliveredState({
           </p>
         )}
         {giftMessage && (
-          <p className="mt-2 text-sm italic text-dark-400">&ldquo;{giftMessage}&rdquo;</p>
+          <p className="text-muted-foreground mt-2 text-sm italic">&ldquo;{giftMessage}&rdquo;</p>
         )}
       </div>
 
       {warning && (
-        <div className="w-full rounded-xl border border-warning-500/20 bg-warning-500/5 p-3">
-          <p className="text-sm text-warning-400">{t(`gift.warning.${warning}`)}</p>
+        <div className="border-warning-500/20 bg-warning-500/5 w-full rounded-xl border p-3">
+          <p className="text-warning-400 text-sm">{t(`gift.warning.${warning}`)}</p>
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => navigate('/')}
-        className="flex w-full items-center justify-center rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={() => navigate('/')} className="w-full">
         {t('gift.backToDashboard', 'Back to dashboard')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -270,9 +269,9 @@ function PendingActivationState({
       className="flex flex-col items-center gap-6 text-center"
     >
       {/* Info icon */}
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-500/10">
+      <div className="bg-warning-500/10 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-warning-400"
+          className="text-warning-400 h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -287,23 +286,23 @@ function PendingActivationState({
       </div>
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.pendingActivationTitle', 'Gift pending activation')}
         </h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('gift.days', 'days')}
           </p>
         )}
         {recipientContact && (
-          <p className="mt-2 text-sm text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm">
             {t('gift.successDesc', {
               contact: recipientContact,
               defaultValue: `Sent to ${recipientContact}`,
             })}
           </p>
         )}
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t(
             'gift.pendingActivationDesc',
             'The recipient currently has an active subscription. Your gift will be activated once their current subscription expires.',
@@ -312,18 +311,14 @@ function PendingActivationState({
       </div>
 
       {warning && (
-        <div className="w-full rounded-xl border border-warning-500/20 bg-warning-500/5 p-3">
-          <p className="text-sm text-warning-400">{t(`gift.warning.${warning}`)}</p>
+        <div className="border-warning-500/20 bg-warning-500/5 w-full rounded-xl border p-3">
+          <p className="text-warning-400 text-sm">{t(`gift.warning.${warning}`)}</p>
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => navigate('/')}
-        className="flex w-full items-center justify-center rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={() => navigate('/')} className="w-full">
         {t('gift.backToDashboard', 'Back to dashboard')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -341,21 +336,17 @@ function FailedState() {
       <AnimatedCrossmark />
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.failedTitle', 'Something went wrong')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t('gift.failedDesc', 'Your gift could not be processed. Please try again.')}
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={() => navigate('/gift')}
-        className="flex w-full items-center justify-center rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={() => navigate('/gift')} className="w-full">
         {t('gift.tryAgain', 'Try again')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -370,9 +361,9 @@ function PollErrorState() {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-500/10">
+      <div className="bg-warning-500/10 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-warning-400"
+          className="text-warning-400 h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -387,10 +378,10 @@ function PollErrorState() {
       </div>
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.pollErrorTitle', 'Could not check gift status')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t(
             'gift.pollErrorDesc',
             'Your purchase was successful. Check your dashboard for details.',
@@ -398,13 +389,9 @@ function PollErrorState() {
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={() => navigate('/')}
-        className="flex w-full items-center justify-center rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={() => navigate('/')} className="w-full">
         {t('gift.backToDashboard', 'Back to dashboard')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -418,9 +405,9 @@ function PollTimedOutState({ onRetry }: { onRetry: () => void }) {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-dark-800/50">
+      <div className="bg-card/50 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-dark-400"
+          className="text-muted-foreground h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -434,23 +421,19 @@ function PollTimedOutState({ onRetry }: { onRetry: () => void }) {
         </svg>
       </div>
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('gift.pollTimeout', 'Taking longer than expected')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t(
             'gift.pollTimeoutDesc',
             'Payment processing is taking longer than usual. You can try checking again.',
           )}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={onRetry}>
         {t('gift.retry', 'Retry')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -465,9 +448,9 @@ function NoTokenState() {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-dark-800/50">
+      <div className="bg-card/50 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-dark-400"
+          className="text-muted-foreground h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -481,18 +464,14 @@ function NoTokenState() {
         </svg>
       </div>
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('gift.noToken', 'Invalid link')}</h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <h1 className="text-foreground text-xl font-bold">{t('gift.noToken', 'Invalid link')}</h1>
+        <p className="text-muted-foreground mt-2 text-sm">
           {t('gift.noTokenDesc', 'This gift link is invalid or has expired.')}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={() => navigate('/gift')}
-        className="rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={() => navigate('/gift')}>
         {t('gift.backToGift', 'Go back')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -554,7 +533,7 @@ export default function GiftResult() {
     return (
       <div className="flex min-h-dvh items-center justify-center px-4">
         <div
-          className="w-full max-w-md rounded-2xl border border-dark-800/50 bg-dark-900/50 p-8"
+          className="border-border/50 bg-background/50 w-full max-w-md rounded-2xl border p-8"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -578,7 +557,7 @@ export default function GiftResult() {
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div
-        className="w-full max-w-md rounded-2xl border border-dark-800/50 bg-dark-900/50 p-8"
+        className="border-border/50 bg-background/50 w-full max-w-md rounded-2xl border p-8"
         aria-live="polite"
         aria-atomic="true"
       >

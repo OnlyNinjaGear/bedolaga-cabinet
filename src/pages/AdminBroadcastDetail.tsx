@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { adminBroadcastsApi, type BroadcastChannel } from '../api/adminBroadcasts';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
 
 // Icons
 
@@ -93,7 +94,7 @@ function ChannelBadge({ channel }: { channel?: BroadcastChannel }) {
   }
 
   return (
-    <span className="flex items-center gap-1 rounded-full bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+    <span className="bg-success-500/20 text-success-400 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
       <TelegramIcon />
       <span className="mx-0.5">+</span>
       <EmailIcon />
@@ -109,8 +110,8 @@ const statusConfig: Record<string, { bg: string; text: string; labelKey: string 
     labelKey: 'admin.broadcasts.status.queued',
   },
   in_progress: {
-    bg: 'bg-accent-500/20',
-    text: 'text-accent-400',
+    bg: 'bg-primary/20',
+    text: 'text-primary',
     labelKey: 'admin.broadcasts.status.inProgress',
   },
   completed: {
@@ -129,8 +130,8 @@ const statusConfig: Record<string, { bg: string; text: string; labelKey: string 
     labelKey: 'admin.broadcasts.status.failed',
   },
   cancelled: {
-    bg: 'bg-dark-500/20',
-    text: 'text-dark-400',
+    bg: 'bg-muted/20',
+    text: 'text-muted-foreground',
     labelKey: 'admin.broadcasts.status.cancelled',
   },
   cancelling: {
@@ -198,7 +199,7 @@ export default function AdminBroadcastDetail() {
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -206,13 +207,8 @@ export default function AdminBroadcastDetail() {
   if (!broadcast) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-        <p className="text-dark-400">{t('admin.broadcasts.notFound')}</p>
-        <button
-          onClick={() => navigate('/admin/broadcasts')}
-          className="rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-        >
-          {t('common.back')}
-        </button>
+        <p className="text-muted-foreground">{t('admin.broadcasts.notFound')}</p>
+        <Button onClick={() => navigate('/admin/broadcasts')}>{t('common.back')}</Button>
       </div>
     );
   }
@@ -225,37 +221,34 @@ export default function AdminBroadcastDetail() {
           <AdminBackButton to="/admin/broadcasts" />
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-dark-100">
+              <h1 className="text-foreground text-xl font-bold">
                 {t('admin.broadcasts.detail')} #{broadcast.id}
               </h1>
               <StatusBadge status={broadcast.status} />
               <ChannelBadge channel={broadcast.channel} />
             </div>
-            <p className="text-sm text-dark-400">
+            <p className="text-muted-foreground text-sm">
               {new Date(broadcast.created_at).toLocaleString()}
             </p>
           </div>
         </div>
-        <button
-          onClick={() => refetch()}
-          className="rounded-lg p-2 transition-colors hover:bg-dark-700"
-        >
+        <Button variant="ghost" size="icon" onClick={() => refetch()}>
           <RefreshIcon />
-        </button>
+        </Button>
       </div>
 
       {/* Progress */}
       {isRunning && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
           <div className="mb-2 flex justify-between text-sm">
-            <span className="text-dark-400">{t('admin.broadcasts.progress')}</span>
-            <span className="font-medium text-dark-100">
+            <span className="text-muted-foreground">{t('admin.broadcasts.progress')}</span>
+            <span className="text-foreground font-medium">
               {broadcast.progress_percent.toFixed(1)}%
             </span>
           </div>
-          <div className="h-3 overflow-hidden rounded-full bg-dark-700">
+          <div className="bg-muted h-3 overflow-hidden rounded-full">
             <div
-              className="h-full bg-gradient-to-r from-accent-500 to-accent-400 transition-all duration-300"
+              className="from-primary to-primary/70 h-full bg-gradient-to-r transition-all duration-300"
               style={{ width: `${broadcast.progress_percent}%` }}
             />
           </div>
@@ -264,38 +257,38 @@ export default function AdminBroadcastDetail() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4 text-center">
-          <p className="text-3xl font-bold text-dark-100">{broadcast.total_count}</p>
-          <p className="text-sm text-dark-400">{t('admin.broadcasts.total')}</p>
+        <div className="border-border bg-card/50 rounded-xl border p-4 text-center">
+          <p className="text-foreground text-3xl font-bold">{broadcast.total_count}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.broadcasts.total')}</p>
         </div>
-        <div className="rounded-xl border border-success-500/30 bg-success-500/10 p-4 text-center">
-          <p className="text-3xl font-bold text-success-400">{broadcast.sent_count}</p>
-          <p className="text-sm text-dark-400">{t('admin.broadcasts.sent')}</p>
+        <div className="border-success-500/30 bg-success-500/10 rounded-xl border p-4 text-center">
+          <p className="text-success-400 text-3xl font-bold">{broadcast.sent_count}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.broadcasts.sent')}</p>
         </div>
-        <div className="rounded-xl border border-warning-500/30 bg-warning-500/10 p-4 text-center">
-          <p className="text-3xl font-bold text-warning-400">{broadcast.blocked_count}</p>
-          <p className="text-sm text-dark-400">{t('admin.broadcasts.blocked')}</p>
+        <div className="border-warning-500/30 bg-warning-500/10 rounded-xl border p-4 text-center">
+          <p className="text-warning-400 text-3xl font-bold">{broadcast.blocked_count}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.broadcasts.blocked')}</p>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-4 text-center">
-          <p className="text-3xl font-bold text-error-400">{broadcast.failed_count}</p>
-          <p className="text-sm text-dark-400">{t('admin.broadcasts.failed')}</p>
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-4 text-center">
+          <p className="text-error-400 text-3xl font-bold">{broadcast.failed_count}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.broadcasts.failed')}</p>
         </div>
       </div>
 
       {/* Target */}
-      <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-        <p className="mb-1 text-sm text-dark-400">{t('admin.broadcasts.filter')}</p>
-        <p className="font-medium text-dark-100">{broadcast.target_type}</p>
+      <div className="border-border bg-card/50 rounded-xl border p-4">
+        <p className="text-muted-foreground mb-1 text-sm">{t('admin.broadcasts.filter')}</p>
+        <p className="text-foreground font-medium">{broadcast.target_type}</p>
       </div>
 
       {/* Telegram Message */}
       {broadcast.message_text && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <p className="mb-2 flex items-center gap-2 text-sm text-dark-400">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
+          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-sm">
             <TelegramIcon />
             {t('admin.broadcasts.message')}
           </p>
-          <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded-lg bg-dark-700/50 p-4 text-dark-100">
+          <div className="bg-muted/50 text-foreground max-h-60 overflow-y-auto rounded-lg p-4 whitespace-pre-wrap">
             {broadcast.message_text}
           </div>
         </div>
@@ -303,12 +296,12 @@ export default function AdminBroadcastDetail() {
 
       {/* Email Subject */}
       {broadcast.email_subject && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <p className="mb-2 flex items-center gap-2 text-sm text-dark-400">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
+          <p className="text-muted-foreground mb-2 flex items-center gap-2 text-sm">
             <EmailIcon />
             {t('admin.broadcasts.emailSubject')}
           </p>
-          <div className="rounded-lg bg-dark-700/50 p-4 text-dark-100">
+          <div className="bg-muted/50 text-foreground rounded-lg p-4">
             {broadcast.email_subject}
           </div>
         </div>
@@ -316,9 +309,9 @@ export default function AdminBroadcastDetail() {
 
       {/* Email Content */}
       {broadcast.email_html_content && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <p className="mb-2 text-sm text-dark-400">{t('admin.broadcasts.emailContent')}</p>
-          <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded-lg bg-dark-700/50 p-4 font-mono text-xs text-dark-100">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
+          <p className="text-muted-foreground mb-2 text-sm">{t('admin.broadcasts.emailContent')}</p>
+          <div className="bg-muted/50 text-foreground max-h-60 overflow-y-auto rounded-lg p-4 font-mono text-xs whitespace-pre-wrap">
             {broadcast.email_html_content}
           </div>
         </div>
@@ -326,9 +319,9 @@ export default function AdminBroadcastDetail() {
 
       {/* Media */}
       {broadcast.has_media && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <p className="mb-2 text-sm text-dark-400">{t('admin.broadcasts.media')}</p>
-          <div className="flex items-center gap-3 text-dark-100">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
+          <p className="text-muted-foreground mb-2 text-sm">{t('admin.broadcasts.media')}</p>
+          <div className="text-foreground flex items-center gap-3">
             {broadcast.media_type === 'photo' && <PhotoIcon />}
             {broadcast.media_type === 'video' && <VideoIcon />}
             {broadcast.media_type === 'document' && <DocumentIcon />}
@@ -338,26 +331,29 @@ export default function AdminBroadcastDetail() {
       )}
 
       {/* Admin info */}
-      <div className="flex justify-between rounded-xl border border-dark-700 bg-dark-800/50 p-4 text-sm">
-        <span className="text-dark-400">
+      <div className="border-border bg-card/50 flex justify-between rounded-xl border p-4 text-sm">
+        <span className="text-muted-foreground">
           {t('admin.broadcasts.createdBy')}:{' '}
-          <span className="text-dark-100">
+          <span className="text-foreground">
             {broadcast.admin_name || t('admin.broadcasts.unknownAdmin')}
           </span>
         </span>
-        <span className="text-dark-400">{new Date(broadcast.created_at).toLocaleString()}</span>
+        <span className="text-muted-foreground">
+          {new Date(broadcast.created_at).toLocaleString()}
+        </span>
       </div>
 
       {/* Stop button */}
       {isRunning && broadcast.status !== 'cancelling' && (
-        <button
+        <Button
+          variant="destructive"
+          className="w-full"
           onClick={() => stopMutation.mutate(broadcast.id)}
           disabled={stopMutation.isPending}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-error-500/30 bg-error-500/20 px-4 py-2 text-sm text-error-400 transition-colors hover:bg-error-500/30 disabled:opacity-50"
         >
           <StopIcon />
           {stopMutation.isPending ? t('admin.broadcasts.stopping') : t('admin.broadcasts.stop')}
-        </button>
+        </Button>
       )}
     </div>
   );

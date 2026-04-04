@@ -11,14 +11,15 @@ import {
 } from '../../api/buttonStyles';
 import { Toggle } from './Toggle';
 import { useNotify } from '../../platform/hooks/useNotify';
+import { Button } from '@/components/ui/button';
 
 type StyleValue = 'primary' | 'success' | 'danger' | 'default';
 
 const STYLE_OPTIONS: { value: StyleValue; colorClass: string }[] = [
-  { value: 'default', colorClass: 'bg-dark-500' },
-  { value: 'primary', colorClass: 'bg-blue-500' },
+  { value: 'default', colorClass: 'bg-muted' },
+  { value: 'primary', colorClass: 'bg-primary' },
   { value: 'success', colorClass: 'bg-success-500' },
-  { value: 'danger', colorClass: 'bg-red-500' },
+  { value: 'danger', colorClass: 'bg-destructive' },
 ];
 
 function labelsEqual(a: Record<string, string>, b: Record<string, string>): boolean {
@@ -194,38 +195,38 @@ export function ButtonsTab() {
           return (
             <div
               key={section}
-              className={`overflow-hidden rounded-2xl border bg-dark-800/50 p-4 transition-colors sm:p-5 ${
-                cfg.enabled ? 'border-dark-700/50' : 'border-dark-700/30 opacity-60'
+              className={`bg-card/50 overflow-hidden rounded-2xl border p-4 transition-colors sm:p-5 ${
+                cfg.enabled ? 'border-border/50' : 'border-border/30 opacity-60'
               }`}
             >
               {/* Header */}
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="truncate text-sm font-semibold text-dark-100">
+                    <h4 className="text-foreground truncate text-sm font-semibold">
                       {t(`admin.buttons.sections.${section}`)}
                     </h4>
                     {!cfg.enabled && (
-                      <span className="shrink-0 rounded bg-dark-600 px-1.5 py-0.5 text-[10px] font-medium text-dark-400">
+                      <span className="bg-muted text-muted-foreground shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium">
                         {t('admin.buttons.hidden')}
                       </span>
                     )}
                   </div>
-                  <p className="mt-0.5 truncate text-xs text-dark-400">
+                  <p className="text-muted-foreground mt-0.5 truncate text-xs">
                     {t(`admin.buttons.descriptions.${section}`)}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {/* Live preview chip */}
                   <div
-                    className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-medium whitespace-nowrap ${
                       cfg.style === 'default'
-                        ? 'bg-dark-600 text-dark-300'
+                        ? 'bg-muted text-muted-foreground'
                         : cfg.style === 'success'
-                          ? 'bg-success-500 text-white'
+                          ? 'bg-success-500 text-primary-foreground'
                           : cfg.style === 'danger'
-                            ? 'bg-red-500 text-white'
-                            : 'bg-blue-500 text-white'
+                            ? 'bg-destructive text-primary-foreground'
+                            : 'bg-primary text-primary-foreground'
                     }`}
                   >
                     {t(`admin.buttons.styles.${cfg.style}`)}
@@ -237,30 +238,32 @@ export function ButtonsTab() {
 
               {/* Color selector chips */}
               <div className="mb-3">
-                <label className="mb-1.5 block text-xs font-medium text-dark-300">
+                <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
                   {t('admin.buttons.color')}
                 </label>
                 <div className="flex flex-wrap gap-1.5">
                   {STYLE_OPTIONS.map((opt) => (
-                    <button
+                    <Button
                       key={opt.value}
                       onClick={() => updateSection(section, 'style', opt.value)}
-                      className={`flex h-7 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all ${
+                      variant={cfg.style === opt.value ? 'outline' : 'ghost'}
+                      size="sm"
+                      className={`flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all ${
                         cfg.style === opt.value
-                          ? 'border-accent-500 bg-accent-500/10 text-accent-400'
-                          : 'border-dark-600 bg-dark-700/50 text-dark-300 hover:border-dark-500'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border bg-muted/50 text-muted-foreground hover:border-border'
                       }`}
                     >
                       <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${opt.colorClass}`} />
                       {t(`admin.buttons.styles.${opt.value}`)}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
               {/* Emoji ID input */}
               <div className="mb-3">
-                <label className="mb-1.5 block text-xs font-medium text-dark-300">
+                <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
                   {t('admin.buttons.emojiId')}
                 </label>
                 <input
@@ -268,19 +271,20 @@ export function ButtonsTab() {
                   value={cfg.icon_custom_emoji_id}
                   onChange={(e) => updateSection(section, 'icon_custom_emoji_id', e.target.value)}
                   placeholder={t('admin.buttons.emojiPlaceholder')}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+                  className="border-border bg-muted/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
                 />
               </div>
 
               {/* Custom labels */}
               <div>
-                <button
+                <Button
                   onClick={() => toggleLabelsExpanded(section)}
-                  className="flex w-full items-center justify-between text-xs font-medium text-dark-300 transition-colors hover:text-dark-200"
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground flex h-auto w-full items-center justify-between p-0 text-xs font-medium transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
                     {t('admin.buttons.customLabels')}
-                    {hasCustomLabels && <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />}
+                    {hasCustomLabels && <span className="bg-primary h-1.5 w-1.5 rounded-full" />}
                   </span>
                   <svg
                     className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -291,12 +295,12 @@ export function ButtonsTab() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
-                </button>
+                </Button>
                 {isExpanded && (
                   <div className="mt-2 space-y-2">
                     {BOT_LOCALES.map((locale) => (
                       <div key={locale} className="flex items-center gap-2">
-                        <span className="w-7 shrink-0 text-center text-[10px] font-semibold uppercase text-dark-500">
+                        <span className="text-muted-foreground w-7 shrink-0 text-center text-[10px] font-semibold uppercase">
                           {locale}
                         </span>
                         <input
@@ -305,11 +309,13 @@ export function ButtonsTab() {
                           onChange={(e) => updateLabel(section, locale, e.target.value)}
                           placeholder={t('admin.buttons.labelPlaceholder')}
                           maxLength={100}
-                          className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-1.5 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+                          className="border-border bg-muted/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-1.5 text-sm transition-colors focus:outline-none"
                         />
                       </div>
                     ))}
-                    <p className="text-[10px] text-dark-500">{t('admin.buttons.labelsHint')}</p>
+                    <p className="text-muted-foreground text-[10px]">
+                      {t('admin.buttons.labelsHint')}
+                    </p>
                   </div>
                 )}
               </div>
@@ -321,36 +327,34 @@ export function ButtonsTab() {
       {/* Save / Cancel */}
       {hasUnsavedChanges && (
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleSave}
-            disabled={updateMutation.isPending}
-            className="rounded-xl bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-          >
+          <Button onClick={handleSave} disabled={updateMutation.isPending} className="rounded-xl">
             {updateMutation.isPending ? t('common.saving') : t('common.save')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleCancel}
             disabled={updateMutation.isPending}
-            className="rounded-xl bg-dark-700 px-4 py-2 text-sm font-medium text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-50"
+            variant="ghost"
+            className="rounded-xl"
           >
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Reset */}
       <div className="flex justify-end">
-        <button
+        <Button
           onClick={() => {
             if (window.confirm(t('admin.buttons.resetConfirm'))) {
               resetMutation.mutate();
             }
           }}
           disabled={resetMutation.isPending}
-          className="rounded-xl bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-50"
+          variant="ghost"
+          className="rounded-xl"
         >
           {t('admin.buttons.resetAll')}
-        </button>
+        </Button>
       </div>
     </div>
   );

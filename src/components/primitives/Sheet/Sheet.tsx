@@ -91,7 +91,7 @@ export const SheetOverlay = forwardRef<HTMLDivElement, SheetOverlayProps>(
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn('fixed inset-0 z-50 bg-black/60 backdrop-blur-sm', className)}
+      className={cn('fixed inset-0 z-50 bg-black/80 backdrop-blur-sm', className)}
       asChild
       {...props}
     >
@@ -161,7 +161,7 @@ export const SheetContent = forwardRef<HTMLDivElement, SheetContentProps>(
                   'fixed inset-x-0 bottom-0 z-50',
                   'flex flex-col',
                   'max-h-[85vh]',
-                  'rounded-t-2xl border-t border-dark-700/50 bg-dark-900/95 backdrop-blur-linear',
+                  'border-border bg-card backdrop-blur-linear rounded-t-2xl border-t',
                   'shadow-linear-lg',
                   'focus:outline-none',
                   'pb-[env(safe-area-inset-bottom,0px)]',
@@ -185,10 +185,10 @@ export const SheetContent = forwardRef<HTMLDivElement, SheetContentProps>(
                   {/* Drag handle */}
                   {showDragHandle && (
                     <div
-                      className="flex cursor-grab justify-center pb-2 pt-3 active:cursor-grabbing"
+                      className="flex cursor-grab justify-center pt-3 pb-2 active:cursor-grabbing"
                       onPointerDown={(e) => dragControls.start(e)}
                     >
-                      <div className="h-1 w-10 rounded-full bg-dark-600" />
+                      <div className="bg-muted h-1 w-10 rounded-full" />
                     </div>
                   )}
 
@@ -196,10 +196,10 @@ export const SheetContent = forwardRef<HTMLDivElement, SheetContentProps>(
                   {showCloseButton && (
                     <DialogPrimitive.Close
                       className={cn(
-                        'absolute right-4 top-4 rounded-linear p-1.5',
-                        'text-dark-400 opacity-70 transition-all',
-                        'hover:bg-dark-800/80 hover:opacity-100',
-                        'focus:outline-none focus:ring-2 focus:ring-accent-500/50',
+                        'rounded-linear absolute top-4 right-4 p-1.5',
+                        'text-muted-foreground opacity-70 transition-all',
+                        'hover:bg-muted hover:opacity-100',
+                        'focus:ring-ring/50 focus:ring-2 focus:outline-none',
                       )}
                     >
                       <CloseIcon />
@@ -252,7 +252,7 @@ export const SheetTitle = forwardRef<HTMLHeadingElement, SheetTitleProps>(
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Title
       ref={ref}
-      className={cn('text-lg font-semibold text-dark-100', className)}
+      className={cn('text-foreground text-lg font-semibold', className)}
       {...props}
     />
   ),
@@ -267,7 +267,7 @@ export const SheetDescription = forwardRef<HTMLParagraphElement, SheetDescriptio
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Description
       ref={ref}
-      className={cn('text-sm text-dark-400', className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   ),

@@ -6,11 +6,12 @@ import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { newsApi } from '../api/news';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Button } from '@/components/ui/button';
 
 // Icons
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -302,15 +303,16 @@ export default function NewsArticlePage() {
     return (
       <div className="space-y-6">
         {!capabilities.hasBackButton && (
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => navigate('/')}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
             aria-label={t('news.backToHome')}
           >
             <BackIcon />
-          </button>
+          </Button>
         )}
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           {t('news.noNews')}
         </div>
       </div>
@@ -321,14 +323,15 @@ export default function NewsArticlePage() {
     <div className="space-y-6">
       {/* Back button */}
       {!capabilities.hasBackButton && (
-        <button
+        <Button
+          variant="outline"
           onClick={() => navigate(-1)}
-          className="flex min-h-[44px] items-center gap-2 rounded-xl border border-dark-700 bg-dark-800 px-4 text-sm text-dark-400 transition-colors hover:border-dark-600 hover:text-dark-200"
           aria-label={t('news.backToHome')}
+          className="gap-2"
         >
           <BackIcon />
           <span>{t('news.backToHome')}</span>
-        </button>
+        </Button>
       )}
 
       {/* Article header */}
@@ -344,7 +347,7 @@ export default function NewsArticlePage() {
             return (
               <>
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-widest"
+                  className="inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-[11px] font-bold tracking-widest uppercase"
                   style={{
                     color,
                     background: `${color}15`,
@@ -362,7 +365,7 @@ export default function NewsArticlePage() {
                 </span>
                 {article.tag && (
                   <span
-                    className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider"
+                    className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase"
                     style={{
                       color,
                       border: `1px solid ${color}33`,
@@ -378,12 +381,12 @@ export default function NewsArticlePage() {
         </div>
 
         {/* Title */}
-        <h1 className="mb-4 text-2xl font-extrabold leading-tight text-dark-50 sm:text-3xl">
+        <h1 className="text-foreground mb-4 text-2xl leading-tight font-extrabold sm:text-3xl">
           {article.title}
         </h1>
 
         {/* Meta info */}
-        <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-dark-400">
+        <div className="text-muted-foreground mb-6 flex flex-wrap items-center gap-4 text-sm">
           {article.published_at && (
             <span className="inline-flex items-center gap-1.5 font-mono text-xs">
               <CalendarIcon />

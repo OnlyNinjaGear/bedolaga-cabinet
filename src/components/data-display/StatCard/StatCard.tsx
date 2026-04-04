@@ -24,7 +24,7 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
     const trendColors = {
       up: 'text-success-400',
       down: 'text-error-400',
-      neutral: 'text-dark-400',
+      neutral: 'text-muted-foreground',
     };
 
     const trendIcon = {
@@ -38,14 +38,14 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
             {/* Label */}
-            <p className="truncate text-sm font-medium text-dark-400">{label}</p>
+            <p className="text-muted-foreground truncate text-sm font-medium">{label}</p>
 
             {/* Value */}
             {loading ? (
-              <div className="mt-2 h-8 w-24 animate-pulse rounded bg-dark-800" />
+              <div className="bg-muted mt-2 h-8 w-24 animate-pulse rounded" />
             ) : (
               <motion.p
-                className="mt-1 text-2xl font-bold text-dark-100 sm:text-3xl"
+                className="text-foreground mt-1 text-2xl font-bold sm:text-3xl"
                 variants={slideUp}
                 initial="initial"
                 animate="animate"
@@ -63,14 +63,14 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
                   {change.value > 0 ? '+' : ''}
                   {change.value}%
                 </span>
-                {change.label && <span className="text-dark-500">{change.label}</span>}
+                {change.label && <span className="text-muted-foreground">{change.label}</span>}
               </div>
             )}
           </div>
 
           {/* Icon */}
           {icon && (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-linear bg-dark-800/80 text-dark-400">
+            <div className="rounded-linear bg-muted text-muted-foreground flex h-10 w-10 shrink-0 items-center justify-center">
               {icon}
             </div>
           )}

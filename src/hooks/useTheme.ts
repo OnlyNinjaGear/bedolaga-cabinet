@@ -157,12 +157,11 @@ export function useTheme() {
       }
     }
 
-    if (theme === 'light') {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    } else {
-      root.classList.remove('light');
+    // shadcn convention: light = no class, dark = .dark class
+    if (theme === 'dark') {
       root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
 
     localStorage.setItem(THEME_KEY, theme);

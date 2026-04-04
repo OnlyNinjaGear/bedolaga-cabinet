@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { AnimatedCheckmark } from '@/components/ui/AnimatedCheckmark';
 import { AnimatedCrossmark } from '@/components/ui/AnimatedCrossmark';
 import { cn } from '../lib/utils';
+import { Button } from '@/components/ui/button';
 
 const MAX_POLL_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -24,12 +25,12 @@ function PendingState() {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <Spinner className="h-16 w-16 border-[3px]" />
+      <Spinner className="h-16 w-16 border-3" />
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('landing.awaitingPayment', 'Awaiting payment')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">{t('landing.awaitingPaymentDesc')}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{t('landing.awaitingPaymentDesc')}</p>
       </div>
     </motion.div>
   );
@@ -58,23 +59,23 @@ function CopyableField({ label, value }: { label: string; value: string }) {
   }, [value]);
 
   return (
-    <div className="flex items-center gap-2 rounded-xl bg-dark-800/50 px-4 py-3">
+    <div className="bg-card/50 flex items-center gap-2 rounded-xl px-4 py-3">
       <div className="flex-1 text-left">
-        <p className="text-xs text-dark-400">{label}</p>
-        <p className="mt-0.5 font-mono text-sm text-dark-100">{value}</p>
+        <p className="text-muted-foreground text-xs">{label}</p>
+        <p className="text-foreground mt-0.5 font-mono text-sm">{value}</p>
       </div>
-      <button
+      <Button
         type="button"
+        size="sm"
+        variant={copied ? 'ghost' : 'secondary'}
         onClick={handleCopy}
         className={cn(
-          'shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
-          copied
-            ? 'bg-success-500/10 text-success-500'
-            : 'bg-dark-700/50 text-dark-300 hover:bg-dark-600/50',
+          'shrink-0',
+          copied && 'bg-success-500/10 text-success-500 hover:bg-success-500/10',
         )}
       >
         {copied ? t('landing.copied', 'Copied!') : t('landing.copy', 'Copy')}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -127,9 +128,9 @@ function CabinetCredentialsState({
 
       {/* Title */}
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('landing.cabinetReady')}</h1>
+        <h1 className="text-foreground text-xl font-bold">{t('landing.cabinetReady')}</h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('landing.daysAccess')}
           </p>
         )}
@@ -141,21 +142,20 @@ function CabinetCredentialsState({
         {cabinetPassword && (
           <CopyableField label={t('landing.cabinetPassword')} value={cabinetPassword} />
         )}
-        {cabinetPassword && <p className="text-xs text-dark-400">{t('landing.saveCredentials')}</p>}
+        {cabinetPassword && (
+          <p className="text-muted-foreground text-xs">{t('landing.saveCredentials')}</p>
+        )}
         {!cabinetPassword && (
-          <p className="text-xs text-dark-400">{t('landing.credentialsSentToEmail')}</p>
+          <p className="text-muted-foreground text-xs">{t('landing.credentialsSentToEmail')}</p>
         )}
       </div>
 
       {/* Go to Cabinet button */}
-      <button
+      <Button
         type="button"
         onClick={handleGoToCabinet}
         disabled={isLoggingIn}
-        className={cn(
-          'flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-colors',
-          isLoggingIn ? 'cursor-not-allowed bg-accent-500/50' : 'bg-accent-500 hover:bg-accent-400',
-        )}
+        className="w-full gap-2"
       >
         {isLoggingIn ? (
           <>
@@ -165,8 +165,8 @@ function CabinetCredentialsState({
         ) : (
           t('landing.goToCabinet')
         )}
-      </button>
-      {loginError && <p className="text-xs text-error-400">{t('landing.autoLoginFailed')}</p>}
+      </Button>
+      {loginError && <p className="text-error-400 text-xs">{t('landing.autoLoginFailed')}</p>}
     </motion.div>
   );
 }
@@ -233,29 +233,29 @@ function SuccessState({
 
       {/* Title */}
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {isGift ? t('landing.giftSentSuccess') : t('landing.purchaseSuccess')}
         </h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('landing.daysAccess')}
           </p>
         )}
         {isGift && contactType === 'telegram' && recipientInBot === true && (
-          <p className="mt-2 text-sm text-dark-400">{t('landing.giftTelegramSent')}</p>
+          <p className="text-muted-foreground mt-2 text-sm">{t('landing.giftTelegramSent')}</p>
         )}
         {isGift && contactType === 'telegram' && recipientInBot !== true && (
-          <p className="mt-2 text-sm text-dark-400">{t('landing.giftTelegramNotInBot')}</p>
+          <p className="text-muted-foreground mt-2 text-sm">{t('landing.giftTelegramNotInBot')}</p>
         )}
         {!(isGift && contactType === 'telegram') && displayContact && (
-          <p className="mt-2 text-sm text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm">
             {isGift
               ? t('landing.giftSentTo', { contact: displayContact })
               : t('landing.keySentTo', { contact: displayContact })}
           </p>
         )}
         {isGift && giftMessage && (
-          <p className="mt-2 text-sm italic text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm italic">
             {t('landing.giftMessage')}: {giftMessage}
           </p>
         )}
@@ -267,7 +267,7 @@ function SuccessState({
           href={botLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
+          className="bg-primary hover:bg-primary/80 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-colors"
         >
           {t('landing.openBot')}
         </a>
@@ -282,19 +282,18 @@ function SuccessState({
               size={200}
               level="M"
               includeMargin={false}
-              className="h-[200px] w-[200px]"
+              className="h-50 w-50"
             />
           </div>
 
           {/* Copy button */}
-          <button
+          <Button
             type="button"
+            variant={copied ? 'ghost' : 'secondary'}
             onClick={handleCopy}
             className={cn(
-              'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
-              copied
-                ? 'bg-success-500/10 text-success-500'
-                : 'bg-dark-800/50 text-dark-200 hover:bg-dark-700/50',
+              'w-full gap-2',
+              copied && 'bg-success-500/10 text-success-500 hover:bg-success-500/10',
             )}
           >
             {copied ? (
@@ -328,7 +327,7 @@ function SuccessState({
                 {t('landing.copyLink', 'Copy link')}
               </>
             )}
-          </button>
+          </Button>
         </div>
       )}
     </motion.div>
@@ -382,9 +381,9 @@ function PendingActivationState({
       className="flex flex-col items-center gap-6 text-center"
     >
       {/* Warning icon */}
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-500/10">
+      <div className="bg-warning-500/10 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-warning-400"
+          className="text-warning-400 h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -399,32 +398,22 @@ function PendingActivationState({
       </div>
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('landing.pendingActivation')}</h1>
+        <h1 className="text-foreground text-xl font-bold">{t('landing.pendingActivation')}</h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('landing.daysAccess')}
           </p>
         )}
-        <p className="mt-2 text-sm text-dark-400">{t('landing.pendingActivationDesc')}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{t('landing.pendingActivationDesc')}</p>
         {isGift && giftMessage && (
-          <p className="mt-2 text-sm italic text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm italic">
             {t('landing.giftMessage')}: {giftMessage}
           </p>
         )}
       </div>
 
       <div className="flex w-full flex-col gap-3">
-        <button
-          type="button"
-          onClick={onActivate}
-          disabled={isActivating}
-          className={cn(
-            'flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-colors',
-            isActivating
-              ? 'cursor-not-allowed bg-accent-500/50'
-              : 'bg-accent-500 hover:bg-accent-400',
-          )}
-        >
+        <Button type="button" onClick={onActivate} disabled={isActivating} className="gap-2">
           {isActivating ? (
             <>
               <Spinner className="h-4 w-4" />
@@ -433,19 +422,15 @@ function PendingActivationState({
           ) : (
             t('landing.activateNow')
           )}
-        </button>
+        </Button>
 
         {autoLoginToken && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={handleGoToCabinet}
             disabled={isLoggingIn}
-            className={cn(
-              'flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium transition-colors',
-              isLoggingIn
-                ? 'cursor-not-allowed bg-dark-800/30 text-dark-400'
-                : 'bg-dark-800/50 text-dark-200 hover:bg-dark-700/50',
-            )}
+            className="gap-2"
           >
             {isLoggingIn ? (
               <>
@@ -455,7 +440,7 @@ function PendingActivationState({
             ) : (
               t('landing.goToCabinet')
             )}
-          </button>
+          </Button>
         )}
       </div>
     </motion.div>
@@ -490,28 +475,34 @@ function GiftPendingActivationState({
       <AnimatedCheckmark />
 
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('landing.giftSentSuccess')}</h1>
+        <h1 className="text-foreground text-xl font-bold">{t('landing.giftSentSuccess')}</h1>
         {tariffName && periodDays !== null && (
-          <p className="mt-1 text-sm text-dark-300">
+          <p className="text-muted-foreground mt-1 text-sm">
             {tariffName} — {periodDays} {t('landing.daysAccess')}
           </p>
         )}
         {contactType === 'telegram' && recipientInBot === true && (
-          <p className="mt-2 text-sm text-dark-400">{t('landing.giftTelegramPendingSent')}</p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            {t('landing.giftTelegramPendingSent')}
+          </p>
         )}
         {contactType === 'telegram' && recipientInBot !== true && (
-          <p className="mt-2 text-sm text-dark-400">{t('landing.giftTelegramPendingNotInBot')}</p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            {t('landing.giftTelegramPendingNotInBot')}
+          </p>
         )}
         {contactType !== 'telegram' && (
-          <p className="mt-2 text-sm text-dark-400">{t('landing.giftPendingActivationDesc')}</p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            {t('landing.giftPendingActivationDesc')}
+          </p>
         )}
         {contactType !== 'telegram' && recipientContactValue && (
-          <p className="mt-2 text-sm text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm">
             {t('landing.giftSentTo', { contact: recipientContactValue })}
           </p>
         )}
         {giftMessage && (
-          <p className="mt-2 text-sm italic text-dark-400">
+          <p className="text-muted-foreground mt-2 text-sm italic">
             {t('landing.giftMessage')}: {giftMessage}
           </p>
         )}
@@ -523,7 +514,7 @@ function GiftPendingActivationState({
           href={botLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
+          className="bg-primary hover:bg-primary/80 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-colors"
         >
           {t('landing.openBot')}
         </a>
@@ -543,8 +534,8 @@ function FailedState() {
     >
       <AnimatedCrossmark />
       <div>
-        <h1 className="text-xl font-bold text-dark-50">{t('landing.purchaseFailed')}</h1>
-        <p className="mt-2 text-sm text-dark-400">{t('landing.purchaseFailedDesc')}</p>
+        <h1 className="text-foreground text-xl font-bold">{t('landing.purchaseFailed')}</h1>
+        <p className="text-muted-foreground mt-2 text-sm">{t('landing.purchaseFailedDesc')}</p>
       </div>
     </motion.div>
   );
@@ -559,9 +550,9 @@ function PollTimedOutState({ onRetry }: { onRetry: () => void }) {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-6 text-center"
     >
-      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-dark-800/50">
+      <div className="bg-card/50 flex h-20 w-20 items-center justify-center rounded-full">
         <svg
-          className="h-10 w-10 text-dark-400"
+          className="text-muted-foreground h-10 w-10"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -575,23 +566,19 @@ function PollTimedOutState({ onRetry }: { onRetry: () => void }) {
         </svg>
       </div>
       <div>
-        <h1 className="text-xl font-bold text-dark-50">
+        <h1 className="text-foreground text-xl font-bold">
           {t('landing.pollTimedOut', 'Taking longer than expected')}
         </h1>
-        <p className="mt-2 text-sm text-dark-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           {t(
             'landing.pollTimedOutDesc',
             'Payment processing is taking longer than usual. You can try checking again.',
           )}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="rounded-xl bg-accent-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-      >
+      <Button type="button" onClick={onRetry}>
         {t('common.retry', 'Retry')}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -680,9 +667,9 @@ export default function PurchaseSuccess() {
     purchaseStatus.cabinet_email;
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-dark-950 px-4">
+    <div className="bg-background flex min-h-dvh items-center justify-center px-4">
       <div
-        className="w-full max-w-md rounded-2xl border border-dark-800/50 bg-dark-900/50 p-8"
+        className="border-border/50 bg-background/50 w-full max-w-md rounded-2xl border p-8"
         aria-live="polite"
         aria-atomic="true"
       >
@@ -732,7 +719,7 @@ export default function PurchaseSuccess() {
               autoLoginToken={purchaseStatus.auto_login_token}
             />
             {activationError && (
-              <p className="text-center text-sm text-error-400">{t('landing.activationFailed')}</p>
+              <p className="text-error-400 text-center text-sm">{t('landing.activationFailed')}</p>
             )}
           </div>
         ) : isFailed ? (

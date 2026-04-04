@@ -3,14 +3,15 @@
  * Shows prominent success messages for balance top-ups and subscription purchases.
  */
 
-import { useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useSuccessNotification } from '../store/successNotification';
 import { useCurrency } from '../hooks/useCurrency';
 import { useTelegramSDK } from '../hooks/useTelegramSDK';
 import { useHaptic } from '@/platform';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 // Icons
 const CheckCircleIcon = () => (
@@ -69,12 +70,6 @@ const TrafficIcon = () => (
   </svg>
 );
 
-const CloseIcon = () => (
-  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
 export default function SuccessNotificationModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -89,24 +84,9 @@ export default function SuccessNotificationModal() {
     ? Math.max(safeAreaInset.bottom, contentSafeAreaInset.bottom)
     : 0;
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     hide();
-  }, [hide]);
-
-  // Escape key to close
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        handleClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, handleClose]);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -114,17 +94,9 @@ export default function SuccessNotificationModal() {
     }
   }, [isOpen, haptic]);
 
-  // Scroll lock
-  useEffect(() => {
-    if (!isOpen) return;
-
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  if (!isOpen || !data) return null;
+  if (!data) {
+    return <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()} />;
+  }
 
   const isBalanceTopup = data.type === 'balance_topup';
   const isSubscription =
@@ -168,15 +140,15 @@ export default function SuccessNotificationModal() {
     } else if (data.type === 'subscription_activated') {
       title = t('successNotification.subscriptionActivated.title', 'Subscription activated!');
       icon = <RocketIcon />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-primary to-purple-600';
     } else if (data.type === 'subscription_renewed') {
       title = t('successNotification.subscriptionRenewed.title', 'Subscription renewed!');
       icon = <RocketIcon />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-primary to-purple-600';
     } else if (data.type === 'subscription_purchased') {
       title = t('successNotification.subscriptionPurchased.title', 'Subscription purchased!');
       icon = <RocketIcon />;
-      gradientClass = 'from-accent-500 to-purple-600';
+      gradientClass = 'from-primary to-purple-600';
     } else if (data.type === 'devices_purchased') {
       title = t('successNotification.devicesPurchased.title', 'Devices added!');
       icon = <DevicesIcon />;
@@ -198,48 +170,36 @@ export default function SuccessNotificationModal() {
     navigate('/balance');
   };
 
-  const modalContent = (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={handleClose} />
-
-      {/* Modal */}
-      <div
-        className="relative mx-4 w-full max-w-sm overflow-hidden rounded-3xl border border-dark-700/50 bg-dark-900 shadow-2xl"
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent
+        className="border-border/50 bg-background max-w-sm overflow-hidden rounded-3xl border p-0 shadow-2xl"
         style={{
           marginBottom: safeBottom ? `${safeBottom}px` : undefined,
         }}
-        onClick={(e) => e.stopPropagation()}
+        showCloseButton={false}
       >
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          className="absolute right-3 top-3 z-10 rounded-xl p-2 text-dark-400 transition-colors hover:bg-dark-800 hover:text-dark-200"
-        >
-          <CloseIcon />
-        </button>
-
         {/* Success header with animation */}
         <div
-          className={`flex flex-col items-center bg-gradient-to-br ${gradientClass} px-6 pb-8 pt-10`}
+          className={`flex flex-col items-center bg-gradient-to-br ${gradientClass} px-6 pt-10 pb-8`}
         >
-          <div className="mb-4 animate-bounce text-white">{icon}</div>
-          <h2 className="text-center text-2xl font-bold text-white">{title}</h2>
-          {message && <p className="mt-2 text-center text-white/80">{message}</p>}
+          <div className="text-primary-foreground mb-4 animate-bounce">{icon}</div>
+          <h2 className="text-primary-foreground text-center text-2xl font-bold">{title}</h2>
+          {message && <p className="text-primary-foreground/80 mt-2 text-center">{message}</p>}
         </div>
 
         {/* Details */}
         <div className="space-y-4 p-6">
           {/* Amount */}
           {formattedAmount && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {isBalanceTopup
                   ? t('successNotification.amount', 'Amount')
                   : t('successNotification.price', 'Price')}
               </span>
               <span
-                className={`text-lg font-bold ${isDevicesPurchased || isTrafficPurchased ? 'text-dark-100' : 'text-success-400'}`}
+                className={`text-lg font-bold ${isDevicesPurchased || isTrafficPurchased ? 'text-foreground' : 'text-success-400'}`}
               >
                 {isDevicesPurchased || isTrafficPurchased ? '' : '+'}
                 {formattedAmount}
@@ -249,126 +209,124 @@ export default function SuccessNotificationModal() {
 
           {/* Devices info (for devices purchase) */}
           {isDevicesPurchased && data.devicesAdded && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.devicesAdded', 'Devices added')}
               </span>
-              <span className="text-lg font-bold text-blue-400">+{data.devicesAdded}</span>
+              <span className="text-primary text-lg font-bold">+{data.devicesAdded}</span>
             </div>
           )}
 
           {isDevicesPurchased && data.newDeviceLimit && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.totalDevices', 'Total devices')}
               </span>
-              <span className="font-semibold text-dark-100">{data.newDeviceLimit}</span>
+              <span className="text-foreground font-semibold">{data.newDeviceLimit}</span>
             </div>
           )}
 
           {/* Traffic info (for traffic purchase) */}
           {isTrafficPurchased && data.trafficGbAdded && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.trafficAdded', 'Traffic added')}
               </span>
-              <span className="text-lg font-bold text-success-400">+{data.trafficGbAdded} GB</span>
+              <span className="text-success-400 text-lg font-bold">+{data.trafficGbAdded} GB</span>
             </div>
           )}
 
           {isTrafficPurchased && data.newTrafficLimitGb && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.totalTraffic', 'Total traffic')}
               </span>
-              <span className="font-semibold text-dark-100">{data.newTrafficLimitGb} GB</span>
+              <span className="text-foreground font-semibold">{data.newTrafficLimitGb} GB</span>
             </div>
           )}
 
           {/* New balance (for top-up) */}
           {isBalanceTopup && formattedBalance && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.newBalance', 'New balance')}
               </span>
-              <span className="text-lg font-bold text-dark-100">{formattedBalance}</span>
+              <span className="text-foreground text-lg font-bold">{formattedBalance}</span>
             </div>
           )}
 
           {/* Tariff name */}
           {data.tariffName && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">{t('successNotification.tariff', 'Tariff')}</span>
-              <span className="font-semibold text-dark-100">{data.tariffName}</span>
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
+                {t('successNotification.tariff', 'Tariff')}
+              </span>
+              <span className="text-foreground font-semibold">{data.tariffName}</span>
             </div>
           )}
 
           {/* Expiry date */}
           {formattedExpiry && (
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 px-4 py-3">
-              <span className="text-dark-400">
+            <div className="bg-card/50 flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-muted-foreground">
                 {t('successNotification.validUntil', 'Valid until')}
               </span>
-              <span className="font-semibold text-dark-100">{formattedExpiry}</span>
+              <span className="text-foreground font-semibold">{formattedExpiry}</span>
             </div>
           )}
 
           {/* Action buttons */}
           <div className="space-y-2 pt-2">
             {isSubscription && (
-              <button
+              <Button
                 onClick={handleGoToSubscription}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 py-3.5 font-bold text-white shadow-lg shadow-accent-500/25 transition-all hover:from-accent-400 hover:to-accent-500 active:from-accent-600 active:to-accent-700"
+                className="shadow-primary/25 from-primary to-primary/80 hover:from-primary/80 hover:to-primary active:from-primary/90 active:to-primary/90 h-auto w-full gap-2 bg-gradient-to-r py-3.5 font-bold shadow-lg"
               >
                 <RocketIcon />
                 <span>{t('successNotification.goToSubscription', 'Go to Subscription')}</span>
-              </button>
+              </Button>
             )}
 
             {isBalanceTopup && (
-              <button
+              <Button
                 onClick={handleGoToBalance}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-success-500 to-success-600 py-3.5 font-bold text-white shadow-lg shadow-success-500/25 transition-all hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700"
+                className="shadow-success-500/25 from-success-500 to-success-600 hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700 h-auto w-full gap-2 bg-gradient-to-r py-3.5 font-bold shadow-lg"
               >
                 <WalletIcon />
                 <span>{t('successNotification.goToBalance', 'Go to Balance')}</span>
-              </button>
+              </Button>
             )}
 
             {isDevicesPurchased && (
-              <button
+              <Button
                 onClick={handleGoToSubscription}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-400 hover:to-cyan-500 active:from-blue-600 active:to-cyan-700"
+                className="shadow-primary/25 from-primary to-primary/80 hover:from-primary/80 hover:to-primary active:from-primary/90 active:to-primary/90 h-auto w-full gap-2 bg-gradient-to-r py-3.5 font-bold shadow-lg"
               >
                 <DevicesIcon />
                 <span>{t('successNotification.goToSubscription', 'Go to Subscription')}</span>
-              </button>
+              </Button>
             )}
 
             {isTrafficPurchased && (
-              <button
+              <Button
                 onClick={handleGoToSubscription}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-success-500 to-success-600 py-3.5 font-bold text-white shadow-lg shadow-success-500/25 transition-all hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700"
+                className="shadow-success-500/25 from-success-500 to-success-600 hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700 h-auto w-full gap-2 bg-gradient-to-r py-3.5 font-bold shadow-lg"
               >
                 <TrafficIcon />
                 <span>{t('successNotification.goToSubscription', 'Go to Subscription')}</span>
-              </button>
+              </Button>
             )}
 
-            <button
+            <Button
+              variant="ghost"
               onClick={handleClose}
-              className="w-full rounded-xl bg-dark-800 py-3 font-semibold text-dark-300 transition-colors hover:bg-dark-700 hover:text-dark-100"
+              className="bg-card text-muted-foreground hover:bg-muted hover:text-foreground w-full py-3 font-semibold"
             >
               {t('common.close', 'Close')}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-
-  if (typeof document !== 'undefined') {
-    return createPortal(modalContent, document.body);
-  }
-  return modalContent;
 }

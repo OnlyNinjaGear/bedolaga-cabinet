@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
 
 import { useAuthStore } from '@/store/auth';
 import {
@@ -13,6 +14,7 @@ import {
 } from '@/api/branding';
 import { cn } from '@/lib/utils';
 import { usePlatform } from '@/platform';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 // Icons
 import {
   HomeIcon,
@@ -95,14 +97,14 @@ export function DesktopSidebar({
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-60 flex-col border-r border-dark-700/30 bg-dark-950/80 backdrop-blur-linear">
+    <aside className="border-border bg-card/50 fixed top-0 left-0 z-40 flex h-screen w-60 flex-col border-r">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-dark-700/30 px-4">
+      <div className="border-border flex h-16 items-center gap-3 border-b px-4">
         <Link to="/" className="flex items-center gap-3" onClick={handleNavClick}>
-          <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-linear-lg border border-dark-700/50 bg-dark-800/80">
+          <div className="rounded-linear-lg border-border bg-card relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border">
             <span
               className={cn(
-                'absolute text-lg font-bold text-accent-400 transition-opacity duration-200',
+                'text-primary absolute text-lg font-bold transition-opacity duration-200',
                 hasCustomLogo && isLogoPreloaded() ? 'opacity-0' : 'opacity-100',
               )}
             >
@@ -120,7 +122,7 @@ export function DesktopSidebar({
             )}
           </div>
           {appName && (
-            <span className="whitespace-nowrap text-base font-semibold text-dark-100">
+            <span className="text-foreground text-base font-semibold whitespace-nowrap">
               {appName}
             </span>
           )}
@@ -135,10 +137,10 @@ export function DesktopSidebar({
             to={item.path}
             onClick={handleNavClick}
             className={cn(
-              'group flex items-center gap-3 rounded-linear px-3 py-2.5 text-sm font-medium transition-all duration-200',
+              'group rounded-linear flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-200',
               isActive(item.path)
-                ? 'bg-accent-500/10 text-accent-400'
-                : 'text-dark-400 hover:bg-dark-800/50 hover:text-dark-100',
+                ? 'bg-muted text-foreground'
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
             )}
           >
             <item.icon className="h-5 w-5 shrink-0" />
@@ -146,7 +148,7 @@ export function DesktopSidebar({
             {isActive(item.path) && (
               <motion.div
                 layoutId="sidebar-active-indicator"
-                className="absolute left-0 h-8 w-0.5 rounded-r-full bg-accent-400"
+                className="bg-primary absolute left-0 h-8 w-0.5 rounded-r-full"
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               />
             )}
@@ -156,12 +158,12 @@ export function DesktopSidebar({
         {/* Admin section */}
         {isAdmin && (
           <>
-            <div className="my-3 h-px bg-dark-700/30" />
+            <div className="bg-border my-3 h-px" />
             <Link
               to="/admin"
               onClick={handleNavClick}
               className={cn(
-                'group flex items-center gap-3 rounded-linear px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                'group rounded-linear flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-200',
                 isAdminActive()
                   ? 'bg-warning-500/10 text-warning-400'
                   : 'text-warning-500/70 hover:bg-warning-500/10 hover:text-warning-400',
@@ -175,38 +177,42 @@ export function DesktopSidebar({
       </nav>
 
       {/* User section */}
-      <div className="border-t border-dark-700/30 p-3">
+      <div className="border-border border-t p-3">
         <Link
           to="/profile"
           onClick={handleNavClick}
           className={cn(
-            'group flex items-center gap-3 rounded-linear px-3 py-2.5 transition-all duration-200',
-            isActive('/profile') ? 'bg-dark-800/80' : 'hover:bg-dark-800/50',
+            'group rounded-linear flex items-center gap-3 px-3 py-2.5 transition-all duration-200',
+            isActive('/profile') ? 'bg-muted' : 'hover:bg-muted/50',
           )}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-700">
-            <UserIcon className="h-4 w-4 text-dark-400" />
+          <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
+            <UserIcon className="text-muted-foreground h-4 w-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-dark-100">
+            <p className="text-foreground truncate text-sm font-medium">
               {user?.first_name || user?.username || `#${user?.telegram_id}`}
             </p>
-            <p className="truncate text-xs text-dark-500">
+            <p className="text-muted-foreground truncate text-xs">
               @{user?.username || `ID: ${user?.telegram_id}`}
             </p>
           </div>
         </Link>
 
-        <button
-          onClick={() => {
-            haptic.impact('light');
-            logout();
-          }}
-          className="mt-2 flex w-full items-center gap-3 rounded-linear px-3 py-2.5 text-sm text-dark-400 transition-all duration-200 hover:bg-error-500/10 hover:text-error-400"
-        >
-          <LogoutIcon className="h-5 w-5 shrink-0" />
-          <span>{t('nav.logout')}</span>
-        </button>
+        <div className="mt-2 flex items-center gap-2">
+          <ThemeToggle className="shrink-0" />
+          <Button
+            variant="ghost"
+            onClick={() => {
+              haptic.impact('light');
+              logout();
+            }}
+            className="rounded-linear text-muted-foreground hover:bg-destructive/10 hover:text-destructive flex h-auto flex-1 items-center justify-start gap-3 px-3 py-2.5 text-sm"
+          >
+            <LogoutIcon className="h-5 w-5 shrink-0" />
+            <span>{t('nav.logout')}</span>
+          </Button>
+        </div>
       </div>
     </aside>
   );

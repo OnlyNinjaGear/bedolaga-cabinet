@@ -6,13 +6,13 @@ export default function MaintenanceScreen() {
   const maintenanceInfo = useBlockingStore((state) => state.maintenanceInfo);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-dark-950 p-6">
+    <div className="bg-background fixed inset-0 z-[100] flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-md text-center">
         {/* Icon */}
         <div className="mb-8">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-dark-800">
+          <div className="bg-card mx-auto flex h-24 w-24 items-center justify-center rounded-full">
             <svg
-              className="h-12 w-12 text-amber-500"
+              className="text-warning-500 h-12 w-12"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -28,38 +28,44 @@ export default function MaintenanceScreen() {
         </div>
 
         {/* Title */}
-        <h1 className="mb-4 text-2xl font-bold text-white">{t('blocking.maintenance.title')}</h1>
+        <h1 className="text-foreground mb-4 text-2xl font-bold">
+          {t('blocking.maintenance.title')}
+        </h1>
 
         {/* Message */}
-        <p className="mb-6 text-lg text-gray-400">
+        <p className="text-muted-foreground mb-6 text-lg">
           {maintenanceInfo?.message || t('blocking.maintenance.defaultMessage')}
         </p>
 
         {/* Reason */}
         {maintenanceInfo?.reason && (
-          <div className="mb-6 rounded-xl bg-dark-800/50 p-4">
-            <p className="mb-1 text-sm text-gray-500">{t('blocking.maintenance.reason')}:</p>
-            <p className="text-gray-300">{maintenanceInfo.reason}</p>
+          <div className="bg-card/50 mb-6 rounded-xl p-4">
+            <p className="text-muted-foreground mb-1 text-sm">
+              {t('blocking.maintenance.reason')}:
+            </p>
+            <p className="text-foreground">{maintenanceInfo.reason}</p>
           </div>
         )}
 
         {/* Decorative dots */}
         <div className="mt-8 flex items-center justify-center gap-2">
           <div
-            className="h-2 w-2 animate-pulse rounded-full bg-amber-500"
+            className="bg-warning-500 h-2 w-2 animate-pulse rounded-full"
             style={{ animationDelay: '0ms' }}
           />
           <div
-            className="h-2 w-2 animate-pulse rounded-full bg-amber-500"
+            className="bg-warning-500 h-2 w-2 animate-pulse rounded-full"
             style={{ animationDelay: '300ms' }}
           />
           <div
-            className="h-2 w-2 animate-pulse rounded-full bg-amber-500"
+            className="bg-warning-500 h-2 w-2 animate-pulse rounded-full"
             style={{ animationDelay: '600ms' }}
           />
         </div>
 
-        <p className="mt-4 text-sm text-gray-500">{t('blocking.maintenance.waitMessage')}</p>
+        <p className="text-muted-foreground mt-4 text-sm">
+          {t('blocking.maintenance.waitMessage')}
+        </p>
       </div>
     </div>
   );

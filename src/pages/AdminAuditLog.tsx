@@ -5,12 +5,20 @@ import { useTranslation } from 'react-i18next';
 import { rbacApi, AuditLogEntry, AuditLogFilters } from '@/api/rbac';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { usePlatform } from '@/platform/hooks/usePlatform';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 // === Icons ===
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -195,7 +203,7 @@ function StatusBadge({ status, label }: StatusBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${colorMap[status] || 'bg-dark-600 text-dark-300'}`}
+      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${colorMap[status] || 'bg-muted text-muted-foreground'}`}
     >
       {label}
     </span>
@@ -217,7 +225,7 @@ function MethodBadge({ method }: MethodBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-medium ${colorMap[method] || 'bg-dark-600 text-dark-300'}`}
+      className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-medium ${colorMap[method] || 'bg-muted text-muted-foreground'}`}
     >
       {method}
     </span>
@@ -238,17 +246,18 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
   const userName = entry.user_first_name || entry.user_email || t('admin.auditLog.unknownUser');
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600">
+    <div className="border-border bg-card hover:border-border rounded-xl border transition-colors">
       {/* Main row */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={onToggle}
         className="flex w-full flex-col gap-2 p-4 text-left sm:flex-row sm:items-center sm:gap-4"
         aria-expanded={isExpanded}
       >
         {/* Timestamp */}
         <div
-          className="shrink-0 text-sm text-dark-400"
+          className="text-muted-foreground shrink-0 text-sm"
           title={formatAbsoluteTime(entry.created_at)}
         >
           {formatRelativeTime(entry.created_at, t)}
@@ -256,7 +265,7 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
 
         {/* User */}
         <div className="min-w-0 shrink-0">
-          <span className="text-sm font-medium text-dark-200">{userName}</span>
+          <span className="text-foreground text-sm font-medium">{userName}</span>
         </div>
 
         {/* Action + status */}
@@ -265,20 +274,20 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
             status={status}
             label={t(`admin.auditLog.status.${status}`, { defaultValue: status })}
           />
-          <span className="truncate text-sm font-medium text-dark-100">
+          <span className="text-foreground truncate text-sm font-medium">
             {translateAction(entry.action, t)}
           </span>
         </div>
 
         {/* Resource */}
-        <div className="flex shrink-0 items-center gap-2 text-sm text-dark-400">
+        <div className="text-muted-foreground flex shrink-0 items-center gap-2 text-sm">
           <span>
             {entry.resource_type
               ? t(`admin.roles.form.permissionSections.${entry.resource_type}`, entry.resource_type)
               : null}
           </span>
           {entry.resource_id && (
-            <span className="rounded bg-dark-700 px-1.5 py-0.5 font-mono text-xs text-dark-300">
+            <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-xs">
               #{entry.resource_id}
             </span>
           )}
@@ -293,64 +302,66 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
 
         {/* IP */}
         {entry.ip_address && (
-          <div className="shrink-0 font-mono text-xs text-dark-500">{entry.ip_address}</div>
+          <div className="text-muted-foreground shrink-0 font-mono text-xs">{entry.ip_address}</div>
         )}
 
         {/* Expand indicator */}
         <ChevronDownIcon
-          className={`h-4 w-4 shrink-0 text-dark-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          className={`text-muted-foreground h-4 w-4 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
         />
-      </button>
+      </Button>
 
       {/* Expanded details */}
       {isExpanded && (
-        <div className="border-t border-dark-700 p-4">
+        <div className="border-border border-t p-4">
           <div className="grid gap-4 sm:grid-cols-2">
             {/* User agent */}
             {entry.user_agent && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                   {t('admin.auditLog.details.userAgent')}
                 </p>
-                <p className="break-all text-sm text-dark-300">{entry.user_agent}</p>
+                <p className="text-muted-foreground text-sm break-all">{entry.user_agent}</p>
               </div>
             )}
 
             {/* Request path */}
             {requestPath && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                   {t('admin.auditLog.details.requestPath')}
                 </p>
-                <p className="break-all font-mono text-sm text-dark-300">{requestPath}</p>
+                <p className="text-muted-foreground font-mono text-sm break-all">{requestPath}</p>
               </div>
             )}
 
             {/* IP Address */}
             {entry.ip_address && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                   {t('admin.auditLog.details.ipAddress')}
                 </p>
-                <p className="font-mono text-sm text-dark-300">{entry.ip_address}</p>
+                <p className="text-muted-foreground font-mono text-sm">{entry.ip_address}</p>
               </div>
             )}
 
             {/* Timestamp */}
             <div>
-              <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+              <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                 {t('admin.auditLog.details.timestamp')}
               </p>
-              <p className="text-sm text-dark-300">{formatAbsoluteTime(entry.created_at)}</p>
+              <p className="text-muted-foreground text-sm">
+                {formatAbsoluteTime(entry.created_at)}
+              </p>
             </div>
 
             {/* Before/after diff */}
             {entry.details && 'before' in entry.details && entry.details.before != null && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                   {t('admin.auditLog.details.before')}
                 </p>
-                <pre className="max-h-40 overflow-auto rounded-lg bg-dark-900 p-2 text-xs text-dark-300">
+                <pre className="bg-background text-muted-foreground max-h-40 overflow-auto rounded-lg p-2 text-xs">
                   {JSON.stringify(entry.details.before, null, 2)}
                 </pre>
               </div>
@@ -358,10 +369,10 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
 
             {entry.details && 'after' in entry.details && entry.details.after != null && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                   {t('admin.auditLog.details.after')}
                 </p>
-                <pre className="max-h-40 overflow-auto rounded-lg bg-dark-900 p-2 text-xs text-dark-300">
+                <pre className="bg-background text-muted-foreground max-h-40 overflow-auto rounded-lg p-2 text-xs">
                   {JSON.stringify(entry.details.after, null, 2)}
                 </pre>
               </div>
@@ -372,10 +383,10 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
               'query_params' in entry.details &&
               entry.details.query_params != null && (
                 <div className="sm:col-span-2">
-                  <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                     {t('admin.auditLog.details.queryParams')}
                   </p>
-                  <pre className="max-h-40 overflow-auto rounded-lg bg-dark-900 p-2 text-xs text-dark-300">
+                  <pre className="bg-background text-muted-foreground max-h-40 overflow-auto rounded-lg p-2 text-xs">
                     {JSON.stringify(entry.details.query_params, null, 2)}
                   </pre>
                 </div>
@@ -386,10 +397,10 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
               'request_body' in entry.details &&
               entry.details.request_body != null && (
                 <div className="sm:col-span-2">
-                  <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                     {t('admin.auditLog.details.requestBody')}
                   </p>
-                  <pre className="max-h-60 overflow-auto rounded-lg bg-dark-900 p-2 text-xs text-dark-300">
+                  <pre className="bg-background text-muted-foreground max-h-60 overflow-auto rounded-lg p-2 text-xs">
                     {JSON.stringify(entry.details.request_body, null, 2)}
                   </pre>
                 </div>
@@ -399,10 +410,10 @@ function LogEntryCard({ entry, isExpanded, onToggle }: LogEntryCardProps) {
           {/* Full details JSON */}
           {entry.details && (
             <div className="mt-4">
-              <p className="mb-1 text-xs font-medium uppercase text-dark-500">
+              <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">
                 {t('admin.auditLog.details.fullDetails')}
               </p>
-              <pre className="max-h-60 overflow-auto rounded-lg bg-dark-900 p-3 text-xs text-dark-300">
+              <pre className="bg-background text-muted-foreground max-h-60 overflow-auto rounded-lg p-3 text-xs">
                 {JSON.stringify(entry.details, null, 2)}
               </pre>
             </div>
@@ -562,97 +573,98 @@ export default function AdminAuditLog() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {!capabilities.hasBackButton && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
               aria-label={t('admin.auditLog.back')}
             >
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.auditLog.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.auditLog.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-semibold">{t('admin.auditLog.title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('admin.auditLog.subtitle')}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Auto-refresh toggle */}
-          <button
+          <Button
+            variant="outline"
             onClick={() => setAutoRefresh((prev) => !prev)}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors ${
-              autoRefresh
-                ? 'border-accent-500/50 bg-accent-500/10 text-accent-400'
-                : 'border-dark-700 bg-dark-800 text-dark-400 hover:border-dark-600 hover:text-dark-300'
+            className={`flex items-center gap-1.5 ${
+              autoRefresh ? 'border-primary/50 bg-primary/10 text-primary' : ''
             }`}
             title={t('admin.auditLog.autoRefresh.tooltip')}
           >
             <RefreshIcon className={`h-4 w-4 ${isFetching && autoRefresh ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">{t('admin.auditLog.autoRefresh.label')}</span>
-          </button>
+          </Button>
 
           {/* Manual refresh */}
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-dark-700 bg-dark-800 text-dark-400 transition-colors hover:border-dark-600 hover:text-dark-300 disabled:opacity-50"
             title={t('admin.auditLog.refresh')}
           >
             <RefreshIcon className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-          </button>
+          </Button>
 
           {/* Export */}
           <PermissionGate permission="audit_log:export">
             <div className="flex items-center gap-2">
-              {exportError && <p className="text-sm text-error-400">{exportError}</p>}
-              <button
+              {exportError && <p className="text-error-400 text-sm">{exportError}</p>}
+              <Button
                 onClick={() => {
                   setExportError(null);
                   handleExport();
                 }}
                 disabled={exporting}
-                className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
               >
                 <DownloadIcon />
                 <span className="hidden sm:inline">
                   {exporting ? t('admin.auditLog.exporting') : t('admin.auditLog.exportCsv')}
                 </span>
-              </button>
+              </Button>
             </div>
           </PermissionGate>
         </div>
       </div>
 
       {/* Filters bar */}
-      <div className="mb-4 rounded-xl border border-dark-700 bg-dark-800">
-        <button
+      <div className="border-border bg-card mb-4 rounded-xl border">
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => setFiltersOpen((prev) => !prev)}
           className="flex w-full items-center justify-between p-4"
         >
           <div className="flex items-center gap-2">
             <FilterIcon />
-            <span className="text-sm font-medium text-dark-200">
+            <span className="text-foreground text-sm font-medium">
               {t('admin.auditLog.filters.title')}
             </span>
             {hasActiveFilters && (
-              <span className="rounded-full bg-accent-500/20 px-2 py-0.5 text-xs font-medium text-accent-400">
+              <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
                 {t('admin.auditLog.filters.active')}
               </span>
             )}
           </div>
           <ChevronDownIcon
-            className={`h-5 w-5 text-dark-400 transition-transform ${filtersOpen ? 'rotate-180' : ''}`}
+            className={`text-muted-foreground h-5 w-5 transition-transform ${filtersOpen ? 'rotate-180' : ''}`}
           />
-        </button>
+        </Button>
 
         {filtersOpen && (
-          <div className="border-t border-dark-700 p-4">
+          <div className="border-border border-t p-4">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {/* User filter */}
               {rbacUsers && rbacUsers.length > 0 && (
                 <div className="sm:col-span-2 lg:col-span-3">
-                  <label className="mb-1 block text-sm font-medium text-dark-300">
+                  <label className="text-muted-foreground mb-1 block text-sm font-medium">
                     {t('admin.auditLog.filters.user')}
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -661,9 +673,11 @@ export default function AdminAuditLog() {
                       const displayName =
                         ru.first_name || ru.email || ru.username || `#${ru.user_id}`;
                       return (
-                        <button
+                        <Button
                           key={ru.user_id}
                           type="button"
+                          variant="outline"
+                          size="sm"
                           aria-pressed={isSelected}
                           onClick={() =>
                             setFilters((prev) => ({
@@ -671,23 +685,23 @@ export default function AdminAuditLog() {
                               userId: isSelected ? '' : String(ru.user_id),
                             }))
                           }
-                          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-1 focus-visible:ring-offset-dark-900 ${
+                          className={`flex items-center gap-1.5 ${
                             isSelected
-                              ? 'border-accent-500 bg-accent-500/20 text-accent-300'
-                              : 'border-dark-600 bg-dark-900 text-dark-300 hover:border-dark-500 hover:text-dark-200'
+                              ? 'border-primary bg-primary/20 text-primary/70'
+                              : 'bg-background text-muted-foreground'
                           }`}
                         >
                           <span
                             className={`flex h-4 w-4 items-center justify-center rounded border text-xs ${
                               isSelected
-                                ? 'border-accent-500 bg-accent-500 text-white'
-                                : 'border-dark-500 bg-dark-800'
+                                ? 'border-primary bg-primary text-white'
+                                : 'border-border bg-card'
                             }`}
                           >
                             {isSelected && '✓'}
                           </span>
                           <span>{displayName}</span>
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
@@ -698,12 +712,12 @@ export default function AdminAuditLog() {
               <div>
                 <label
                   htmlFor="filter-action"
-                  className="mb-1 block text-sm font-medium text-dark-300"
+                  className="text-muted-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.auditLog.filters.action')}
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500">
+                  <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
                     <SearchIcon />
                   </span>
                   <input
@@ -711,7 +725,7 @@ export default function AdminAuditLog() {
                     type="text"
                     value={filters.action}
                     onChange={(e) => setFilters((prev) => ({ ...prev, action: e.target.value }))}
-                    className="w-full rounded-lg border border-dark-600 bg-dark-900 py-2 pl-9 pr-3 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+                    className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border py-2 pr-3 pl-9 text-sm transition-colors outline-none"
                     placeholder={t('admin.auditLog.filters.actionPlaceholder')}
                   />
                 </div>
@@ -721,53 +735,67 @@ export default function AdminAuditLog() {
               <div>
                 <label
                   htmlFor="filter-resource"
-                  className="mb-1 block text-sm font-medium text-dark-300"
+                  className="text-muted-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.auditLog.filters.resource')}
                 </label>
-                <select
-                  id="filter-resource"
-                  value={filters.resource}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, resource: e.target.value }))}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition-colors focus:border-accent-500"
+                <Select
+                  value={filters.resource || '__all__'}
+                  onValueChange={(v) =>
+                    setFilters((prev) => ({ ...prev, resource: v === '__all__' ? '' : v }))
+                  }
                 >
-                  <option value="">{t('admin.auditLog.filters.allResources')}</option>
-                  {RESOURCE_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {t(`admin.roles.form.permissionSections.${type}`, type)}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">
+                      {t('admin.auditLog.filters.allResources')}
+                    </SelectItem>
+                    {RESOURCE_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {t(`admin.roles.form.permissionSections.${type}`, type)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Status */}
               <div>
                 <label
                   htmlFor="filter-status"
-                  className="mb-1 block text-sm font-medium text-dark-300"
+                  className="text-muted-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.auditLog.filters.status')}
                 </label>
-                <select
-                  id="filter-status"
-                  value={filters.status}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition-colors focus:border-accent-500"
+                <Select
+                  value={filters.status || '__all__'}
+                  onValueChange={(v) =>
+                    setFilters((prev) => ({ ...prev, status: v === '__all__' ? '' : v }))
+                  }
                 >
-                  <option value="">{t('admin.auditLog.filters.allStatuses')}</option>
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>
-                      {t(`admin.auditLog.status.${status}`)}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">
+                      {t('admin.auditLog.filters.allStatuses')}
+                    </SelectItem>
+                    {STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {t(`admin.auditLog.status.${status}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Date from */}
               <div>
                 <label
                   htmlFor="filter-date-from"
-                  className="mb-1 block text-sm font-medium text-dark-300"
+                  className="text-muted-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.auditLog.filters.dateFrom')}
                 </label>
@@ -776,7 +804,7 @@ export default function AdminAuditLog() {
                   type="date"
                   value={filters.dateFrom}
                   onChange={(e) => setFilters((prev) => ({ ...prev, dateFrom: e.target.value }))}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition-colors focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
                 />
               </div>
 
@@ -784,7 +812,7 @@ export default function AdminAuditLog() {
               <div>
                 <label
                   htmlFor="filter-date-to"
-                  className="mb-1 block text-sm font-medium text-dark-300"
+                  className="text-muted-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.auditLog.filters.dateTo')}
                 </label>
@@ -793,25 +821,17 @@ export default function AdminAuditLog() {
                   type="date"
                   value={filters.dateTo}
                   onChange={(e) => setFilters((prev) => ({ ...prev, dateTo: e.target.value }))}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-sm text-dark-100 outline-none transition-colors focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
                 />
               </div>
             </div>
 
             {/* Filter actions */}
             <div className="mt-4 flex items-center gap-3">
-              <button
-                onClick={handleApplyFilters}
-                className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
-              >
-                {t('admin.auditLog.filters.apply')}
-              </button>
-              <button
-                onClick={handleClearFilters}
-                className="rounded-lg border border-dark-600 px-4 py-2 text-sm font-medium text-dark-300 transition-colors hover:border-dark-500 hover:text-dark-200"
-              >
+              <Button onClick={handleApplyFilters}>{t('admin.auditLog.filters.apply')}</Button>
+              <Button variant="outline" onClick={handleClearFilters}>
                 {t('admin.auditLog.filters.clear')}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -820,25 +840,25 @@ export default function AdminAuditLog() {
       {/* Results summary */}
       {!isLoading && !error && (
         <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-dark-400">
+          <p className="text-muted-foreground text-sm">
             {t('admin.auditLog.totalEntries', { count: total })}
           </p>
           <div className="flex items-center gap-2">
-            <label htmlFor="page-size" className="text-sm text-dark-500">
+            <label htmlFor="page-size" className="text-muted-foreground text-sm">
               {t('admin.auditLog.pagination.pageSize')}
             </label>
-            <select
-              id="page-size"
-              value={pageSize}
-              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-              className="rounded-lg border border-dark-600 bg-dark-800 px-2 py-1 text-sm text-dark-200 outline-none focus:border-accent-500"
-            >
-              {PAGE_SIZE_OPTIONS.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+            <Select value={String(pageSize)} onValueChange={(v) => handlePageSizeChange(Number(v))}>
+              <SelectTrigger className="border-border bg-card text-foreground h-8 w-auto rounded-lg border px-2 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
@@ -846,21 +866,18 @@ export default function AdminAuditLog() {
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : error ? (
         <div className="py-12 text-center">
           <p className="text-error-400">{t('admin.auditLog.errors.loadFailed')}</p>
-          <button
-            onClick={() => refetch()}
-            className="mt-3 text-sm text-accent-400 transition-colors hover:text-accent-300"
-          >
+          <Button variant="ghost" size="sm" onClick={() => refetch()} className="mt-3">
             {t('admin.auditLog.errors.retry')}
-          </button>
+          </Button>
         </div>
       ) : filteredEntries.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-dark-400">{t('admin.auditLog.noEntries')}</p>
+          <p className="text-muted-foreground">{t('admin.auditLog.noEntries')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -878,46 +895,50 @@ export default function AdminAuditLog() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage(0)}
             disabled={page === 0}
-            className="rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('admin.auditLog.pagination.first')}
           >
             &laquo;
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('admin.auditLog.pagination.previous')}
           >
             &lsaquo;
-          </button>
+          </Button>
 
-          <span className="px-3 py-2 text-sm text-dark-300">
+          <span className="text-muted-foreground px-3 py-2 text-sm">
             {t('admin.auditLog.pagination.pageOf', {
               current: page + 1,
               total: totalPages,
             })}
           </span>
 
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('admin.auditLog.pagination.next')}
           >
             &rsaquo;
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage(totalPages - 1)}
             disabled={page >= totalPages - 1}
-            className="rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('admin.auditLog.pagination.last')}
           >
             &raquo;
-          </button>
+          </Button>
         </div>
       )}
     </div>

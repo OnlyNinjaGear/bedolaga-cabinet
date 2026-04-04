@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SettingDefinition } from '../../api/adminSettings';
 import { SearchIcon, CloseIcon } from './icons';
 import { formatSettingKey } from './utils';
+import { Button } from '@/components/ui/button';
 
 interface SettingsSearchProps {
   searchQuery: string;
@@ -108,42 +109,45 @@ export function SettingsSearch({
         onFocus={() => setIsOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder={t('admin.settings.searchPlaceholder')}
-        className="w-48 rounded-xl border border-dark-700 bg-dark-800 py-2 pl-10 pr-10 text-sm text-dark-100 placeholder-dark-500 focus:border-accent-500 focus:outline-none lg:w-64"
+        className="border-border bg-card text-foreground placeholder-muted-foreground focus:border-primary w-48 rounded-xl border py-2 pr-10 pl-10 text-sm focus:outline-none lg:w-64"
       />
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500">
+      <div className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
         <SearchIcon />
       </div>
       {searchQuery && (
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => {
             setSearchQuery('');
             setIsOpen(false);
           }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-500 transition-colors hover:text-dark-300"
+          className="text-muted-foreground hover:text-muted-foreground absolute top-1/2 right-3 h-auto w-auto -translate-y-1/2 p-0"
         >
           <CloseIcon />
-        </button>
+        </Button>
       )}
 
       {/* Autocomplete dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute right-0 top-full z-50 mt-1 max-h-80 w-80 overflow-y-auto rounded-xl border border-dark-700 bg-dark-800 py-1 shadow-xl">
+        <div className="border-border bg-card absolute top-full right-0 z-50 mt-1 max-h-80 w-80 overflow-y-auto rounded-xl border py-1 shadow-xl">
           {suggestions.map((setting, index) => (
-            <button
+            <Button
               key={setting.key}
+              variant="ghost"
               onClick={() => handleSelect(setting)}
               onMouseEnter={() => setHighlightedIndex(index)}
-              className={`flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors ${
-                index === highlightedIndex ? 'bg-accent-500/20' : 'hover:bg-dark-700/50'
+              className={`flex h-auto w-full flex-col items-start gap-0.5 px-3 py-2 text-left ${
+                index === highlightedIndex ? 'bg-primary/20' : ''
               }`}
             >
-              <span className="truncate text-sm font-medium text-dark-100">
+              <span className="text-foreground truncate text-sm font-medium">
                 {getSettingDisplayName(setting)}
               </span>
-              <span className="truncate text-xs text-dark-500">
+              <span className="text-muted-foreground truncate text-xs">
                 {t(`admin.settings.categories.${setting.category.key}`, setting.category.key)}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -218,41 +222,44 @@ export function SettingsSearchMobile({
         }}
         onFocus={() => setIsOpen(true)}
         placeholder={t('admin.settings.searchPlaceholder')}
-        className="w-full rounded-xl border border-dark-700 bg-dark-800 py-2 pl-10 pr-10 text-sm text-dark-100 placeholder-dark-500 focus:border-accent-500 focus:outline-none"
+        className="border-border bg-card text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-xl border py-2 pr-10 pl-10 text-sm focus:outline-none"
       />
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500">
+      <div className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
         <SearchIcon />
       </div>
       {searchQuery && (
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => {
             setSearchQuery('');
             setIsOpen(false);
           }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-500 transition-colors hover:text-dark-300"
+          className="text-muted-foreground hover:text-muted-foreground absolute top-1/2 right-3 h-auto w-auto -translate-y-1/2 p-0"
         >
           <CloseIcon />
-        </button>
+        </Button>
       )}
 
       {/* Autocomplete dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-dark-700 bg-dark-800 py-1 shadow-xl">
+        <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border py-1 shadow-xl">
           {suggestions.map((setting, index) => (
-            <button
+            <Button
               key={setting.key}
+              variant="ghost"
               onClick={() => handleSelect(setting)}
-              className={`flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors ${
-                index === highlightedIndex ? 'bg-accent-500/20' : 'hover:bg-dark-700/50'
+              className={`flex h-auto w-full flex-col items-start gap-0.5 px-3 py-2 text-left ${
+                index === highlightedIndex ? 'bg-primary/20' : ''
               }`}
             >
-              <span className="truncate text-sm font-medium text-dark-100">
+              <span className="text-foreground truncate text-sm font-medium">
                 {getSettingDisplayName(setting)}
               </span>
-              <span className="truncate text-xs text-dark-500">
+              <span className="text-muted-foreground truncate text-xs">
                 {t(`admin.settings.categories.${setting.category.key}`, setting.category.key)}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -273,13 +280,15 @@ export function SettingsSearchResults({
 
   return (
     <div className="mt-3 flex items-center gap-2 text-sm">
-      <span className="text-dark-400">
+      <span className="text-muted-foreground">
         {resultsCount > 0
           ? t('admin.settings.foundCount', { count: resultsCount })
           : t('admin.settings.notFound')}
       </span>
       {resultsCount > 0 && (
-        <span className="text-dark-500">{t('admin.settings.byQuery', { query: searchQuery })}</span>
+        <span className="text-muted-foreground">
+          {t('admin.settings.byQuery', { query: searchQuery })}
+        </span>
       )}
     </div>
   );

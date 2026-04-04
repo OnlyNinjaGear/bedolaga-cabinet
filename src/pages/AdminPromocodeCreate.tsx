@@ -13,11 +13,21 @@ import {
 } from '../api/promocodes';
 import { tariffsApi } from '../api/tariffs';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Icons
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -204,7 +214,7 @@ export default function AdminPromocodeCreate() {
   if (isEdit && isLoadingPromocode) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -215,36 +225,33 @@ export default function AdminPromocodeCreate() {
       <div className="flex items-center gap-3">
         {/* Show back button only on web, not in Telegram Mini App */}
         {!capabilities.hasBackButton && (
-          <button
-            onClick={() => navigate('/admin/promocodes')}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-          >
+          <Button variant="outline" size="icon" onClick={() => navigate('/admin/promocodes')}>
             <BackIcon />
-          </button>
+          </Button>
         )}
         <div>
-          <h1 className="text-xl font-bold text-dark-100">
+          <h1 className="text-foreground text-xl font-bold">
             {isEdit
               ? t('admin.promocodes.modal.editPromocode')
               : t('admin.promocodes.modal.newPromocode')}
           </h1>
-          <p className="text-sm text-dark-400">{t('admin.promocodes.subtitle')}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.promocodes.subtitle')}</p>
         </div>
       </div>
 
       {/* Form */}
-      <div className="card space-y-4">
+      <Card className="space-y-4">
         {/* Code */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promocodes.form.code')}
             <span className="text-error-400">*</span>
           </label>
-          <input
+          <Input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className={`input uppercase ${!isCodeValid && code.length > 0 ? 'border-error-500/50' : ''}`}
+            className={`uppercase ${!isCodeValid && code.length > 0 ? 'border-error-500/50' : ''}`}
             placeholder="SUMMER2025"
             maxLength={50}
           />
@@ -252,93 +259,100 @@ export default function AdminPromocodeCreate() {
 
         {/* Type */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promocodes.form.type')}
           </label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as PromoCodeType)}
-            className="input"
-          >
-            <option value="balance">{t('admin.promocodes.form.typeBalance')}</option>
-            <option value="subscription_days">
-              {t('admin.promocodes.form.typeSubscriptionDays')}
-            </option>
-            <option value="trial_subscription">
-              {t('admin.promocodes.form.typeTrialSubscription')}
-            </option>
-            <option value="promo_group">{t('admin.promocodes.form.typePromoGroup')}</option>
-            <option value="discount">{t('admin.promocodes.form.typeDiscount')}</option>
-          </select>
+          <Select value={type} onValueChange={(v) => setType(v as PromoCodeType)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="balance">{t('admin.promocodes.form.typeBalance')}</SelectItem>
+              <SelectItem value="subscription_days">
+                {t('admin.promocodes.form.typeSubscriptionDays')}
+              </SelectItem>
+              <SelectItem value="trial_subscription">
+                {t('admin.promocodes.form.typeTrialSubscription')}
+              </SelectItem>
+              <SelectItem value="promo_group">
+                {t('admin.promocodes.form.typePromoGroup')}
+              </SelectItem>
+              <SelectItem value="discount">{t('admin.promocodes.form.typeDiscount')}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Type-specific fields */}
         {type === 'balance' && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promocodes.form.bonusAmount')}
               <span className="text-error-400">*</span>
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="number"
                 value={balanceBonusRubles}
                 onChange={createNumberInputHandler(setBalanceBonusRubles, 0)}
-                className="input w-32"
+                className="w-32"
                 min={0}
                 step={1}
                 placeholder="0"
               />
-              <span className="text-dark-400">{t('admin.promocodes.form.rub')}</span>
+              <span className="text-muted-foreground">{t('admin.promocodes.form.rub')}</span>
             </div>
           </div>
         )}
 
         {(type === 'subscription_days' || type === 'trial_subscription') && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promocodes.form.daysCount')}
               <span className="text-error-400">*</span>
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="number"
                 value={subscriptionDays}
                 onChange={createNumberInputHandler(setSubscriptionDays, 0)}
-                className="input w-32"
+                className="w-32"
                 min={1}
                 placeholder="0"
               />
-              <span className="text-dark-400">{t('admin.promocodes.form.days')}</span>
+              <span className="text-muted-foreground">{t('admin.promocodes.form.days')}</span>
             </div>
           </div>
         )}
 
         {type === 'trial_subscription' && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promocodes.form.tariff', 'Тариф')}
             </label>
-            <select
-              value={tariffId || ''}
-              onChange={(e) => setTariffId(e.target.value ? parseInt(e.target.value) : null)}
-              className="input"
+            <Select
+              value={tariffId != null ? String(tariffId) : '__default__'}
+              onValueChange={(v) => setTariffId(v === '__default__' ? null : parseInt(v))}
             >
-              <option value="">
-                {trialTariff
-                  ? t('admin.promocodes.form.defaultTrialTariff', 'По умолчанию: {{name}}', {
-                      name: trialTariff.name,
-                    })
-                  : t('admin.promocodes.form.selectTariff', '— Выберите тариф —')}
-              </option>
-              {tariffsData?.tariffs?.map((tariff) => (
-                <option key={tariff.id} value={tariff.id}>
-                  {tariff.name} ({tariff.traffic_limit_gb} GB, {tariff.device_limit} устр.)
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__default__">
+                  {trialTariff
+                    ? t('admin.promocodes.form.defaultTrialTariff', 'По умолчанию: {{name}}', {
+                        name: trialTariff.name,
+                      })
+                    : t('admin.promocodes.form.selectTariff', '— Выберите тариф —')}
+                </SelectItem>
+                {tariffsData?.tariffs?.map((tariff) => (
+                  <SelectItem key={tariff.id} value={String(tariff.id)}>
+                    {tariff.name} ({tariff.traffic_limit_gb} GB, {tariff.device_limit} устр.)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {!tariffId && !trialTariff && (
-              <div className="mt-1 text-xs text-warning-400">
+              <div className="text-warning-400 mt-1 text-xs">
                 {t(
                   'admin.promocodes.form.noTrialTariffHint',
                   'Выберите тариф или отметьте тариф как «доступен для триала» в настройках.',
@@ -350,34 +364,38 @@ export default function AdminPromocodeCreate() {
 
         {type === 'promo_group' && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promocodes.form.discountGroup')}
               <span className="text-error-400">*</span>
             </label>
-            <select
-              value={promoGroupId || ''}
-              onChange={(e) => setPromoGroupId(e.target.value ? parseInt(e.target.value) : null)}
-              className="input"
+            <Select
+              value={promoGroupId != null ? String(promoGroupId) : '__none__'}
+              onValueChange={(v) => setPromoGroupId(v === '__none__' ? null : parseInt(v))}
             >
-              <option value="">{t('admin.promocodes.form.selectGroup')}</option>
-              {promoGroups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder={t('admin.promocodes.form.selectGroup')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">{t('admin.promocodes.form.selectGroup')}</SelectItem>
+                {promoGroups.map((group) => (
+                  <SelectItem key={group.id} value={String(group.id)}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
         {type === 'discount' && (
           <>
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.promocodes.form.discountPercent')}
                 <span className="text-error-400">*</span>
               </label>
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="number"
                   value={balanceBonusRubles}
                   onChange={(e) => {
@@ -388,24 +406,24 @@ export default function AdminPromocodeCreate() {
                       setBalanceBonusRubles(Math.min(100, Math.max(0, parseFloat(val) || 0)));
                     }
                   }}
-                  className="input w-32"
+                  className="w-32"
                   min={1}
                   max={100}
                   placeholder="0"
                 />
-                <span className="text-dark-400">%</span>
+                <span className="text-muted-foreground">%</span>
               </div>
-              <p className="mt-1 text-xs text-dark-500">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {t('admin.promocodes.form.discountHint')}
               </p>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-dark-300">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('admin.promocodes.form.validityPeriod')}
                 <span className="text-error-400">*</span>
               </label>
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="number"
                   value={subscriptionDays}
                   onChange={(e) => {
@@ -416,13 +434,13 @@ export default function AdminPromocodeCreate() {
                       setSubscriptionDays(Math.max(0, parseInt(val) || 0));
                     }
                   }}
-                  className="input w-32"
+                  className="w-32"
                   min={1}
                   placeholder="0"
                 />
-                <span className="text-dark-400">{t('admin.promocodes.form.hours')}</span>
+                <span className="text-muted-foreground">{t('admin.promocodes.form.hours')}</span>
               </div>
-              <p className="mt-1 text-xs text-dark-500">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {t('admin.promocodes.form.validityHint')}
               </p>
             </div>
@@ -431,19 +449,19 @@ export default function AdminPromocodeCreate() {
 
         {/* Max Uses */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promocodes.form.maxUses')}
           </label>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="number"
               value={maxUses}
               onChange={createNumberInputHandler(setMaxUses, 0)}
-              className="input w-32"
+              className="w-32"
               min={0}
               placeholder="0"
             />
-            <span className="text-xs text-dark-500">
+            <span className="text-muted-foreground text-xs">
               {t('admin.promocodes.form.unlimitedHint')}
             </span>
           </div>
@@ -451,26 +469,24 @@ export default function AdminPromocodeCreate() {
 
         {/* Valid Until */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promocodes.form.validUntil')}
           </label>
-          <input
-            type="date"
-            value={validUntil}
-            onChange={(e) => setValidUntil(e.target.value)}
-            className="input"
-          />
-          <p className="mt-1 text-xs text-dark-500">{t('admin.promocodes.form.validUntilHint')}</p>
+          <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+          <p className="text-muted-foreground mt-1 text-xs">
+            {t('admin.promocodes.form.validUntilHint')}
+          </p>
         </div>
 
         {/* Options */}
         <div className="space-y-3">
           <label className="flex cursor-pointer items-center gap-3">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => setIsActive(!isActive)}
-              className={`relative h-6 w-10 rounded-full transition-colors ${
-                isActive ? 'bg-accent-500' : 'bg-dark-600'
+              className={`relative h-6 w-10 rounded-full p-0 transition-colors ${
+                isActive ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
               }`}
             >
               <span
@@ -478,16 +494,17 @@ export default function AdminPromocodeCreate() {
                   isActive ? 'left-5' : 'left-1'
                 }`}
               />
-            </button>
-            <span className="text-sm text-dark-200">{t('admin.promocodes.form.active')}</span>
+            </Button>
+            <span className="text-foreground text-sm">{t('admin.promocodes.form.active')}</span>
           </label>
 
           <label className="flex cursor-pointer items-center gap-3">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => setFirstPurchaseOnly(!firstPurchaseOnly)}
-              className={`relative h-6 w-10 rounded-full transition-colors ${
-                firstPurchaseOnly ? 'bg-accent-500' : 'bg-dark-600'
+              className={`relative h-6 w-10 rounded-full p-0 transition-colors ${
+                firstPurchaseOnly ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
               }`}
             >
               <span
@@ -495,22 +512,22 @@ export default function AdminPromocodeCreate() {
                   firstPurchaseOnly ? 'left-5' : 'left-1'
                 }`}
               />
-            </button>
-            <span className="text-sm text-dark-200">
+            </Button>
+            <span className="text-foreground text-sm">
               {t('admin.promocodes.form.firstPurchaseOnly')}
             </span>
           </label>
         </div>
-      </div>
+      </Card>
 
       {/* Footer */}
-      <div className="card space-y-3">
+      <Card className="space-y-3">
         {validationErrors.length > 0 && (
-          <div className="rounded-lg border border-error-500/30 bg-error-500/10 p-3">
-            <p className="mb-1 text-sm font-medium text-error-400">
+          <div className="border-error-500/30 bg-error-500/10 rounded-lg border p-3">
+            <p className="text-error-400 mb-1 text-sm font-medium">
               {t('admin.tariffs.cannotSave')}
             </p>
-            <ul className="list-inside list-disc space-y-1 text-xs text-error-300">
+            <ul className="text-error-300 list-inside list-disc space-y-1 text-xs">
               {validationErrors.map((error) => (
                 <li key={error}>{t(`admin.promocodes.validation.${error}`)}</li>
               ))}
@@ -518,22 +535,19 @@ export default function AdminPromocodeCreate() {
           </div>
         )}
         <div className="flex justify-end gap-3">
-          <button
-            onClick={() => navigate('/admin/promocodes')}
-            className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-          >
+          <Button variant="ghost" onClick={() => navigate('/admin/promocodes')}>
             {t('admin.promocodes.form.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
             disabled={!isValid() || isLoading}
-            className="btn-primary flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             {isLoading && <RefreshIcon />}
             {isLoading ? t('admin.promocodes.form.saving') : t('admin.promocodes.form.save')}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

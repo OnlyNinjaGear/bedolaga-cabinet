@@ -5,6 +5,8 @@ import { brandingApi } from '../api/branding';
 const YM_SCRIPT_ID = 'ym-counter-script';
 const GTAG_LOADER_ID = 'gtag-loader-script';
 const GTAG_INIT_ID = 'gtag-init-script';
+const GTM_HEAD_ID = 'gtm-head-script';
+const GTM_NOSCRIPT_ID = 'gtm-noscript';
 
 function removeElement(id: string) {
   document.getElementById(id)?.remove();
@@ -52,9 +54,33 @@ function injectGoogleAds(conversionId: string) {
   document.head.appendChild(init);
 }
 
+function injectGoogleTagManager(containerId: string) {
+  if (document.getElementById(GTM_HEAD_ID)) return;
+
+  // GTM head script
+  const script = document.createElement('script');
+  script.id = GTM_HEAD_ID;
+  script.textContent = `
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','${containerId}');
+  `;
+  document.head.appendChild(script);
+
+  // GTM noscript fallback in body
+  if (!document.getElementById(GTM_NOSCRIPT_ID)) {
+    const noscript = document.createElement('noscript');
+    noscript.id = GTM_NOSCRIPT_ID;
+    noscript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${containerId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+    document.body.prepend(noscript);
+  }
+}
+
 /**
  * Fetches analytics counter settings from the API and dynamically
- * injects Yandex Metrika and/or Google Ads scripts into <head>.
+ * injects Yandex Metrika, Google Ads, and Google Tag Manager scripts.
  */
 export function useAnalyticsCounters() {
   const { data } = useQuery({
@@ -79,6 +105,14 @@ export function useAnalyticsCounters() {
     } else {
       removeElement(GTAG_LOADER_ID);
       removeElement(GTAG_INIT_ID);
+    }
+
+    // Google Tag Manager
+    if (data.google_tag_manager_id) {
+      injectGoogleTagManager(data.google_tag_manager_id);
+    } else {
+      removeElement(GTM_HEAD_ID);
+      removeElement(GTM_NOSCRIPT_ID);
     }
   }, [data]);
 }

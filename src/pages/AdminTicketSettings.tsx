@@ -5,6 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { adminApi } from '../api/admin';
 import { AdminBackButton } from '../components/admin';
 import { toNumber } from '../utils/inputHelpers';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type NumberOrEmpty = number | '';
 
@@ -101,7 +111,7 @@ export default function AdminTicketSettings() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -111,16 +121,17 @@ export default function AdminTicketSettings() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/tickets" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.tickets.settings')}</h1>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.tickets.settings')}</h1>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-6 text-center">
           <p className="text-error-400">{t('admin.tickets.settingsLoadError')}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate('/admin/tickets')}
-            className="mt-4 text-sm text-dark-400 hover:text-dark-200"
+            className="mt-4 text-sm"
           >
             {t('common.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -131,58 +142,60 @@ export default function AdminTicketSettings() {
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin/tickets" />
-        <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+        <div className="bg-primary/20 text-primary rounded-lg p-2">
           <SettingsIcon />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.tickets.settings')}</h1>
-          <p className="text-sm text-dark-400">{t('admin.tickets.settingsSubtitle')}</p>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.tickets.settings')}</h1>
+          <p className="text-muted-foreground text-sm">{t('admin.tickets.settingsSubtitle')}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Support System Mode */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.tickets.supportMode')}
           </h3>
-          <select
+          <Select
             value={formData.support_system_mode}
-            onChange={(e) => setFormData({ ...formData, support_system_mode: e.target.value })}
-            className="input"
+            onValueChange={(v) => setFormData({ ...formData, support_system_mode: v })}
           >
-            <option value="both">{t('admin.tickets.modeBoth')}</option>
-            <option value="tickets">{t('admin.tickets.modeTickets')}</option>
-            <option value="contact">{t('admin.tickets.modeContact')}</option>
-          </select>
-          <p className="mt-2 text-sm text-dark-500">{t('admin.tickets.supportModeDesc')}</p>
-        </div>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="both">{t('admin.tickets.modeBoth')}</SelectItem>
+              <SelectItem value="tickets">{t('admin.tickets.modeTickets')}</SelectItem>
+              <SelectItem value="contact">{t('admin.tickets.modeContact')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-muted-foreground mt-2 text-sm">{t('admin.tickets.supportModeDesc')}</p>
+        </Card>
 
         {/* Cabinet Notifications */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.tickets.cabinetNotifications')}
           </h3>
 
           {/* User Notifications */}
           <div className="mb-4">
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.cabinet_user_notifications_enabled}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   setFormData({
                     ...formData,
-                    cabinet_user_notifications_enabled: e.target.checked,
+                    cabinet_user_notifications_enabled: checked as boolean,
                   })
                 }
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
               />
               <div>
-                <div className="font-medium text-dark-100">
+                <div className="text-foreground font-medium">
                   {t('admin.tickets.userNotificationsEnabled')}
                 </div>
-                <div className="text-sm text-dark-500">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.tickets.userNotificationsEnabledDesc')}
                 </div>
               </div>
@@ -192,54 +205,54 @@ export default function AdminTicketSettings() {
           {/* Admin Notifications */}
           <div>
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.cabinet_admin_notifications_enabled}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   setFormData({
                     ...formData,
-                    cabinet_admin_notifications_enabled: e.target.checked,
+                    cabinet_admin_notifications_enabled: checked as boolean,
                   })
                 }
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
               />
               <div>
-                <div className="font-medium text-dark-100">
+                <div className="text-foreground font-medium">
                   {t('admin.tickets.adminNotificationsEnabled')}
                 </div>
-                <div className="text-sm text-dark-500">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.tickets.adminNotificationsEnabledDesc')}
                 </div>
               </div>
             </label>
           </div>
-        </div>
+        </Card>
 
         {/* SLA Settings */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.tickets.slaSettings')}
           </h3>
 
           {/* SLA Enabled */}
           <div className="mb-6">
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.sla_enabled}
-                onChange={(e) => setFormData({ ...formData, sla_enabled: e.target.checked })}
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, sla_enabled: checked as boolean })
+                }
               />
               <div>
-                <div className="font-medium text-dark-100">{t('admin.tickets.slaEnabled')}</div>
-                <div className="text-sm text-dark-500">{t('admin.tickets.slaEnabledDesc')}</div>
+                <div className="text-foreground font-medium">{t('admin.tickets.slaEnabled')}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t('admin.tickets.slaEnabledDesc')}
+                </div>
               </div>
             </label>
           </div>
 
           {/* SLA Minutes */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.tickets.slaMinutes')}
             </label>
             <input
@@ -257,16 +270,18 @@ export default function AdminTicketSettings() {
               disabled={!formData.sla_enabled}
             />
             {formData.sla_enabled && formData.sla_minutes !== '' && !isSlaMinutesValid && (
-              <p className="mt-1 text-xs text-error-400">
+              <p className="text-error-400 mt-1 text-xs">
                 {t('admin.tickets.validation.slaMinutesRange')}
               </p>
             )}
-            <p className="mt-1 text-xs text-dark-500">{t('admin.tickets.slaMinutesDesc')}</p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {t('admin.tickets.slaMinutesDesc')}
+            </p>
           </div>
 
           {/* Check Interval */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.tickets.checkInterval')}
             </label>
             <input
@@ -286,16 +301,18 @@ export default function AdminTicketSettings() {
             {formData.sla_enabled &&
               formData.sla_check_interval_seconds !== '' &&
               !isCheckIntervalValid && (
-                <p className="mt-1 text-xs text-error-400">
+                <p className="text-error-400 mt-1 text-xs">
                   {t('admin.tickets.validation.checkIntervalRange')}
                 </p>
               )}
-            <p className="mt-1 text-xs text-dark-500">{t('admin.tickets.checkIntervalDesc')}</p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {t('admin.tickets.checkIntervalDesc')}
+            </p>
           </div>
 
           {/* Reminder Cooldown */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.tickets.reminderCooldown')}
             </label>
             <input
@@ -316,28 +333,22 @@ export default function AdminTicketSettings() {
             {formData.sla_enabled &&
               formData.sla_reminder_cooldown_minutes !== '' &&
               !isReminderCooldownValid && (
-                <p className="mt-1 text-xs text-error-400">
+                <p className="text-error-400 mt-1 text-xs">
                   {t('admin.tickets.validation.reminderCooldownRange')}
                 </p>
               )}
-            <p className="mt-1 text-xs text-dark-500">{t('admin.tickets.reminderCooldownDesc')}</p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {t('admin.tickets.reminderCooldownDesc')}
+            </p>
           </div>
-        </div>
+        </Card>
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => navigate('/admin/tickets')}
-            className="btn-secondary"
-          >
+          <Button type="button" variant="secondary" onClick={() => navigate('/admin/tickets')}>
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!isValid || updateMutation.isPending}
-            className="btn-primary"
-          >
+          </Button>
+          <Button type="submit" disabled={!isValid || updateMutation.isPending}>
             {updateMutation.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -346,11 +357,11 @@ export default function AdminTicketSettings() {
             ) : (
               t('common.save')
             )}
-          </button>
+          </Button>
         </div>
 
         {updateMutation.isError && (
-          <div className="rounded-lg border border-error-500/30 bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-lg border p-3 text-sm">
             {t('admin.tickets.settingsUpdateError')}
           </div>
         )}

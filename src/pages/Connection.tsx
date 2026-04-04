@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { openLink as sdkOpenLink } from '@telegram-apps/sdk-react';
@@ -104,7 +105,7 @@ export default function Connection() {
   if (isLoading) {
     return (
       <div className="flex flex-1 items-center justify-center py-20">
-        <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-accent-500/30 border-t-accent-500" />
+        <div className="border-primary/30 border-t-accent-500 h-10 w-10 animate-spin rounded-full border-3" />
       </div>
     );
   }
@@ -112,9 +113,9 @@ export default function Connection() {
   if (error || !appConfig || !hasApps) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+        <div className="bg-card mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
           <svg
-            className="h-8 w-8 text-dark-400"
+            className="text-muted-foreground h-8 w-8"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -127,10 +128,10 @@ export default function Connection() {
             />
           </svg>
         </div>
-        <h3 className="mb-2 text-xl font-bold text-dark-100">
+        <h3 className="text-foreground mb-2 text-xl font-bold">
           {t('subscription.connection.notConfigured')}
         </h3>
-        <p className="mb-6 max-w-sm text-dark-400">
+        <p className="text-muted-foreground mb-6 max-w-sm">
           {isAdmin
             ? t('subscription.connection.notConfiguredAdmin')
             : t('subscription.connection.notConfiguredUser')}
@@ -166,13 +167,11 @@ export default function Connection() {
   if (!appConfig.hasSubscription) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-        <h3 className="mb-2 text-xl font-bold text-dark-100">
+        <h3 className="text-foreground mb-2 text-xl font-bold">
           {t('subscription.connection.title')}
         </h3>
-        <p className="mb-4 text-dark-400">{t('subscription.connection.noSubscription')}</p>
-        <button onClick={handleGoBack} className="btn-primary px-6 py-2">
-          {t('common.close')}
-        </button>
+        <p className="text-muted-foreground mb-4">{t('subscription.connection.noSubscription')}</p>
+        <Button onClick={handleGoBack}>{t('common.close')}</Button>
       </div>
     );
   }

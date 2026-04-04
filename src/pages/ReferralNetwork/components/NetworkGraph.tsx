@@ -533,5 +533,5 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
     }
   }, [hoveredNodeId, highlightedNodes]);
 
-  return <div ref={containerRef} className={`bg-[#0a0a0f] ${className ?? ''}`} />;
+  return <div ref={containerRef} className={`bg-background ${className ?? ''}`} />;
 }

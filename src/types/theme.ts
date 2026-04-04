@@ -37,19 +37,19 @@ export const DEFAULT_ENABLED_THEMES: EnabledThemes = {
   light: true,
 };
 
-// Default theme colors
+// Default theme colors (Zinc preset — shadcn-compatible)
 export const DEFAULT_THEME_COLORS: ThemeColors = {
   accent: '#3b82f6',
 
-  darkBackground: '#0a0f1a',
-  darkSurface: '#0f172a',
-  darkText: '#f1f5f9',
-  darkTextSecondary: '#94a3b8',
+  darkBackground: '#09090b',
+  darkSurface: '#18181b',
+  darkText: '#fafafa',
+  darkTextSecondary: '#a1a1aa',
 
-  lightBackground: '#F7E7CE',
-  lightSurface: '#FEF9F0',
-  lightText: '#1F1A12',
-  lightTextSecondary: '#7D6B48',
+  lightBackground: '#fafafa',
+  lightSurface: '#ffffff',
+  lightText: '#18181b',
+  lightTextSecondary: '#71717a',
 
   success: '#22c55e',
   warning: '#f59e0b',

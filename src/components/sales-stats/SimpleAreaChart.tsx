@@ -49,8 +49,11 @@ export function SimpleAreaChart({
   if (data.length === 0) {
     return (
       <div className="bento-card">
-        <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
-        <div className="flex items-center justify-center text-sm text-dark-400" style={{ height }}>
+        <h4 className="text-foreground mb-3 text-sm font-semibold">{title}</h4>
+        <div
+          className="text-muted-foreground flex items-center justify-center text-sm"
+          style={{ height }}
+        >
           {t('common.noData')}
         </div>
       </div>
@@ -59,7 +62,7 @@ export function SimpleAreaChart({
 
   return (
     <div className="bento-card">
-      <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
+      <h4 className="text-foreground mb-3 text-sm font-semibold">{title}</h4>
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={chartData} margin={SALES_STATS.CHART.MARGIN}>
           <defs>

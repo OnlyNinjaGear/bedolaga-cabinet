@@ -25,6 +25,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Button } from '@/components/ui/button';
 
 // Icons (non-shared, page-specific)
 const EditIcon = () => (
@@ -127,12 +128,12 @@ function SortableLandingCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'rounded-xl border bg-dark-800 p-3 transition-colors sm:p-4',
+        'bg-card rounded-xl border p-3 transition-colors sm:p-4',
         isDragging
-          ? 'border-accent-500/50 shadow-xl shadow-accent-500/20'
+          ? 'border-primary/50 shadow-primary/20 shadow-xl'
           : landing.is_active
-            ? 'border-dark-700'
-            : 'border-dark-700/50 opacity-60',
+            ? 'border-border'
+            : 'border-border/50 opacity-60',
       )}
     >
       <div className="flex items-start gap-2 sm:gap-3">
@@ -140,7 +141,7 @@ function SortableLandingCard({
         <button
           {...attributes}
           {...listeners}
-          className="mt-0.5 flex-shrink-0 cursor-grab touch-none rounded-lg p-2 text-dark-500 hover:bg-dark-700/50 hover:text-dark-300 active:cursor-grabbing sm:mt-1 sm:p-1.5"
+          className="text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground mt-0.5 shrink-0 cursor-grab touch-none rounded-lg p-2 active:cursor-grabbing sm:mt-1 sm:p-1.5"
           title={t('admin.tariffs.dragToReorder')}
         >
           <GripIcon />
@@ -152,33 +153,33 @@ function SortableLandingCard({
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <h3 className="truncate font-medium text-dark-100">
+                <h3 className="text-foreground truncate font-medium">
                   {resolveLocaleDisplay(landing.title)}
                 </h3>
-                <span className="shrink-0 rounded bg-dark-800 px-2 py-0.5 text-xs text-dark-400">
+                <span className="bg-card text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
                   {landing.slug}
                 </span>
                 {landing.is_active ? (
-                  <span className="shrink-0 rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+                  <span className="bg-success-500/20 text-success-400 shrink-0 rounded px-2 py-0.5 text-xs">
                     {t('admin.landings.active')}
                   </span>
                 ) : (
-                  <span className="shrink-0 rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                  <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
                     {t('admin.landings.inactive')}
                   </span>
                 )}
                 {landing.gift_enabled && (
-                  <span className="shrink-0 rounded bg-accent-500/20 px-1.5 py-0.5 text-xs text-accent-400">
+                  <span className="bg-primary/20 text-primary shrink-0 rounded px-1.5 py-0.5 text-xs">
                     <GiftIcon />
                   </span>
                 )}
                 {landing.has_active_discount && (
-                  <span className="rounded-full bg-accent-500/20 px-2 py-0.5 text-[10px] font-medium text-accent-400">
+                  <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-[10px] font-medium">
                     {t('admin.landings.discountActive', 'Discount')}
                   </span>
                 )}
               </div>
-              <div className="text-sm text-dark-400">
+              <div className="text-muted-foreground text-sm">
                 <span>
                   {landing.purchase_stats.total} {t('admin.landings.purchaseCount')}
                 </span>
@@ -187,48 +188,48 @@ function SortableLandingCard({
 
             {/* Actions: hidden on mobile, shown on desktop */}
             <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={onCopyUrl}
-                className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
                 title={t('admin.landings.copyUrl')}
               >
                 <CopyIcon />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={onStats}
-                className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
                 title={t('admin.landings.statistics')}
               >
                 <StatsChartIcon />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={onToggle}
                 className={cn(
-                  'rounded-lg p-2 transition-colors',
                   landing.is_active
                     ? 'bg-success-500/20 text-success-400 hover:bg-success-500/30'
-                    : 'bg-dark-700 text-dark-400 hover:bg-dark-600',
+                    : '',
                 )}
                 title={
                   landing.is_active ? t('admin.landings.inactive') : t('admin.landings.active')
                 }
               >
                 {landing.is_active ? <CheckIcon /> : <XIcon />}
-              </button>
-              <button
-                onClick={onEdit}
-                className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
-                title={t('admin.landings.edit')}
-              >
+              </Button>
+              <Button variant="ghost" size="icon" onClick={onEdit} title={t('admin.landings.edit')}>
                 <EditIcon />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={onDelete}
                 className={cn(
-                  'rounded-lg p-2 transition-colors',
                   isPendingDelete
-                    ? 'bg-error-500/20 text-error-400 ring-1 ring-error-500/30'
-                    : 'bg-dark-700 text-dark-300 hover:bg-error-500/20 hover:text-error-400',
+                    ? 'bg-error-500/20 text-error-400 ring-error-500/30 ring-1'
+                    : 'hover:bg-error-500/20 hover:text-error-400',
                 )}
                 title={
                   isPendingDelete
@@ -243,53 +244,53 @@ function SortableLandingCard({
                 ) : (
                   <TrashIcon />
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Actions: shown on mobile only */}
           <div className="mt-2 flex items-center gap-1.5 sm:hidden">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onCopyUrl}
-              className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
               title={t('admin.landings.copyUrl')}
             >
               <CopyIcon />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onStats}
-              className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
               title={t('admin.landings.statistics')}
             >
               <StatsChartIcon />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onToggle}
               className={cn(
-                'rounded-lg p-2 transition-colors',
                 landing.is_active
                   ? 'bg-success-500/20 text-success-400 hover:bg-success-500/30'
-                  : 'bg-dark-700 text-dark-400 hover:bg-dark-600',
+                  : '',
               )}
               title={landing.is_active ? t('admin.landings.inactive') : t('admin.landings.active')}
             >
               {landing.is_active ? <CheckIcon /> : <XIcon />}
-            </button>
-            <button
-              onClick={onEdit}
-              className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
-              title={t('admin.landings.edit')}
-            >
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onEdit} title={t('admin.landings.edit')}>
               <EditIcon />
-            </button>
+            </Button>
             <div className="flex-1" />
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onDelete}
               className={cn(
-                'rounded-lg p-2 transition-colors',
                 isPendingDelete
-                  ? 'bg-error-500/20 text-error-400 ring-1 ring-error-500/30'
-                  : 'bg-dark-700 text-dark-300 hover:bg-error-500/20 hover:text-error-400',
+                  ? 'bg-error-500/20 text-error-400 ring-error-500/30 ring-1'
+                  : 'hover:bg-error-500/20 hover:text-error-400',
               )}
               title={
                 isPendingDelete
@@ -304,7 +305,7 @@ function SortableLandingCard({
               ) : (
                 <TrashIcon />
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -435,23 +436,20 @@ export default function AdminLandings() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.landings.title')}</h1>
+            <h1 className="text-foreground text-xl font-semibold">{t('admin.landings.title')}</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {orderChanged && (
-            <button
+            <Button
               onClick={handleSaveOrder}
               disabled={saveOrderMutation.isPending}
-              className="flex items-center gap-2 rounded-lg bg-success-500 px-4 py-2 text-white transition-colors hover:bg-success-600"
+              className="bg-success-500 hover:bg-success-600"
             >
               {saveOrderMutation.isPending ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -459,20 +457,17 @@ export default function AdminLandings() {
                 <SaveIcon />
               )}
               {t('admin.landings.saveOrder')}
-            </button>
+            </Button>
           )}
-          <button
-            onClick={() => navigate('/admin/landings/create')}
-            className="flex items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-          >
+          <Button onClick={() => navigate('/admin/landings/create')}>
             <PlusIcon />
             {t('admin.landings.create')}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Drag hint */}
-      <div className="mb-4 flex items-center gap-2 text-sm text-dark-500">
+      <div className="text-muted-foreground mb-4 flex items-center gap-2 text-sm">
         <GripIcon />
         {t('admin.tariffs.dragToReorder')}
       </div>
@@ -480,11 +475,11 @@ export default function AdminLandings() {
       {/* Landings List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : localLandings.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-dark-400">{t('common.noData')}</p>
+          <p className="text-muted-foreground">{t('common.noData')}</p>
         </div>
       ) : (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>

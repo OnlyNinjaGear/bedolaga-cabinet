@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { rbacApi, PermissionSection, CreateRolePayload, UpdateRolePayload } from '@/api/rbac';
 import { AdminBackButton } from '@/components/admin';
+import { Button } from '@/components/ui/button';
 
 // === Icons ===
 
@@ -123,30 +124,28 @@ function PermissionMatrix({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-dark-200">
+      <label className="text-foreground text-sm font-medium">
         {t('admin.roles.form.permissions')}
       </label>
-      <div className="space-y-1 rounded-lg border border-dark-600 bg-dark-900/50 p-2">
+      <div className="border-border bg-background/50 space-y-1 rounded-lg border p-2">
         {registry.map((section) => {
           const isExpanded = expanded[section.section] ?? false;
           const allSelected = isSectionFullySelected(section.section, section.actions);
           const partialSelected = isSectionPartiallySelected(section.section, section.actions);
 
           return (
-            <div
-              key={section.section}
-              className="rounded-lg border border-dark-700/50 bg-dark-800/30"
-            >
+            <div key={section.section} className="border-border/50 bg-card/30 rounded-lg border">
               <div className="flex items-center gap-2 px-3 py-2">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => onToggleSection(section.section, section.actions)}
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                  className={`h-4 w-4 shrink-0 rounded border p-0 transition-colors ${
                     allSelected
-                      ? 'border-accent-500 bg-accent-500'
+                      ? 'border-primary bg-primary'
                       : partialSelected
-                        ? 'border-accent-500 bg-accent-500/40'
-                        : 'border-dark-500 hover:border-dark-400'
+                        ? 'border-primary bg-primary/40'
+                        : 'border-border hover:border-border'
                   }`}
                   aria-label={t('admin.roles.form.toggleSection', { section: section.section })}
                 >
@@ -169,50 +168,53 @@ function PermissionMatrix({
                       )}
                     </svg>
                   )}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => toggleExpand(section.section)}
-                  className="flex flex-1 items-center justify-between"
+                  className="h-auto flex-1 justify-between p-0"
                 >
-                  <span className="text-sm font-medium text-dark-200">
+                  <span className="text-foreground text-sm font-medium">
                     {t(`admin.roles.form.permissionSections.${section.section}`, section.section)}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-dark-500">
+                    <span className="text-muted-foreground text-xs">
                       {section.actions.filter((a) => isPermSelected(section.section, a)).length}/
                       {section.actions.length}
                     </span>
                     <ChevronDownIcon
-                      className={`h-4 w-4 text-dark-400 transition-transform ${
+                      className={`text-muted-foreground h-4 w-4 transition-transform ${
                         isExpanded ? 'rotate-180' : ''
                       }`}
                     />
                   </div>
-                </button>
+                </Button>
               </div>
 
               {isExpanded && (
-                <div className="border-t border-dark-700/50 px-3 py-2">
+                <div className="border-border/50 border-t px-3 py-2">
                   <div className="flex flex-wrap gap-2">
                     {section.actions.map((action) => {
                       const perm = `${section.section}:${action}`;
                       const selected = isPermSelected(section.section, action);
 
                       return (
-                        <button
+                        <Button
                           key={perm}
                           type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => onToggle(perm)}
-                          className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                          className={`h-auto rounded-md px-2.5 py-1 text-xs font-medium ${
                             selected
-                              ? 'bg-accent-500/20 text-accent-400'
-                              : 'bg-dark-700/50 text-dark-400 hover:bg-dark-700 hover:text-dark-300'
+                              ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                              : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-muted-foreground'
                           }`}
                           aria-pressed={selected}
                         >
                           {t(`admin.roles.form.permissionActions.${action}`, action)}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
@@ -366,7 +368,7 @@ export default function AdminRoleEdit() {
   if (isEdit && isLoadingRole) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -377,7 +379,7 @@ export default function AdminRoleEdit() {
       <div className="flex items-center gap-3">
         <AdminBackButton to="/admin/roles" />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {isEdit ? t('admin.roles.modal.editTitle') : t('admin.roles.modal.createTitle')}
           </h1>
         </div>
@@ -385,11 +387,11 @@ export default function AdminRoleEdit() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label htmlFor="role-name" className="mb-1 block text-sm font-medium text-dark-200">
+              <label htmlFor="role-name" className="text-foreground mb-1 block text-sm font-medium">
                 {t('admin.roles.form.name')}
               </label>
               <input
@@ -397,7 +399,7 @@ export default function AdminRoleEdit() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+                className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 transition-colors outline-none"
                 placeholder={t('admin.roles.form.namePlaceholder')}
                 autoFocus
               />
@@ -407,7 +409,7 @@ export default function AdminRoleEdit() {
             <div>
               <label
                 htmlFor="role-description"
-                className="mb-1 block text-sm font-medium text-dark-200"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 {t('admin.roles.form.description')}
               </label>
@@ -415,7 +417,7 @@ export default function AdminRoleEdit() {
                 id="role-description"
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+                className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 transition-colors outline-none"
                 placeholder={t('admin.roles.form.descriptionPlaceholder')}
                 rows={2}
               />
@@ -423,7 +425,10 @@ export default function AdminRoleEdit() {
 
             {/* Level */}
             <div>
-              <label htmlFor="role-level" className="mb-1 block text-sm font-medium text-dark-200">
+              <label
+                htmlFor="role-level"
+                className="text-foreground mb-1 block text-sm font-medium"
+              >
                 {t('admin.roles.form.level')}
               </label>
               <div className="flex items-center gap-3">
@@ -436,7 +441,7 @@ export default function AdminRoleEdit() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, level: Number(e.target.value) }))
                   }
-                  className="flex-1 accent-accent-500"
+                  className="accent-accent-500 flex-1"
                 />
                 <input
                   type="number"
@@ -449,25 +454,28 @@ export default function AdminRoleEdit() {
                       level: Math.min(999, Math.max(0, Number(e.target.value) || 0)),
                     }))
                   }
-                  className="w-20 rounded-lg border border-dark-600 bg-dark-900 px-2 py-1.5 text-center text-sm text-dark-100 outline-none focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary w-20 rounded-lg border px-2 py-1.5 text-center text-sm outline-none"
                   aria-label={t('admin.roles.form.levelValue')}
                 />
               </div>
-              <p className="mt-1 text-xs text-dark-500">{t('admin.roles.form.levelHint')}</p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {t('admin.roles.form.levelHint')}
+              </p>
             </div>
 
             {/* Color picker */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-dark-200">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 {t('admin.roles.form.color')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {ROLE_COLORS.map((color) => (
-                  <button
+                  <Button
                     key={color}
                     type="button"
+                    variant="ghost"
                     onClick={() => setFormData((prev) => ({ ...prev, color }))}
-                    className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                    className={`h-7 w-7 rounded-full border-2 p-0 transition-transform hover:scale-110 ${
                       formData.color === color ? 'scale-110 border-white' : 'border-transparent'
                     }`}
                     style={{ backgroundColor: color }}
@@ -479,19 +487,20 @@ export default function AdminRoleEdit() {
 
             {/* Preset buttons */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-dark-200">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 {t('admin.roles.form.presets')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(PRESETS).map((key) => (
-                  <button
+                  <Button
                     key={key}
                     type="button"
+                    variant="secondary"
+                    size="sm"
                     onClick={() => handleApplyPreset(key)}
-                    className="rounded-lg border border-dark-600 bg-dark-700 px-3 py-1.5 text-xs font-medium text-dark-300 transition-colors hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-400"
                   >
                     {t(`admin.roles.presets.${key}`)}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -500,37 +509,29 @@ export default function AdminRoleEdit() {
 
         {/* Permission Matrix */}
         {permissionRegistry && permissionRegistry.length > 0 && (
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
+          <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
             <PermissionMatrix
               registry={permissionRegistry}
               selectedPermissions={formData.permissions}
               onToggle={handleTogglePermission}
               onToggleSection={handleToggleSection}
             />
-            <p className="mt-2 text-xs text-dark-500">
+            <p className="text-muted-foreground mt-2 text-xs">
               {t('admin.roles.form.selectedPermissions', { count: formData.permissions.length })}
             </p>
           </div>
         )}
 
         {/* Error & Submit */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
-          {formError && <p className="mb-4 text-sm text-error-400">{formError}</p>}
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
+          {formError && <p className="text-error-400 mb-4 text-sm">{formError}</p>}
           <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => navigate('/admin/roles')}
-              className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-            >
+            <Button type="button" variant="ghost" onClick={() => navigate('/admin/roles')}>
               {t('admin.roles.form.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-            >
+            </Button>
+            <Button type="submit" disabled={isSaving}>
               {isSaving ? t('admin.roles.form.saving') : t('admin.roles.form.save')}
-            </button>
+            </Button>
           </div>
         </div>
       </form>

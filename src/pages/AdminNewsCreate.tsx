@@ -13,6 +13,9 @@ import HighlightExtension from '@tiptap/extension-highlight';
 import { VideoExtension } from '../lib/tiptap-video';
 import { newsApi } from '../api/news';
 import { AdminBackButton } from '../components/admin';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { ColoredItemCombobox } from '../components/admin/ColoredItemCombobox';
 import { Toggle } from '../components/admin/Toggle';
 import { useHapticFeedback } from '../platform/hooks/useHaptic';
@@ -133,23 +136,23 @@ interface ToolbarButtonProps {
 
 function ToolbarButton({ onClick, isActive, disabled, title, children }: ToolbarButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       disabled={disabled}
       title={title}
       aria-label={title}
       aria-pressed={isActive}
       className={cn(
-        'min-h-[44px] min-w-[44px] rounded p-2.5 transition-colors',
-        disabled && 'cursor-not-allowed opacity-50',
+        'min-h-11 min-w-11 p-2.5',
         isActive
-          ? 'bg-accent-500/20 text-accent-400'
-          : 'text-dark-400 hover:bg-dark-700 hover:text-dark-200',
+          ? 'bg-primary/20 text-primary'
+          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
       )}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -286,7 +289,7 @@ export default function AdminNewsCreate() {
     extensions,
     editorProps: {
       attributes: {
-        class: 'prose max-w-none min-h-[300px] p-4 focus:outline-none',
+        class: 'prose max-w-none min-h-75 p-4 focus:outline-none',
       },
       handlePaste: (_view, event) => {
         const items = event.clipboardData?.items;
@@ -630,17 +633,16 @@ export default function AdminNewsCreate() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AdminBackButton to="/admin/news" />
-          <h1 className="text-xl font-bold text-dark-100">
+          <h1 className="text-foreground text-xl font-bold">
             {isEdit ? t('news.admin.edit') : t('news.admin.create')}
           </h1>
         </div>
-        <button
+        <Button
           onClick={handleSave}
           disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !selectedCategory}
-          className="min-h-[44px] rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending ? t('news.admin.saving') : t('news.admin.save')}
-        </button>
+        </Button>
       </div>
 
       {/* Form */}
@@ -648,26 +650,20 @@ export default function AdminNewsCreate() {
         {/* Title */}
         <div>
           <label className="label">{t('news.admin.titleLabel')}</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="input"
-            required
-          />
+          <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
 
         {/* Slug */}
         <div>
           <label className="label">{t('news.admin.slugLabel')}</label>
-          <input
+          <Input
             type="text"
             value={slug}
             onChange={(e) => {
               setSlug(e.target.value);
               setSlugManuallyEdited(true);
             }}
-            className="input font-mono text-sm"
+            className="font-mono text-sm"
             required
           />
         </div>
@@ -701,23 +697,23 @@ export default function AdminNewsCreate() {
         {/* Read time */}
         <div>
           <label className="label">{t('news.admin.readTimeLabel')}</label>
-          <input
+          <Input
             type="number"
             value={readTimeMinutes}
             onChange={(e) => setReadTimeMinutes(Number(e.target.value) || 1)}
             min={1}
             max={60}
-            className="input max-w-xs"
+            className="max-w-xs"
           />
         </div>
 
         {/* Excerpt */}
         <div>
           <label className="label">{t('news.admin.excerptLabel')}</label>
-          <textarea
+          <Textarea
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
-            className="input min-h-[80px] resize-y"
+            className="min-h-20 resize-y"
             rows={3}
           />
         </div>
@@ -726,27 +722,27 @@ export default function AdminNewsCreate() {
         <div>
           <label className="label">{t('news.admin.imageLabel')}</label>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="text"
               value={featuredImageUrl}
               onChange={(e) => setFeaturedImageUrl(e.target.value)}
-              className="input flex-1"
+              className="flex-1"
               placeholder="https://..."
             />
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => featuredImageInputRef.current?.click()}
               disabled={isFeaturedImageUploading}
-              className="flex min-h-[44px] items-center gap-2 rounded-lg bg-dark-700 px-4 py-2.5 text-sm font-medium text-dark-200 transition-colors hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label={t('news.admin.uploadFeaturedImage')}
             >
               {isFeaturedImageUploading ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent-400 border-t-transparent" />
+                <div className="border-primary/70 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
               ) : (
                 <UploadIcon />
               )}
               <span className="hidden sm:inline">{t('news.admin.uploadFeaturedImage')}</span>
-            </button>
+            </Button>
           </div>
           <input
             ref={featuredImageInputRef}
@@ -776,7 +772,7 @@ export default function AdminNewsCreate() {
               onChange={() => setIsPublished((v) => !v)}
               aria-label={t('news.admin.published')}
             />
-            <span className="text-sm text-dark-300">{t('news.admin.published')}</span>
+            <span className="text-muted-foreground text-sm">{t('news.admin.published')}</span>
           </div>
           <div className="flex items-center gap-3">
             <Toggle
@@ -784,7 +780,7 @@ export default function AdminNewsCreate() {
               onChange={() => setIsFeatured((v) => !v)}
               aria-label={t('news.admin.featured')}
             />
-            <span className="text-sm text-dark-300">{t('news.admin.featured')}</span>
+            <span className="text-muted-foreground text-sm">{t('news.admin.featured')}</span>
           </div>
         </div>
 
@@ -792,17 +788,17 @@ export default function AdminNewsCreate() {
         <div>
           <label className="label">{t('news.admin.contentLabel')}</label>
           <div
-            className="relative overflow-hidden rounded-xl border border-dark-700 bg-dark-800/50"
+            className="border-border bg-card/50 relative overflow-hidden rounded-xl border"
             onDragOver={handleEditorDragOver}
             onDragLeave={handleEditorDragLeave}
             onDrop={handleEditorDrop}
           >
             {/* Upload progress overlay */}
             {isUploading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-dark-900/60 backdrop-blur-sm">
+              <div className="bg-background/60 absolute inset-0 z-10 flex items-center justify-center rounded-xl backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-3">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-400 border-t-transparent" />
-                  <span className="text-sm font-medium text-dark-200">
+                  <div className="border-primary/70 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                  <span className="text-foreground text-sm font-medium">
                     {t('news.admin.uploading')}
                   </span>
                 </div>
@@ -811,8 +807,8 @@ export default function AdminNewsCreate() {
 
             {/* Drag overlay */}
             {isDragging && !isUploading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 border-dashed border-accent-400 bg-accent-400/10">
-                <span className="text-sm font-semibold text-accent-400">
+              <div className="border-primary/70 bg-primary/10 absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 border-dashed">
+                <span className="text-primary text-sm font-semibold">
                   {t('news.admin.dropMedia')}
                 </span>
               </div>
@@ -820,7 +816,7 @@ export default function AdminNewsCreate() {
 
             {/* Toolbar */}
             {editor && (
-              <div className="flex flex-wrap items-center gap-0.5 border-b border-dark-700 bg-dark-800 p-2">
+              <div className="border-border bg-card flex flex-wrap items-center gap-0.5 border-b p-2">
                 <ToolbarButton
                   onClick={() => editor.chain().focus().toggleBold().run()}
                   isActive={editor.isActive('bold')}
@@ -850,7 +846,7 @@ export default function AdminNewsCreate() {
                   <StrikeIcon />
                 </ToolbarButton>
 
-                <div className="mx-1 h-5 w-px bg-dark-700" />
+                <div className="bg-muted mx-1 h-5 w-px" />
 
                 <ToolbarButton
                   onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -874,7 +870,7 @@ export default function AdminNewsCreate() {
                   <H3Icon />
                 </ToolbarButton>
 
-                <div className="mx-1 h-5 w-px bg-dark-700" />
+                <div className="bg-muted mx-1 h-5 w-px" />
 
                 <ToolbarButton
                   onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -905,7 +901,7 @@ export default function AdminNewsCreate() {
                   <CodeBlockIcon />
                 </ToolbarButton>
 
-                <div className="mx-1 h-5 w-px bg-dark-700" />
+                <div className="bg-muted mx-1 h-5 w-px" />
 
                 <ToolbarButton
                   onClick={() => editor.chain().focus().setTextAlign('left').run()}
@@ -922,7 +918,7 @@ export default function AdminNewsCreate() {
                   <AlignCenterIcon />
                 </ToolbarButton>
 
-                <div className="mx-1 h-5 w-px bg-dark-700" />
+                <div className="bg-muted mx-1 h-5 w-px" />
 
                 <ToolbarButton
                   onClick={() => editor.chain().focus().toggleHighlight().run()}
@@ -940,7 +936,7 @@ export default function AdminNewsCreate() {
                   title={t('news.admin.toolbar.image')}
                 >
                   {isUploading ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent-400 border-t-transparent" />
+                    <div className="border-primary/70 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                   ) : (
                     <ImageIcon />
                   )}
@@ -965,19 +961,19 @@ export default function AdminNewsCreate() {
 
         {/* Error feedback */}
         {saveError && (
-          <div className="rounded-lg border border-error-500/30 bg-error-500/10 px-4 py-3 text-sm text-error-400">
+          <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-lg border px-4 py-3 text-sm">
             {saveError}
           </div>
         )}
 
         {/* Bottom save button for long forms */}
-        <button
+        <Button
           onClick={handleSave}
           disabled={saveMutation.isPending || !title.trim() || !slug.trim() || !selectedCategory}
-          className="min-h-[44px] w-full rounded-lg bg-accent-500 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-11 w-full"
         >
           {saveMutation.isPending ? t('news.admin.saving') : t('news.admin.save')}
-        </button>
+        </Button>
       </div>
     </div>
   );

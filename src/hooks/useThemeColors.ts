@@ -4,12 +4,18 @@ import { themeColorsApi } from '../api/themeColors';
 import { ThemeColors, DEFAULT_THEME_COLORS, SHADE_LEVELS, ColorPalette } from '../types/theme';
 import { hexToRgb, hexToHsl, hslToRgb } from '../utils/colorConversion';
 
-// Convert RGB to string format for CSS variable
-function rgbToString(r: number, g: number, b: number): string {
-  return `${r}, ${g}, ${b}`;
+// Convert RGB to full color string for CSS variable (Tailwind v4 format)
+function rgbString(r: number, g: number, b: number): string {
+  return `rgb(${r}, ${g}, ${b})`;
 }
 
-// Generate color palette from base color (returns RGB strings)
+// Convert hex to HSL string for shadcn CSS variables
+function hslString(hex: string): string {
+  const { h, s, l } = hexToHsl(hex);
+  return `hsl(${h} ${s}% ${l}%)`;
+}
+
+// Generate color palette from base color (returns full rgb() strings)
 function generatePalette(baseHex: string): ColorPalette {
   const { h, s } = hexToHsl(baseHex);
 
@@ -35,7 +41,7 @@ function generatePalette(baseHex: string): ColorPalette {
     // Adjust saturation slightly for very light/dark shades
     const adjustedS = shade <= 100 ? s * 0.7 : shade >= 900 ? s * 0.8 : s;
     const { r, g, b } = hslToRgb(h, adjustedS, lightness);
-    palette[shade] = rgbToString(r, g, b);
+    palette[shade] = rgbString(r, g, b);
   }
 
   return palette as ColorPalette;
@@ -47,14 +53,14 @@ function interpolateRgb(
   rgb2: { r: number; g: number; b: number },
   factor: number,
 ): string {
-  return rgbToString(
+  return rgbString(
     Math.round(rgb1.r + (rgb2.r - rgb1.r) * factor),
     Math.round(rgb1.g + (rgb2.g - rgb1.g) * factor),
     Math.round(rgb1.b + (rgb2.b - rgb1.b) * factor),
   );
 }
 
-// Apply theme colors as CSS variables (RGB format for Tailwind opacity support)
+// Apply theme colors as CSS variables
 export function applyThemeColors(colors: ThemeColors): void {
   const root = document.documentElement;
 
@@ -72,19 +78,16 @@ export function applyThemeColors(colors: ThemeColors): void {
 
   // Apply dark palette with actual user colors:
   // Text colors (light shades): 50-100 = primary text, 200-300 = mixed, 400 = secondary text
-  root.style.setProperty(
-    '--color-dark-50',
-    rgbToString(darkTextRgb.r, darkTextRgb.g, darkTextRgb.b),
-  );
+  root.style.setProperty('--color-dark-50', rgbString(darkTextRgb.r, darkTextRgb.g, darkTextRgb.b));
   root.style.setProperty(
     '--color-dark-100',
-    rgbToString(darkTextRgb.r, darkTextRgb.g, darkTextRgb.b),
+    rgbString(darkTextRgb.r, darkTextRgb.g, darkTextRgb.b),
   );
   root.style.setProperty('--color-dark-200', interpolateRgb(darkTextRgb, darkTextSecRgb, 0.33));
   root.style.setProperty('--color-dark-300', interpolateRgb(darkTextRgb, darkTextSecRgb, 0.66));
   root.style.setProperty(
     '--color-dark-400',
-    rgbToString(darkTextSecRgb.r, darkTextSecRgb.g, darkTextSecRgb.b),
+    rgbString(darkTextSecRgb.r, darkTextSecRgb.g, darkTextSecRgb.b),
   );
 
   // Transition colors (500-700): interpolate between secondary text and surface
@@ -95,13 +98,13 @@ export function applyThemeColors(colors: ThemeColors): void {
   // Surface/card colors (800-850): surface color
   root.style.setProperty(
     '--color-dark-800',
-    rgbToString(darkSurfaceRgb.r, darkSurfaceRgb.g, darkSurfaceRgb.b),
+    rgbString(darkSurfaceRgb.r, darkSurfaceRgb.g, darkSurfaceRgb.b),
   );
   root.style.setProperty('--color-dark-850', interpolateRgb(darkSurfaceRgb, darkBgRgb, 0.5));
 
   // Background colors (900-950): background color
   root.style.setProperty('--color-dark-900', interpolateRgb(darkSurfaceRgb, darkBgRgb, 0.7));
-  root.style.setProperty('--color-dark-950', rgbToString(darkBgRgb.r, darkBgRgb.g, darkBgRgb.b));
+  root.style.setProperty('--color-dark-950', rgbString(darkBgRgb.r, darkBgRgb.g, darkBgRgb.b));
 
   const lightBgRgb = hexToRgb(colors.lightBackground);
   const lightSurfaceRgb = hexToRgb(colors.lightSurface);
@@ -109,27 +112,22 @@ export function applyThemeColors(colors: ThemeColors): void {
   const lightTextSecRgb = hexToRgb(colors.lightTextSecondary);
 
   // Apply champagne palette with actual user colors:
-  // Background colors (light shades): 50-100 = surface, 200-400 = background tones
   root.style.setProperty(
     '--color-champagne-50',
-    rgbToString(lightSurfaceRgb.r, lightSurfaceRgb.g, lightSurfaceRgb.b),
+    rgbString(lightSurfaceRgb.r, lightSurfaceRgb.g, lightSurfaceRgb.b),
   );
   root.style.setProperty('--color-champagne-100', interpolateRgb(lightSurfaceRgb, lightBgRgb, 0.3));
   root.style.setProperty(
     '--color-champagne-200',
-    rgbToString(lightBgRgb.r, lightBgRgb.g, lightBgRgb.b),
+    rgbString(lightBgRgb.r, lightBgRgb.g, lightBgRgb.b),
   );
   root.style.setProperty('--color-champagne-300', interpolateRgb(lightBgRgb, lightTextSecRgb, 0.2));
   root.style.setProperty('--color-champagne-400', interpolateRgb(lightBgRgb, lightTextSecRgb, 0.4));
-
-  // Transition colors (500-600): between bg and text
   root.style.setProperty('--color-champagne-500', interpolateRgb(lightBgRgb, lightTextSecRgb, 0.6));
   root.style.setProperty(
     '--color-champagne-600',
-    rgbToString(lightTextSecRgb.r, lightTextSecRgb.g, lightTextSecRgb.b),
+    rgbString(lightTextSecRgb.r, lightTextSecRgb.g, lightTextSecRgb.b),
   );
-
-  // Text colors (700-950): secondary to primary text
   root.style.setProperty(
     '--color-champagne-700',
     interpolateRgb(lightTextSecRgb, lightTextRgb, 0.33),
@@ -140,13 +138,14 @@ export function applyThemeColors(colors: ThemeColors): void {
   );
   root.style.setProperty(
     '--color-champagne-900',
-    rgbToString(lightTextRgb.r, lightTextRgb.g, lightTextRgb.b),
+    rgbString(lightTextRgb.r, lightTextRgb.g, lightTextRgb.b),
   );
   root.style.setProperty(
     '--color-champagne-950',
-    rgbToString(lightTextRgb.r, lightTextRgb.g, lightTextRgb.b),
+    rgbString(lightTextRgb.r, lightTextRgb.g, lightTextRgb.b),
   );
 
+  // Apply palette shades
   for (const shade of SHADE_LEVELS) {
     root.style.setProperty(`--color-accent-${shade}`, accentPalette[shade]);
     root.style.setProperty(`--color-success-${shade}`, successPalette[shade]);
@@ -159,11 +158,50 @@ export function applyThemeColors(colors: ThemeColors): void {
   root.style.setProperty('--color-dark-surface', colors.darkSurface);
   root.style.setProperty('--color-dark-text', colors.darkText);
   root.style.setProperty('--color-dark-text-secondary', colors.darkTextSecondary);
-
   root.style.setProperty('--color-light-bg', colors.lightBackground);
   root.style.setProperty('--color-light-surface', colors.lightSurface);
   root.style.setProperty('--color-light-text', colors.lightText);
   root.style.setProperty('--color-light-text-secondary', colors.lightTextSecondary);
+
+  // shadcn semantic vars (--background, --foreground, --card, etc.) are managed
+  // exclusively by ThemeConstructor + the index.html init script.
+  // We must NOT overwrite them here — doing so breaks light/dark mode switching.
+  //
+  // We only re-apply the brand accent as --primary if ThemeConstructor hasn't
+  // stored a custom theme-vars entry (i.e. no user customisation yet).
+  const hasCustomTheme = !!localStorage.getItem('theme-vars');
+  if (!hasCustomTheme) {
+    const isDark = root.classList.contains('dark');
+    const bg = isDark ? colors.darkBackground : colors.lightBackground;
+    const fg = isDark ? colors.darkText : colors.lightText;
+    const surface = isDark ? colors.darkSurface : colors.lightSurface;
+    const fgSec = isDark ? colors.darkTextSecondary : colors.lightTextSecondary;
+
+    root.style.setProperty('--background', hslString(bg));
+    root.style.setProperty('--foreground', hslString(fg));
+    root.style.setProperty('--card', hslString(surface));
+    root.style.setProperty('--card-foreground', hslString(fg));
+    root.style.setProperty('--popover', hslString(surface));
+    root.style.setProperty('--popover-foreground', hslString(fg));
+    root.style.setProperty('--primary', hslString(colors.accent));
+    root.style.setProperty('--primary-foreground', 'hsl(0 0% 100%)');
+    root.style.setProperty('--secondary', hslString(surface));
+    root.style.setProperty('--secondary-foreground', hslString(fg));
+    root.style.setProperty('--muted', hslString(surface));
+    root.style.setProperty('--muted-foreground', hslString(fgSec));
+    root.style.setProperty('--destructive', hslString(colors.error));
+    root.style.setProperty('--border', hslString(surface));
+    root.style.setProperty('--input', hslString(surface));
+    root.style.setProperty('--ring', hslString(colors.accent));
+    root.style.setProperty('--sidebar-background', hslString(bg));
+    root.style.setProperty('--sidebar-foreground', hslString(fg));
+    root.style.setProperty('--sidebar-primary', hslString(colors.accent));
+    root.style.setProperty('--sidebar-primary-foreground', 'hsl(0 0% 100%)');
+    root.style.setProperty('--sidebar-accent', hslString(surface));
+    root.style.setProperty('--sidebar-accent-foreground', hslString(fg));
+    root.style.setProperty('--sidebar-border', hslString(surface));
+    root.style.setProperty('--sidebar-ring', hslString(colors.accent));
+  }
 }
 
 export function useThemeColors() {

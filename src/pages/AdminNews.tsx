@@ -7,6 +7,7 @@ import { AdminBackButton } from '../components/admin';
 import { Toggle } from '../components/admin/Toggle';
 import { useHapticFeedback } from '../platform/hooks/useHaptic';
 import { useDestructiveConfirm } from '../platform/hooks/useNativeDialog';
+import { Button } from '@/components/ui/button';
 import type { NewsListItem } from '../types/news';
 
 // Icons
@@ -133,7 +134,7 @@ const ArticleRow = memo(function ArticleRow({
   const color = safeColor(article.category_color);
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4 transition-all hover:border-dark-600">
+    <div className="border-border bg-card/50 hover:border-border rounded-xl border p-4 transition-all">
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
@@ -151,26 +152,26 @@ const ArticleRow = memo(function ArticleRow({
               className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                 article.is_published
                   ? 'bg-success-500/20 text-success-400'
-                  : 'bg-dark-500/20 text-dark-400'
+                  : 'bg-muted/20 text-muted-foreground'
               }`}
             >
               {article.is_published ? t('news.admin.published') : t('news.admin.draft')}
             </span>
             {article.is_featured && (
-              <span className="rounded-full bg-warning-500/20 px-2 py-0.5 text-[10px] font-medium text-warning-400">
+              <span className="bg-warning-500/20 text-warning-400 rounded-full px-2 py-0.5 text-[10px] font-medium">
                 {t('news.admin.featured')}
               </span>
             )}
-            <span className="text-xs text-dark-500">#{article.id}</span>
+            <span className="text-muted-foreground text-xs">#{article.id}</span>
           </div>
 
-          <p className="truncate text-sm font-medium text-dark-100">{article.title}</p>
+          <p className="text-foreground truncate text-sm font-medium">{article.title}</p>
 
           {article.excerpt && (
-            <p className="mt-1 truncate text-xs text-dark-400">{article.excerpt}</p>
+            <p className="text-muted-foreground mt-1 truncate text-xs">{article.excerpt}</p>
           )}
 
-          <div className="mt-2 flex items-center gap-4 text-xs text-dark-500">
+          <div className="text-muted-foreground mt-2 flex items-center gap-4 text-xs">
             <span>
               {article.published_at ? new Date(article.published_at).toLocaleDateString() : '-'}
             </span>
@@ -184,42 +185,43 @@ const ArticleRow = memo(function ArticleRow({
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onToggleFeatured}
-            className={`min-h-[44px] min-w-[44px] rounded-lg p-2.5 transition-colors ${
-              article.is_featured
-                ? 'text-warning-400 hover:bg-warning-500/10'
-                : 'text-dark-500 hover:bg-dark-700 hover:text-dark-300'
-            }`}
+            className={article.is_featured ? 'text-warning-400 hover:bg-warning-500/10' : ''}
             title={t('news.admin.featured')}
             aria-label={t('news.admin.featured')}
           >
             <StarIcon filled={article.is_featured} />
-          </button>
+          </Button>
           <Toggle
             checked={article.is_published}
             onChange={onTogglePublish}
             aria-label={t('news.admin.published')}
           />
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onEdit}
-            className="min-h-[44px] min-w-[44px] rounded-lg p-2.5 text-dark-400 transition-colors hover:bg-dark-700 hover:text-dark-200"
             title={t('news.admin.edit')}
             aria-label={t('news.admin.edit')}
           >
             <PencilIcon />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onDelete}
-            className="min-h-[44px] min-w-[44px] rounded-lg p-2.5 text-dark-400 transition-colors hover:bg-error-500/10 hover:text-error-400"
+            className="text-muted-foreground hover:bg-error-500/10 hover:text-error-400"
             title={t('news.admin.delete')}
             aria-label={t('news.admin.delete')}
           >
             <TrashIcon />
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -348,28 +350,28 @@ export default function AdminNews() {
         <div className="flex items-center gap-3">
           <AdminBackButton />
           <div>
-            <h1 className="text-xl font-bold text-dark-100">{t('news.admin.title')}</h1>
+            <h1 className="text-foreground text-xl font-bold">{t('news.admin.title')}</h1>
           </div>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => refetch()}
-            className="min-h-[44px] min-w-[44px] rounded-lg bg-dark-800 p-2.5 text-dark-400 transition-colors hover:text-dark-100"
             aria-label={t('common.refresh')}
           >
             <RefreshIcon />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => {
               haptic.buttonPress();
               navigate('/admin/news/create');
             }}
-            className="flex min-h-[44px] items-center gap-2 rounded-lg bg-accent-500 px-4 py-2.5 text-white transition-colors hover:bg-accent-600"
             aria-label={t('news.admin.create')}
           >
             <PlusIcon />
             <span className="hidden sm:inline">{t('news.admin.create')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -377,30 +379,27 @@ export default function AdminNews() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl border border-dark-700 bg-dark-800/50 p-4"
-            >
+            <div key={i} className="border-border bg-card/50 animate-pulse rounded-xl border p-4">
               <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex gap-2">
-                    <div className="h-4 w-16 rounded bg-dark-700" />
-                    <div className="h-4 w-12 rounded bg-dark-700" />
+                    <div className="bg-muted h-4 w-16 rounded" />
+                    <div className="bg-muted h-4 w-12 rounded" />
                   </div>
-                  <div className="h-5 w-3/4 rounded bg-dark-700" />
-                  <div className="h-3 w-1/2 rounded bg-dark-700" />
+                  <div className="bg-muted h-5 w-3/4 rounded" />
+                  <div className="bg-muted h-3 w-1/2 rounded" />
                 </div>
                 <div className="flex gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-dark-700" />
-                  <div className="h-8 w-14 rounded-full bg-dark-700" />
-                  <div className="h-8 w-8 rounded-lg bg-dark-700" />
+                  <div className="bg-muted h-8 w-8 rounded-lg" />
+                  <div className="bg-muted h-8 w-14 rounded-full" />
+                  <div className="bg-muted h-8 w-8 rounded-lg" />
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : articles.length === 0 ? (
-        <div className="flex flex-col items-center rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground flex flex-col items-center rounded-xl border p-8 text-center">
           <NewsIcon />
           <p className="mt-2">{t('news.noNews')}</p>
         </div>
@@ -421,24 +420,24 @@ export default function AdminNews() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <button
+        <div className="border-border bg-card/50 flex items-center justify-center gap-2 rounded-xl border p-4">
+          <Button
+            variant="secondary"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="min-h-[44px] rounded-lg bg-dark-700 px-4 py-2.5 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('common.back')}
-          </button>
-          <span className="text-dark-400">
+          </Button>
+          <span className="text-muted-foreground">
             {page + 1} / {totalPages}
           </span>
-          <button
+          <Button
+            variant="secondary"
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="min-h-[44px] rounded-lg bg-dark-700 px-4 py-2.5 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('common.next')}
-          </button>
+          </Button>
         </div>
       )}
     </div>

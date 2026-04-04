@@ -6,10 +6,21 @@ import { rbacApi } from '@/api/rbac';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { usePermissionStore } from '@/store/permissions';
 import { usePlatform } from '@/platform/hooks/usePlatform';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -100,54 +111,56 @@ export default function AdminRoles() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {!capabilities.hasBackButton && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+              className="rounded-xl"
             >
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.roles.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.roles.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-semibold">{t('admin.roles.title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('admin.roles.subtitle')}</p>
           </div>
         </div>
         <PermissionGate permission="roles:create">
-          <button
+          <Button
             onClick={() => navigate('/admin/roles/create')}
-            className="flex items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
+            className="flex items-center justify-center gap-2"
           >
             <PlusIcon />
             {t('admin.roles.createRole')}
-          </button>
+          </Button>
         </PermissionGate>
       </div>
 
       {/* Error message */}
       {formError && (
-        <div className="mb-4 rounded-lg border border-error-500/30 bg-error-500/10 p-3">
-          <p className="text-sm text-error-400">{formError}</p>
+        <div className="border-error-500/30 bg-error-500/10 mb-4 rounded-lg border p-3">
+          <p className="text-error-400 text-sm">{formError}</p>
         </div>
       )}
 
       {/* Stats Overview */}
       {sortedRoles.length > 0 && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-dark-100">{sortedRoles.length}</div>
-            <div className="text-xs text-dark-400">{t('admin.roles.stats.totalRoles')}</div>
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-foreground text-2xl font-bold">{sortedRoles.length}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.roles.stats.totalRoles')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-accent-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-primary text-2xl font-bold">
               {sortedRoles.filter((r) => r.is_active).length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.roles.stats.active')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.roles.stats.active')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-warning-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-warning-400 text-2xl font-bold">
               {sortedRoles.filter((r) => r.is_system).length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.roles.stats.system')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.roles.stats.system')}</div>
           </div>
         </div>
       )}
@@ -155,7 +168,7 @@ export default function AdminRoles() {
       {/* Roles List */}
       {rolesLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : rolesError ? (
         <div className="py-12 text-center">
@@ -164,15 +177,15 @@ export default function AdminRoles() {
       ) : sortedRoles.length === 0 ? (
         <div className="py-12 text-center">
           <ShieldIcon />
-          <p className="mt-2 text-dark-400">{t('admin.roles.noRoles')}</p>
+          <p className="text-muted-foreground mt-2">{t('admin.roles.noRoles')}</p>
         </div>
       ) : (
         <div className="space-y-3">
           {sortedRoles.map((role) => (
             <div
               key={role.id}
-              className={`rounded-xl border bg-dark-800 p-4 transition-colors ${
-                role.is_active ? 'border-dark-700' : 'border-dark-700/50 opacity-60'
+              className={`bg-card rounded-xl border p-4 transition-colors ${
+                role.is_active ? 'border-border' : 'border-border/50 opacity-60'
               }`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -184,20 +197,20 @@ export default function AdminRoles() {
                       style={{ backgroundColor: role.color || '#6b7280' }}
                       aria-hidden="true"
                     />
-                    <span className="font-medium text-dark-100">{role.name}</span>
+                    <span className="text-foreground font-medium">{role.name}</span>
                     {role.is_system && (
-                      <span className="rounded bg-warning-500/20 px-1.5 py-0.5 text-xs text-warning-400">
+                      <span className="bg-warning-500/20 text-warning-400 rounded px-1.5 py-0.5 text-xs">
                         {t('admin.roles.systemBadge')}
                       </span>
                     )}
                     {!role.is_active && (
-                      <span className="rounded bg-dark-600 px-1.5 py-0.5 text-xs text-dark-400">
+                      <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs">
                         {t('admin.roles.inactiveBadge')}
                       </span>
                     )}
                   </div>
                   {/* Info */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-dark-400">
+                  <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     <span>
                       {t('admin.roles.levelLabel')}: {role.level}
                     </span>
@@ -212,26 +225,29 @@ export default function AdminRoles() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 border-t border-dark-700 pt-3 sm:border-0 sm:pt-0">
+                <div className="border-border flex items-center gap-2 border-t pt-3 sm:border-0 sm:pt-0">
                   <PermissionGate permission="roles:edit">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => navigate(`/admin/roles/${role.id}/edit`)}
                       disabled={!canManageRole(role.level)}
-                      className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
                       title={t('admin.roles.actions.edit')}
                     >
                       <EditIcon />
-                    </button>
+                    </Button>
                   </PermissionGate>
                   <PermissionGate permission="roles:delete">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setDeleteConfirm(role.id)}
                       disabled={role.is_system || !canManageRole(role.level)}
-                      className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-error-500/20 hover:text-error-400 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
+                      className="hover:bg-error-500/20 hover:text-error-400"
                       title={t('admin.roles.actions.delete')}
                     >
                       <TrashIcon />
-                    </button>
+                    </Button>
                   </PermissionGate>
                 </div>
               </div>
@@ -241,38 +257,31 @@ export default function AdminRoles() {
       )}
 
       {/* Delete Confirmation */}
-      {deleteConfirm !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/60"
-            onClick={() => setDeleteConfirm(null)}
-            aria-hidden="true"
-          />
-          <div className="relative w-full max-w-sm rounded-xl border border-dark-700 bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.roles.confirm.title')}
-            </h3>
-            <p className="mb-6 text-dark-400">{t('admin.roles.confirm.text')}</p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('admin.roles.confirm.cancel')}
-              </button>
-              <button
-                onClick={() => deleteMutation.mutate(deleteConfirm)}
-                disabled={deleteMutation.isPending}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
-              >
-                {deleteMutation.isPending
-                  ? t('admin.roles.confirm.deleting')
-                  : t('admin.roles.confirm.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertDialog
+        open={deleteConfirm !== null}
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.roles.confirm.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('admin.roles.confirm.text')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirm(null)}>
+              {t('admin.roles.confirm.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteConfirm !== null && deleteMutation.mutate(deleteConfirm)}
+              disabled={deleteMutation.isPending}
+              className="bg-error-500 hover:bg-error-600"
+            >
+              {deleteMutation.isPending
+                ? t('admin.roles.confirm.deleting')
+                : t('admin.roles.confirm.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

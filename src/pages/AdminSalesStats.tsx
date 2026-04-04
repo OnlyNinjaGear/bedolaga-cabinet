@@ -7,6 +7,7 @@ import { salesStatsApi } from '../api/adminSalesStats';
 import { SALES_STATS } from '../constants/salesStats';
 import { useCurrency } from '../hooks/useCurrency';
 import { AdminBackButton } from '../components/admin/AdminBackButton';
+import { Button } from '@/components/ui/button';
 import { StatCard } from '../components/stats';
 import {
   AddonsTab,
@@ -66,10 +67,10 @@ export default function AdminSalesStats() {
       <div className="flex items-center gap-3">
         <AdminBackButton />
         <div>
-          <h1 className="text-xl font-bold text-dark-100 sm:text-2xl">
+          <h1 className="text-foreground text-xl font-bold sm:text-2xl">
             {t('admin.salesStats.title')}
           </h1>
-          <p className="text-sm text-dark-400">{t('admin.salesStats.subtitle')}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.salesStats.subtitle')}</p>
         </div>
       </div>
 
@@ -78,7 +79,7 @@ export default function AdminSalesStats() {
 
       {/* Summary cards */}
       {summaryError && (
-        <div className="rounded-xl bg-error-500/10 px-4 py-3 text-sm text-error-400">
+        <div className="bg-error-500/10 text-error-400 rounded-xl px-4 py-3 text-sm">
           {t('admin.salesStats.loadError')}
         </div>
       )}
@@ -97,7 +98,7 @@ export default function AdminSalesStats() {
         <StatCard
           label={t('admin.salesStats.summary.activeSubs')}
           value={summaryLoading ? '...' : (summary?.active_subscriptions ?? 0)}
-          valueClassName="text-accent-400"
+          valueClassName="text-primary"
         />
         <StatCard
           label={t('admin.salesStats.summary.activeTrials')}
@@ -127,7 +128,7 @@ export default function AdminSalesStats() {
                   (summary?.addon_revenue_kopeks ?? 0) / SALES_STATS.KOPEKS_DIVISOR,
                 )
           }
-          valueClassName="text-accent-400"
+          valueClassName="text-primary"
         />
         <StatCard
           label={t('admin.salesStats.summary.manualTopup')}
@@ -142,26 +143,27 @@ export default function AdminSalesStats() {
 
       {/* Tabs */}
       <div
-        className="scrollbar-hide flex gap-1 overflow-x-auto rounded-xl bg-dark-800/30 p-1"
+        className="scrollbar-hide bg-card/30 flex gap-1 overflow-x-auto rounded-xl p-1"
         role="tablist"
       >
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.id}
             id={`tab-${tab.id}`}
             type="button"
+            variant="ghost"
             role="tab"
             aria-selected={activeTab === tab.id}
             aria-controls={`panel-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
-            className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-2.5 text-xs font-medium transition-colors sm:text-sm ${
+            className={`shrink-0 text-xs whitespace-nowrap sm:text-sm ${
               activeTab === tab.id
-                ? 'bg-dark-700/60 text-dark-100'
-                : 'text-dark-400 hover:text-dark-300'
+                ? 'bg-muted/60 text-foreground hover:bg-muted/60 hover:text-foreground'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </div>
 

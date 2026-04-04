@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/auth';
+import { Button } from '@/components/ui/button';
 
 export default function TelegramCallback() {
   const { t } = useTranslation();
@@ -69,9 +70,7 @@ export default function TelegramCallback() {
           <div className="mb-4 text-5xl text-red-500">✗</div>
           <h2 className="mb-2 text-lg font-semibold text-gray-900">{t('auth.loginFailed')}</h2>
           <p className="mb-6 text-sm text-gray-500">{error}</p>
-          <button onClick={() => navigate('/login')} className="btn-primary">
-            {t('auth.tryAgain')}
-          </button>
+          <Button onClick={() => navigate('/login')}>{t('auth.tryAgain')}</Button>
         </div>
       </div>
     );

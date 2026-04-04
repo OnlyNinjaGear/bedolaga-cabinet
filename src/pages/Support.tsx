@@ -10,8 +10,12 @@ import { checkRateLimit, getRateLimitResetTime, RATE_LIMIT_KEYS } from '../utils
 import type { TicketDetail, TicketMessage } from '../types';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
+import { Button as ShadcnButton } from '@/components/ui/button';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 import { usePlatform } from '@/platform';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 const log = logger.createLogger('Support');
 
@@ -73,12 +77,12 @@ function MessageMedia({ message, t }: { message: TicketMessage; t: (key: string)
       <>
         <div className="relative mt-3">
           {!imageLoaded && !imageError && (
-            <div className="flex h-48 w-full animate-pulse items-center justify-center rounded-lg bg-dark-700">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <div className="bg-muted flex h-48 w-full animate-pulse items-center justify-center rounded-lg">
+              <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           )}
           {imageError ? (
-            <div className="flex h-32 w-full items-center justify-center rounded-lg bg-dark-700 text-sm text-dark-400">
+            <div className="bg-muted text-muted-foreground flex h-32 w-full items-center justify-center rounded-lg text-sm">
               {t('support.imageLoadFailed')}
             </div>
           ) : (
@@ -92,29 +96,20 @@ function MessageMedia({ message, t }: { message: TicketMessage; t: (key: string)
             />
           )}
           {message.media_caption && (
-            <p className="mt-1 text-xs text-dark-400">{message.media_caption}</p>
+            <p className="text-muted-foreground mt-1 text-xs">{message.media_caption}</p>
           )}
         </div>
 
         {/* Full image modal */}
-        {showFullImage && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={() => setShowFullImage(false)}
-          >
-            <button
-              className="absolute right-4 top-4 text-white/70 hover:text-white"
-              onClick={() => setShowFullImage(false)}
-            >
-              <CloseIcon />
-            </button>
+        <Dialog open={showFullImage} onOpenChange={setShowFullImage}>
+          <DialogContent className="max-w-[95vw] bg-black/90 p-4" showCloseButton={true}>
             <img
               src={mediaUrl}
               alt={message.media_caption || 'Attached image'}
-              className="max-h-full max-w-full object-contain"
+              className="max-h-[85vh] max-w-full object-contain"
             />
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
@@ -126,7 +121,7 @@ function MessageMedia({ message, t }: { message: TicketMessage; t: (key: string)
         href={mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-2 text-sm text-dark-200 transition-colors hover:bg-dark-600"
+        className="bg-muted text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
       >
         <svg
           className="h-4 w-4"
@@ -326,7 +321,7 @@ export default function Support() {
   if (configLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -402,9 +397,9 @@ export default function Support() {
     return (
       <div className="mx-auto mt-12 max-w-md">
         <Card className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+          <div className="bg-card mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
             <svg
-              className="h-8 w-8 text-dark-400"
+              className="text-muted-foreground h-8 w-8"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -417,8 +412,8 @@ export default function Support() {
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-xl font-semibold text-dark-100">{supportMessage.title}</h2>
-          <p className="mb-6 text-dark-400">{supportMessage.message}</p>
+          <h2 className="text-foreground mb-2 text-xl font-semibold">{supportMessage.title}</h2>
+          <p className="text-muted-foreground mb-6">{supportMessage.message}</p>
           <Button onClick={supportMessage.buttonAction} fullWidth>
             {supportMessage.buttonText}
           </Button>
@@ -440,22 +435,24 @@ export default function Support() {
         <img
           src={attachment.preview}
           alt="Attachment preview"
-          className="h-20 w-auto rounded-lg border border-dark-700"
+          className="border-border h-20 w-auto rounded-lg border"
         />
       )}
       {attachment.uploading && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-dark-900/70">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="bg-background/70 absolute inset-0 flex items-center justify-center rounded-lg">
+          <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       )}
       {attachment.error && <div className="mt-1 text-xs text-red-400">{attachment.error}</div>}
-      <button
+      <ShadcnButton
         type="button"
         onClick={onRemove}
-        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+        variant="destructive"
+        size="icon-xs"
+        className="absolute -top-2 -right-2 rounded-full"
       >
         <CloseIcon />
-      </button>
+      </ShadcnButton>
     </div>
   );
 
@@ -470,7 +467,7 @@ export default function Support() {
         variants={staggerItem}
         className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
       >
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('support.title')}</h1>
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">{t('support.title')}</h1>
         <Button
           onClick={() => {
             setShowCreateForm(true);
@@ -488,9 +485,9 @@ export default function Support() {
         <motion.div variants={staggerItem}>
           <Card className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-dark-800">
+              <div className="bg-card flex h-10 w-10 items-center justify-center rounded-xl">
                 <svg
-                  className="h-5 w-5 text-dark-400"
+                  className="text-muted-foreground h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -504,8 +501,10 @@ export default function Support() {
                 </svg>
               </div>
               <div>
-                <div className="text-sm font-medium text-dark-100">{t('support.contactUs')}</div>
-                <div className="text-xs text-dark-400">{supportConfig.support_username}</div>
+                <div className="text-foreground text-sm font-medium">{t('support.contactUs')}</div>
+                <div className="text-muted-foreground text-xs">
+                  {supportConfig.support_username}
+                </div>
               </div>
             </div>
             <Button
@@ -526,45 +525,46 @@ export default function Support() {
       <motion.div variants={staggerItem} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Tickets List */}
         <Card className="lg:col-span-1">
-          <h2 className="mb-4 text-lg font-semibold text-dark-100">{t('support.yourTickets')}</h2>
+          <h2 className="text-foreground mb-4 text-lg font-semibold">{t('support.yourTickets')}</h2>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           ) : tickets?.items && tickets.items.length > 0 ? (
             <div className="space-y-2">
               {tickets.items.map((ticket) => (
-                <button
+                <ShadcnButton
                   key={ticket.id}
                   onClick={() => {
                     setSelectedTicket(ticket as unknown as TicketDetail);
                     setShowCreateForm(false);
                     clearReplyAttachment();
                   }}
-                  className={`w-full rounded-bento border p-4 text-left transition-all ${
+                  variant="ghost"
+                  className={`rounded-bento h-auto w-full flex-col items-start border p-4 text-left transition-all ${
                     selectedTicket?.id === ticket.id
-                      ? 'border-accent-500 bg-accent-500/10'
-                      : 'border-dark-700/50 bg-dark-800/30 hover:border-dark-600'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border/50 bg-card/30 hover:border-border'
                   }`}
                 >
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <div className="truncate font-medium text-dark-100">{ticket.title}</div>
-                    <span className={`${getStatusBadge(ticket.status)} flex-shrink-0`}>
+                    <div className="text-foreground truncate font-medium">{ticket.title}</div>
+                    <span className={`${getStatusBadge(ticket.status)} shrink-0`}>
                       {getStatusLabel(ticket.status)}
                     </span>
                   </div>
-                  <div className="text-xs text-dark-500">
+                  <div className="text-muted-foreground text-xs">
                     {new Date(ticket.updated_at).toLocaleDateString()}
                   </div>
-                </button>
+                </ShadcnButton>
               ))}
             </div>
           ) : (
             <div className="py-12 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+              <div className="bg-card mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
                 <svg
-                  className="h-8 w-8 text-dark-500"
+                  className="text-muted-foreground h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -577,7 +577,7 @@ export default function Support() {
                   />
                 </svg>
               </div>
-              <div className="text-dark-400">{t('support.noTickets')}</div>
+              <div className="text-muted-foreground">{t('support.noTickets')}</div>
             </div>
           )}
         </Card>
@@ -586,7 +586,7 @@ export default function Support() {
         <Card className="lg:col-span-2">
           {showCreateForm ? (
             <div>
-              <h2 className="mb-6 text-lg font-semibold text-dark-100">
+              <h2 className="text-foreground mb-6 text-lg font-semibold">
                 {t('support.createTicket')}
               </h2>
               <form
@@ -605,9 +605,8 @@ export default function Support() {
               >
                 <div>
                   <label className="label">{t('support.subject')}</label>
-                  <input
+                  <Input
                     type="text"
-                    className="input"
                     placeholder={t('support.subjectPlaceholder')}
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
@@ -618,8 +617,8 @@ export default function Support() {
                 </div>
                 <div>
                   <label className="label">{t('support.message')}</label>
-                  <textarea
-                    className="input min-h-[150px]"
+                  <Textarea
+                    className="min-h-37.5"
                     placeholder={t('support.messagePlaceholder')}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -648,19 +647,20 @@ export default function Support() {
                       onRemove={() => clearCreateAttachment()}
                     />
                   ) : (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       onClick={() => createFileInputRef.current?.click()}
-                      className="flex items-center gap-2 text-sm text-dark-400 transition-colors hover:text-dark-200"
+                      className="text-muted-foreground hover:text-foreground gap-2 text-sm"
                     >
                       <ImageIcon />
                       {t('support.attachImage')}
-                    </button>
+                    </Button>
                   )}
                 </div>
 
                 {rateLimitError && (
-                  <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-3 text-sm text-error-400">
+                  <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-xl border p-3 text-sm">
                     {rateLimitError}
                   </div>
                 )}
@@ -689,16 +689,16 @@ export default function Support() {
             </div>
           ) : selectedTicket ? (
             <div className="flex h-full flex-col">
-              <div className="mb-6 flex flex-col gap-2 border-b border-dark-800/50 pb-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="border-border/50 mb-6 flex flex-col gap-2 border-b pb-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-dark-100">
+                  <h2 className="text-foreground text-lg font-semibold">
                     {ticketDetail?.title || selectedTicket.title}
                   </h2>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <span className={getStatusBadge(ticketDetail?.status || selectedTicket.status)}>
                       {getStatusLabel(ticketDetail?.status || selectedTicket.status)}
                     </span>
-                    <span className="text-xs text-dark-500">
+                    <span className="text-muted-foreground text-xs">
                       {t('support.created')}{' '}
                       {new Date(selectedTicket.created_at).toLocaleDateString()}
                     </span>
@@ -709,7 +709,7 @@ export default function Support() {
               {/* Messages */}
               {detailLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                 </div>
               ) : ticketDetail?.messages ? (
                 <div className="scrollbar-hide mb-6 max-h-96 flex-1 space-y-4 overflow-y-auto">
@@ -718,21 +718,21 @@ export default function Support() {
                       key={msg.id}
                       className={`rounded-xl p-4 ${
                         msg.is_from_admin
-                          ? 'ml-4 border border-accent-500/20 bg-accent-500/10'
-                          : 'mr-4 border border-dark-700/30 bg-dark-800/50'
+                          ? 'border-primary/20 bg-primary/10 ml-4 border'
+                          : 'border-border/30 bg-card/50 mr-4 border'
                       }`}
                     >
                       <div className="mb-2 flex items-center justify-between">
                         <span
-                          className={`text-xs font-medium ${msg.is_from_admin ? 'text-accent-400' : 'text-dark-400'}`}
+                          className={`text-xs font-medium ${msg.is_from_admin ? 'text-primary' : 'text-muted-foreground'}`}
                         >
                           {msg.is_from_admin ? t('support.supportTeam') : t('support.you')}
                         </span>
-                        <span className="text-xs text-dark-500">
+                        <span className="text-muted-foreground text-xs">
                           {new Date(msg.created_at).toLocaleString()}
                         </span>
                       </div>
-                      <div className="whitespace-pre-wrap text-dark-200">{msg.message_text}</div>
+                      <div className="text-foreground whitespace-pre-wrap">{msg.message_text}</div>
                       {/* Display media if present */}
                       <MessageMedia message={msg} t={t} />
                     </div>
@@ -754,12 +754,12 @@ export default function Support() {
                     }
                     replyMutation.mutate();
                   }}
-                  className="border-t border-dark-800/50 pt-4"
+                  className="border-border/50 border-t pt-4"
                 >
                   <div className="space-y-3">
                     <div className="flex gap-3">
-                      <textarea
-                        className="input min-h-[80px] flex-1"
+                      <Textarea
+                        className="min-h-20 flex-1"
                         placeholder={t('support.replyPlaceholder')}
                         value={replyMessage}
                         onChange={(e) => setReplyMessage(e.target.value)}
@@ -789,14 +789,15 @@ export default function Support() {
                             onRemove={() => clearReplyAttachment()}
                           />
                         ) : (
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => replyFileInputRef.current?.click()}
-                            className="flex items-center gap-2 text-sm text-dark-400 transition-colors hover:text-dark-200"
+                            className="text-muted-foreground hover:text-foreground gap-2 text-sm"
                           >
                             <ImageIcon />
                             {t('support.attachImage')}
-                          </button>
+                          </Button>
                         )}
                       </div>
 
@@ -809,7 +810,7 @@ export default function Support() {
                       </Button>
                     </div>
                     {rateLimitError && (
-                      <div className="mt-2 rounded-lg border border-error-500/30 bg-error-500/10 p-2 text-sm text-error-400">
+                      <div className="border-error-500/30 bg-error-500/10 text-error-400 mt-2 rounded-lg border p-2 text-sm">
                         {rateLimitError}
                       </div>
                     )}
@@ -818,16 +819,16 @@ export default function Support() {
               )}
 
               {ticketDetail?.is_reply_blocked && (
-                <div className="border-t border-dark-800/50 py-4 text-center text-sm text-dark-500">
+                <div className="border-border/50 text-muted-foreground border-t py-4 text-center text-sm">
                   {t('support.repliesDisabled')}
                 </div>
               )}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+              <div className="bg-card mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
                 <svg
-                  className="h-8 w-8 text-dark-500"
+                  className="text-muted-foreground h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -840,7 +841,7 @@ export default function Support() {
                   />
                 </svg>
               </div>
-              <div className="text-dark-400">{t('support.selectTicket')}</div>
+              <div className="text-muted-foreground">{t('support.selectTicket')}</div>
             </div>
           )}
         </Card>

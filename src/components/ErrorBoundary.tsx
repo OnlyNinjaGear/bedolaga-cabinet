@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -65,19 +66,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     if (level === 'app') {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-dark-900 p-4">
+        <div className="bg-background flex min-h-screen items-center justify-center p-4">
           <div className="max-w-md text-center">
             <div className="mb-4 text-4xl">⚠️</div>
-            <h1 className="mb-2 text-xl font-bold text-dark-50">Something went wrong</h1>
-            <p className="mb-6 text-dark-400">
+            <h1 className="text-foreground mb-2 text-xl font-bold">Something went wrong</h1>
+            <p className="text-muted-foreground mb-6">
               An unexpected error occurred. Please try reloading the page.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="rounded-xl bg-accent-500 px-6 py-3 font-medium text-white transition-colors hover:bg-accent-600"
-            >
+            <Button onClick={() => window.location.reload()} className="px-6 py-3">
               Reload page
-            </button>
+            </Button>
           </div>
         </div>
       );
@@ -85,14 +83,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     if (level === 'widget') {
       return (
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-4 text-center">
-          <p className="text-sm text-error-400">Failed to load this section</p>
-          <button
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-4 text-center">
+          <p className="text-error-400 text-sm">Failed to load this section</p>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={this.handleReset}
-            className="mt-2 text-sm text-accent-400 hover:text-accent-300"
+            className="text-primary hover:text-primary/70 mt-2 text-sm"
           >
             Try again
-          </button>
+          </Button>
         </div>
       );
     }
@@ -102,18 +102,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       <div className="flex min-h-[50vh] items-center justify-center p-4">
         <div className="max-w-md text-center">
           <div className="mb-4 text-4xl">⚠️</div>
-          <h1 className="mb-2 text-xl font-bold text-dark-50">Something went wrong</h1>
-          <p className="mb-6 text-sm text-dark-400">
+          <h1 className="text-foreground mb-2 text-xl font-bold">Something went wrong</h1>
+          <p className="text-muted-foreground mb-6 text-sm">
             {isChunk
               ? 'App was updated. Reloading...'
               : this.state.error?.message || 'An unexpected error occurred'}
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-xl bg-accent-500 px-6 py-3 font-medium text-white transition-colors hover:bg-accent-600"
-          >
+          <Button onClick={() => window.location.reload()} className="px-6 py-3">
             {isChunk ? 'Reload' : 'Try again'}
-          </button>
+          </Button>
         </div>
       </div>
     );

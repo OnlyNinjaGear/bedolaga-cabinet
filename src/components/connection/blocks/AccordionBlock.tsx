@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getColorGradient } from '@/utils/colorParser';
 import { ThemeIcon } from './ThemeIcon';
 import type { BlockRendererProps } from './types';
+import { Button } from '@/components/ui/button';
 
 export function AccordionBlock({
   blocks,
@@ -31,17 +32,18 @@ export function AccordionBlock({
             className={`overflow-hidden rounded-2xl border transition-colors ${
               isLight
                 ? isOpen
-                  ? 'border-accent-500/30 bg-white/80 shadow-sm'
-                  : 'border-dark-700/60 bg-white/60'
+                  ? 'border-primary/30 bg-card/80 shadow-sm'
+                  : 'border-border/60 bg-card/60'
                 : isOpen
-                  ? 'border-accent-500/30 bg-dark-800/50'
-                  : 'border-dark-700/50 bg-dark-800/50'
+                  ? 'border-primary/30 bg-card/50'
+                  : 'border-border/50 bg-card/50'
             }`}
           >
             {/* Control */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setOpenIndex(isOpen ? null : index)}
-              className="flex w-full items-center gap-3 p-4 text-left"
+              className="flex h-auto w-full items-center justify-start gap-3 p-4 text-left"
             >
               <ThemeIcon
                 getSvgHtml={getSvgHtml}
@@ -49,11 +51,11 @@ export function AccordionBlock({
                 gradientStyle={gradientStyle}
                 isMobile={isMobile}
               />
-              <span className="min-w-0 flex-1 truncate font-semibold text-dark-100">
+              <span className="text-foreground min-w-0 flex-1 truncate font-semibold">
                 {getLocalizedText(block.title)}
               </span>
               <svg
-                className={`h-[18px] w-[18px] shrink-0 text-dark-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                className={`text-muted-foreground h-4.5 w-4.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -61,15 +63,15 @@ export function AccordionBlock({
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
-            </button>
+            </Button>
             {/* Panel */}
             <div
               className={`overflow-hidden transition-all duration-200 ${
-                isOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                isOpen ? 'max-h-150 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="px-4 pb-4">
-                <p className="whitespace-pre-line text-sm leading-relaxed text-dark-400">
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
                   {getLocalizedText(block.description)}
                 </p>
                 {renderBlockButtons(block.buttons, 'light')}

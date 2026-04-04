@@ -6,6 +6,10 @@ import { serversApi, ServerUpdateRequest } from '../api/servers';
 import { AdminBackButton } from '../components/admin';
 import { ServerIcon } from '../components/icons';
 import { createNumberInputHandler, toNumber } from '../utils/inputHelpers';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // Country flags (simple emoji mapping)
 const getCountryFlag = (code: string | null): string => {
@@ -101,7 +105,7 @@ export default function AdminServerEdit() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -111,16 +115,17 @@ export default function AdminServerEdit() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/servers" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.servers.edit')}</h1>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.servers.edit')}</h1>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-6 text-center">
           <p className="text-error-400">{t('admin.servers.loadError')}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate('/admin/servers')}
-            className="mt-4 text-sm text-dark-400 hover:text-dark-200"
+            className="mt-4 text-sm"
           >
             {t('common.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -133,36 +138,36 @@ export default function AdminServerEdit() {
         <AdminBackButton to="/admin/servers" />
         <div className="flex items-center gap-2">
           <span className="text-2xl">{getCountryFlag(server.country_code)}</span>
-          <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+          <div className="bg-primary/20 text-primary rounded-lg p-2">
             <ServerIcon />
           </div>
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.servers.edit')}</h1>
-          <p className="text-sm text-dark-400">{server.display_name}</p>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.servers.edit')}</h1>
+          <p className="text-muted-foreground text-sm">{server.display_name}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Main Settings */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.servers.mainSettings')}
           </h3>
 
           {/* Original Name (readonly) */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.originalName')}
             </label>
-            <div className="rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-2 text-dark-400">
+            <div className="border-border bg-muted/50 text-muted-foreground rounded-lg border px-3 py-2">
               {server.original_name || server.squad_uuid}
             </div>
           </div>
 
           {/* Display Name */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.displayName')}
               <span className="text-error-400">*</span>
             </label>
@@ -178,13 +183,13 @@ export default function AdminServerEdit() {
 
           {/* Description */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.description')}
             </label>
-            <textarea
+            <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="input resize-none"
+              className="resize-none"
               rows={2}
               placeholder={t('admin.servers.descriptionPlaceholder')}
             />
@@ -192,36 +197,36 @@ export default function AdminServerEdit() {
 
           {/* Country Code */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.countryCode')}
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="text"
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))}
-                className="input w-32"
+                className="w-32"
                 placeholder="RU"
                 maxLength={2}
               />
               {countryCode && <span className="text-xl">{getCountryFlag(countryCode)}</span>}
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Pricing & Limits */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.servers.pricingAndLimits')}
           </h3>
 
           {/* Price */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.price')}
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="number"
                 value={priceKopeks === '' ? '' : priceKopeks / 100}
                 onChange={(e) => {
@@ -232,72 +237,80 @@ export default function AdminServerEdit() {
                     setPriceKopeks(Math.max(0, parseFloat(val) || 0) * 100);
                   }
                 }}
-                className="input w-32"
+                className="w-32"
                 min={0}
                 step={1}
               />
-              <span className="text-dark-400">₽</span>
+              <span className="text-muted-foreground">₽</span>
             </div>
-            <p className="mt-1 text-xs text-dark-500">{t('admin.servers.priceHint')}</p>
+            <p className="text-muted-foreground mt-1 text-xs">{t('admin.servers.priceHint')}</p>
           </div>
 
           {/* Max Users */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.maxUsers')}
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="number"
                 value={maxUsers || ''}
                 onChange={(e) =>
                   setMaxUsers(e.target.value ? Math.max(0, parseInt(e.target.value)) : null)
                 }
-                className="input w-32"
+                className="w-32"
                 min={0}
                 placeholder={t('admin.servers.unlimited')}
               />
               {!maxUsers && (
-                <span className="text-sm text-dark-400">{t('admin.servers.unlimited')}</span>
+                <span className="text-muted-foreground text-sm">
+                  {t('admin.servers.unlimited')}
+                </span>
               )}
             </div>
           </div>
 
           {/* Sort Order */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.servers.sortOrder')}
             </label>
-            <input
+            <Input
               type="number"
               value={sortOrder}
               onChange={createNumberInputHandler(setSortOrder)}
-              className="input w-32"
+              className="w-32"
             />
           </div>
-        </div>
+        </Card>
 
         {/* Statistics */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">{t('admin.servers.stats')}</h3>
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">{t('admin.servers.stats')}</h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="text-2xl font-bold text-dark-100">{server.current_users}</div>
-              <div className="text-sm text-dark-400">{t('admin.servers.currentUsers')}</div>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-foreground text-2xl font-bold">{server.current_users}</div>
+              <div className="text-muted-foreground text-sm">{t('admin.servers.currentUsers')}</div>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <div className="text-2xl font-bold text-dark-100">{server.active_subscriptions}</div>
-              <div className="text-sm text-dark-400">{t('admin.servers.activeSubscriptions')}</div>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="text-foreground text-2xl font-bold">
+                {server.active_subscriptions}
+              </div>
+              <div className="text-muted-foreground text-sm">
+                {t('admin.servers.activeSubscriptions')}
+              </div>
             </div>
           </div>
           {server.tariffs_using.length > 0 && (
             <div className="mt-4">
-              <span className="text-sm text-dark-400">{t('admin.servers.usedByTariffs')}:</span>
+              <span className="text-muted-foreground text-sm">
+                {t('admin.servers.usedByTariffs')}:
+              </span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {server.tariffs_using.map((tariff) => (
                   <span
                     key={tariff}
-                    className="rounded-lg bg-dark-700 px-3 py-1 text-sm text-dark-300"
+                    className="bg-muted text-muted-foreground rounded-lg px-3 py-1 text-sm"
                   >
                     {tariff}
                   </span>
@@ -305,22 +318,14 @@ export default function AdminServerEdit() {
               </div>
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => navigate('/admin/servers')}
-            className="btn-secondary"
-          >
+          <Button type="button" variant="secondary" onClick={() => navigate('/admin/servers')}>
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!displayName || updateMutation.isPending}
-            className="btn-primary"
-          >
+          </Button>
+          <Button type="submit" disabled={!displayName || updateMutation.isPending}>
             {updateMutation.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -329,11 +334,11 @@ export default function AdminServerEdit() {
             ) : (
               t('common.save')
             )}
-          </button>
+          </Button>
         </div>
 
         {updateMutation.isError && (
-          <div className="rounded-lg border border-error-500/30 bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-lg border p-3 text-sm">
             {t('admin.servers.updateError')}
           </div>
         )}

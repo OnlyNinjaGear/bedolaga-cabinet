@@ -28,7 +28,7 @@ export function MinimalBlock({
             className={
               isLast
                 ? 'pb-4'
-                : `mb-4 border-b pb-4 ${isLight ? 'border-dark-700/40' : 'border-dark-700/50'}`
+                : `mb-4 border-b pb-4 ${isLight ? 'border-border/40' : 'border-border/50'}`
             }
           >
             <div className="mb-2 flex items-center gap-3">
@@ -38,9 +38,9 @@ export function MinimalBlock({
                 gradientStyle={gradientStyle}
                 isMobile={isMobile}
               />
-              <span className="font-medium text-dark-100">{getLocalizedText(block.title)}</span>
+              <span className="text-foreground font-medium">{getLocalizedText(block.title)}</span>
             </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-dark-400">
+            <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
               {getLocalizedText(block.description)}
             </p>
             {renderBlockButtons(block.buttons, 'subtle')}

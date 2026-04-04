@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import { AnalyticsTab } from '../components/admin/AnalyticsTab';
 import { BrandingTab } from '../components/admin/BrandingTab';
 import { MenuEditorTab } from '../components/admin/MenuEditorTab';
 import { ThemeTab } from '../components/admin/ThemeTab';
+import { SeoTab } from '../components/admin/SeoTab';
 import { FavoritesTab } from '../components/admin/FavoritesTab';
 import { SettingsTab } from '../components/admin/SettingsTab';
 import { SettingsTreeSidebar } from '../components/admin/SettingsTreeSidebar';
@@ -20,7 +22,7 @@ import { SettingsSearchMobile, SettingsSearchResults } from '../components/admin
 // BackIcon
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -33,7 +35,7 @@ const BackIcon = () => (
 // ChevronRight for breadcrumbs
 const ChevronRightIcon = () => (
   <svg
-    className="h-3.5 w-3.5 text-dark-600"
+    className="text-muted-foreground h-3.5 w-3.5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -42,6 +44,9 @@ const ChevronRightIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
   </svg>
 );
+
+// Settings that require SALES_MODE=tariffs to be visible
+const TARIFF_MODE_SETTINGS = ['MULTI_TARIFF_ENABLED', 'MAX_ACTIVE_SUBSCRIPTIONS'];
 
 export default function AdminSettings() {
   const { t } = useTranslation();
@@ -84,9 +89,6 @@ export default function AdminSettings() {
       break;
     }
   }
-
-  // Settings that require SALES_MODE=tariffs to be visible
-  const TARIFF_MODE_SETTINGS = ['MULTI_TARIFF_ENABLED', 'MAX_ACTIVE_SUBSCRIPTIONS'];
 
   // Check if tariffs mode is active
   const isTariffsMode = useMemo(() => {
@@ -210,6 +212,8 @@ export default function AdminSettings() {
         return <BrandingTab accentColor={themeColors?.accent} />;
       case 'theme':
         return <ThemeTab />;
+      case 'seo':
+        return <SeoTab />;
       case 'buttons':
         return <MenuEditorTab />;
       case 'favorites':
@@ -260,20 +264,22 @@ export default function AdminSettings() {
       {/* Desktop Layout - fixed sidebar, scrollable content */}
       <div className="hidden h-[calc(100vh-120px)] lg:flex">
         {/* Fixed Sidebar */}
-        <div className="w-[264px] shrink-0 overflow-y-auto border-r border-dark-700/50">
-          <div className="border-b border-dark-700/50 p-4">
+        <div className="border-border/50 w-66 shrink-0 overflow-y-auto border-r">
+          <div className="border-border/50 border-b p-4">
             <div className="flex items-center gap-3">
               {/* Show back button only on web, not in Telegram Mini App */}
               {!capabilities.hasBackButton && (
-                <button
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={() => navigate('/admin')}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+                  className="rounded-xl"
                   aria-label={t('admin.settings.backToAdmin')}
                 >
                   <BackIcon />
-                </button>
+                </Button>
               )}
-              <h1 className="text-lg font-bold text-dark-100">{t('admin.settings.title')}</h1>
+              <h1 className="text-foreground text-lg font-bold">{t('admin.settings.title')}</h1>
             </div>
           </div>
           <SettingsTreeSidebar
@@ -292,14 +298,16 @@ export default function AdminSettings() {
           {/* Breadcrumb for tree sub-items */}
           {activeTreeInfo && !searchQuery.trim() && (
             <div className="mb-2 flex items-center gap-1.5 text-xs">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setActiveSection(activeTreeInfo.group.children[0].id)}
-                className="text-dark-500 transition-colors hover:text-dark-300"
+                className="text-muted-foreground hover:text-muted-foreground h-auto p-0"
               >
                 {t(`admin.settings.groups.${activeTreeInfo.group.id}`)}
-              </button>
+              </Button>
               <ChevronRightIcon />
-              <span className="text-dark-300">
+              <span className="text-muted-foreground">
                 {t(`admin.settings.tree.${activeTreeInfo.child.id}`)}
               </span>
             </div>
@@ -307,14 +315,14 @@ export default function AdminSettings() {
 
           {/* Title + count badges */}
           <div className="mb-4 flex items-center gap-3">
-            <h2 className="truncate text-xl font-semibold text-dark-100">{sectionTitle}</h2>
+            <h2 className="text-foreground truncate text-xl font-semibold">{sectionTitle}</h2>
             {totalCount > 0 && !searchQuery.trim() && activeTreeInfo && (
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-dark-700/50 px-2 py-0.5 text-xs text-dark-400">
+                <span className="bg-muted/50 text-muted-foreground rounded-full px-2 py-0.5 text-xs">
                   {t('admin.settings.totalCount', { count: totalCount })}
                 </span>
                 {modifiedCount > 0 && (
-                  <span className="rounded-full bg-warning-500/20 px-2 py-0.5 text-xs text-warning-400">
+                  <span className="bg-warning-500/20 text-warning-400 rounded-full px-2 py-0.5 text-xs">
                     {t('admin.settings.modifiedCount', { count: modifiedCount })}
                   </span>
                 )}

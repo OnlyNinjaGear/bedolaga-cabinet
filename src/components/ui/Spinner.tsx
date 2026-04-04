@@ -9,7 +9,7 @@ export function Spinner({ className }: { className?: string }) {
       role="status"
       aria-label={t('common.loading')}
       className={cn(
-        'h-8 w-8 animate-spin rounded-full border-2 border-dark-600 border-t-accent-500',
+        'border-border border-t-primary h-8 w-8 animate-spin rounded-full border-2',
         className,
       )}
     />

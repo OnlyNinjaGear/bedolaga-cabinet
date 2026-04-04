@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils';
 import { GripIcon, TrashIcon } from '../icons/LandingIcons';
 import { LocalizedInput } from './LocalizedInput';
 import type { AdminLandingFeature, LocaleDict, SupportedLocale } from '../../api/landings';
+import { Button } from '@/components/ui/button';
 
 export type FeatureWithId = AdminLandingFeature & { _id: string };
 
@@ -43,13 +44,13 @@ export function SortableFeatureItem({
       style={style}
       className={cn(
         'flex items-start gap-2 rounded-lg border p-3',
-        isDragging ? 'border-accent-500/50 bg-dark-700' : 'border-dark-700 bg-dark-800/50',
+        isDragging ? 'border-primary/50 bg-muted' : 'border-border bg-card/50',
       )}
     >
       <button
         {...attributes}
         {...listeners}
-        className="mt-2 flex-shrink-0 cursor-grab touch-none text-dark-500 hover:text-dark-300 active:cursor-grabbing"
+        className="text-muted-foreground hover:text-muted-foreground mt-2 shrink-0 cursor-grab touch-none active:cursor-grabbing"
       >
         <GripIcon />
       </button>
@@ -60,14 +61,14 @@ export function SortableFeatureItem({
             value={feature.icon}
             onChange={(e) => onUpdateIcon(index, e.target.value)}
             placeholder={t('admin.landings.featureIcon')}
-            className="w-16 rounded-lg border border-dark-700 bg-dark-800 px-2 py-1.5 text-center text-sm text-dark-100 outline-none focus:border-accent-500"
+            className="border-border bg-card text-foreground focus:border-primary w-16 rounded-lg border px-2 py-1.5 text-center text-sm outline-none"
           />
           <LocalizedInput
             value={feature.title}
             onChange={(v) => onUpdateLocalized(index, 'title', v)}
             locale={locale}
             placeholder={t('admin.landings.featureTitle')}
-            className="min-w-0 flex-1 rounded-lg border border-dark-700 bg-dark-800 px-3 py-1.5 text-sm text-dark-100 outline-none focus:border-accent-500"
+            className="border-border bg-card text-foreground focus:border-primary min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none"
           />
         </div>
         <LocalizedInput
@@ -75,15 +76,17 @@ export function SortableFeatureItem({
           onChange={(v) => onUpdateLocalized(index, 'description', v)}
           locale={locale}
           placeholder={t('admin.landings.featureDesc')}
-          className="w-full rounded-lg border border-dark-700 bg-dark-800 px-3 py-1.5 text-sm text-dark-100 outline-none focus:border-accent-500"
+          className="border-border bg-card text-foreground focus:border-primary w-full rounded-lg border px-3 py-1.5 text-sm outline-none"
         />
       </div>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => onRemove(index)}
-        className="mt-2 flex-shrink-0 text-dark-500 hover:text-error-400"
+        className="text-muted-foreground hover:text-destructive mt-2 h-auto shrink-0 p-0"
       >
         <TrashIcon />
-      </button>
+      </Button>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { tariffsApi, TariffListItem, PeriodPrice } from '../api/tariffs';
 import { formatPrice } from '../utils/format';
 import { adminPaymentMethodsApi } from '../api/adminPaymentMethods';
 import { Toggle, LocaleTabs, LocalizedInput } from '../components/admin';
+import { Checkbox } from '@/components/ui/checkbox';
 import { BackgroundConfigEditor } from '../components/admin/BackgroundConfigEditor';
 import type { AnimationConfig } from '@/components/ui/backgrounds/types';
 import { DEFAULT_ANIMATION_CONFIG } from '@/components/ui/backgrounds/types';
@@ -43,6 +44,7 @@ import {
 } from '@dnd-kit/sortable';
 import { cn } from '../lib/utils';
 import type { PaymentMethodSubOptionInfo } from '../types';
+import { Button } from '@/components/ui/button';
 
 function isoToDatetimeLocal(iso: string): string {
   const d = new Date(iso);
@@ -73,15 +75,16 @@ interface SectionProps {
 
 function Section({ title, open, onToggle, children }: SectionProps) {
   return (
-    <div className="overflow-hidden rounded-xl border border-dark-700 bg-dark-900/50">
-      <button
+    <div className="border-border bg-background/50 overflow-hidden rounded-xl border">
+      <Button
+        variant="ghost"
         onClick={onToggle}
-        className="flex w-full items-center justify-between px-4 py-3 text-start text-sm font-medium text-dark-100 hover:bg-dark-800/50"
+        className="text-foreground hover:bg-card/50 flex h-auto w-full items-center justify-between rounded-none px-4 py-3 text-start text-sm font-medium"
       >
         {title}
         <ChevronDownIcon open={open} />
-      </button>
-      {open && <div className="border-t border-dark-700 px-4 py-4">{children}</div>}
+      </Button>
+      {open && <div className="border-border border-t px-4 py-4">{children}</div>}
     </div>
   );
 }
@@ -552,34 +555,27 @@ export default function AdminLandingEditor() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin/landings')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin/landings')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {isEdit ? t('admin.landings.edit') : t('admin.landings.create')}
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate('/admin/landings')}
-            className="rounded-lg border border-dark-700 bg-dark-800 px-4 py-2 text-sm text-dark-300 transition-colors hover:border-dark-600"
-          >
+          <Button variant="outline" onClick={() => navigate('/admin/landings')}>
             {t('admin.landings.back')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
             disabled={isPending || !slug || !Object.values(title).some((v) => v.trim())}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
           >
             {isPending && (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
             )}
             {t('admin.landings.save')}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -608,7 +604,7 @@ export default function AdminLandingEditor() {
         >
           <div className="space-y-4">
             <div>
-              <label htmlFor="landing-slug" className="mb-1 block text-sm text-dark-400">
+              <label htmlFor="landing-slug" className="text-muted-foreground mb-1 block text-sm">
                 {t('admin.landings.slug')}
               </label>
               <input
@@ -618,13 +614,13 @@ export default function AdminLandingEditor() {
                 onChange={(e) => setSlug(e.target.value)}
                 disabled={isEdit}
                 placeholder="my-landing"
-                className="w-full rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-100 outline-none focus:border-accent-500 disabled:opacity-50"
+                className="border-border bg-card text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm outline-none disabled:opacity-50"
               />
-              <p className="mt-1 text-xs text-dark-500">{t('admin.landings.slugHint')}</p>
+              <p className="text-muted-foreground mt-1 text-xs">{t('admin.landings.slugHint')}</p>
             </div>
 
             <div>
-              <label htmlFor="landing-title" className="mb-1 block text-sm text-dark-400">
+              <label htmlFor="landing-title" className="text-muted-foreground mb-1 block text-sm">
                 {t('admin.landings.pageTitle')}
               </label>
               <LocalizedInput
@@ -636,7 +632,10 @@ export default function AdminLandingEditor() {
             </div>
 
             <div>
-              <label htmlFor="landing-subtitle" className="mb-1 block text-sm text-dark-400">
+              <label
+                htmlFor="landing-subtitle"
+                className="text-muted-foreground mb-1 block text-sm"
+              >
                 {t('admin.landings.subtitle')}
               </label>
               <LocalizedInput
@@ -650,16 +649,18 @@ export default function AdminLandingEditor() {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="text-sm text-dark-400">{t('admin.landings.active')}</label>
+              <label className="text-muted-foreground text-sm">{t('admin.landings.active')}</label>
               <Toggle checked={isActive} onChange={() => setIsActive(!isActive)} />
             </div>
 
             {/* SEO */}
-            <div className="border-t border-dark-700 pt-4">
-              <h4 className="mb-3 text-sm font-medium text-dark-300">{t('admin.landings.seo')}</h4>
+            <div className="border-border border-t pt-4">
+              <h4 className="text-muted-foreground mb-3 text-sm font-medium">
+                {t('admin.landings.seo')}
+              </h4>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-sm text-dark-400">
+                  <label className="text-muted-foreground mb-1 block text-sm">
                     {t('admin.landings.metaTitle')}
                   </label>
                   <LocalizedInput
@@ -669,7 +670,7 @@ export default function AdminLandingEditor() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-dark-400">
+                  <label className="text-muted-foreground mb-1 block text-sm">
                     {t('admin.landings.metaDesc')}
                   </label>
                   <LocalizedInput
@@ -707,13 +708,10 @@ export default function AdminLandingEditor() {
                 ))}
               </SortableContext>
             </DndContext>
-            <button
-              onClick={addFeature}
-              className="flex items-center gap-2 rounded-lg border border-dashed border-dark-600 px-4 py-2 text-sm text-dark-400 transition-colors hover:border-dark-500 hover:text-dark-300"
-            >
+            <Button variant="outline" onClick={addFeature}>
               <PlusIcon />
               {t('admin.landings.addFeature')}
-            </button>
+            </Button>
           </div>
         </Section>
 
@@ -724,35 +722,37 @@ export default function AdminLandingEditor() {
           onToggle={() => toggleSection('tariffs')}
         >
           <div className="space-y-3">
-            <p className="text-sm text-dark-500">{t('admin.landings.selectTariffs')}</p>
+            <p className="text-muted-foreground text-sm">{t('admin.landings.selectTariffs')}</p>
             {allTariffs.map((tariff: TariffListItem) => (
-              <div key={tariff.id} className="rounded-lg border border-dark-700 bg-dark-800/50 p-3">
+              <div key={tariff.id} className="border-border bg-card/50 rounded-lg border p-3">
                 <label className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={selectedTariffIds.includes(tariff.id)}
-                    onChange={() => toggleTariff(tariff.id)}
-                    className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-accent-500"
+                    onCheckedChange={() => toggleTariff(tariff.id)}
                   />
-                  <span className="text-sm font-medium text-dark-100">{tariff.name}</span>
+                  <span className="text-foreground text-sm font-medium">{tariff.name}</span>
                   {!tariff.is_active && (
-                    <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                    <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
                       {t('admin.landings.inactive')}
                     </span>
                   )}
                 </label>
                 {/* Period checkboxes from tariff detail */}
                 {selectedTariffIds.includes(tariff.id) && !tariff.is_daily && (
-                  <div className="ml-7 mt-2">
-                    <span className="text-xs text-dark-500">{t('admin.landings.periods')}:</span>
+                  <div className="mt-2 ml-7">
+                    <span className="text-muted-foreground text-xs">
+                      {t('admin.landings.periods')}:
+                    </span>
                     {tariffPeriodsMap[tariff.id] ? (
                       <div className="mt-1 flex flex-wrap gap-2">
                         {tariffPeriodsMap[tariff.id].map((period) => {
                           const override = allowedPeriods[String(tariff.id)];
                           const isAllowed = !override || override.includes(period.days);
                           return (
-                            <button
+                            <Button
                               key={period.days}
+                              size="sm"
+                              variant={isAllowed ? 'secondary' : 'ghost'}
                               onClick={() =>
                                 togglePeriodFromTariff(
                                   tariff.id,
@@ -761,21 +761,19 @@ export default function AdminLandingEditor() {
                                 )
                               }
                               className={cn(
-                                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                                isAllowed
-                                  ? 'bg-accent-500/20 text-accent-400'
-                                  : 'bg-dark-700/50 text-dark-500 line-through',
+                                'rounded-full text-xs',
+                                !isAllowed && 'text-muted-foreground line-through',
                               )}
                             >
                               {period.days}
                               {t('admin.landings.periodDaySuffix')} —{' '}
                               {formatPrice(period.price_kopeks)}
-                            </button>
+                            </Button>
                           );
                         })}
                       </div>
                     ) : (
-                      <span className="ml-2 text-xs text-dark-600">
+                      <span className="text-muted-foreground ml-2 text-xs">
                         {t('admin.landings.loadingPeriods')}
                       </span>
                     )}
@@ -795,7 +793,7 @@ export default function AdminLandingEditor() {
           <div className="space-y-4">
             {/* Enable/disable discount */}
             <div className="flex items-center justify-between">
-              <label className="text-sm text-dark-400">
+              <label className="text-muted-foreground text-sm">
                 {t('admin.landings.discountEnabled', 'Enable discount')}
               </label>
               <Toggle
@@ -818,7 +816,7 @@ export default function AdminLandingEditor() {
               <div className="space-y-4">
                 {/* Global percent */}
                 <div>
-                  <label className="mb-1 block text-sm text-dark-400">
+                  <label className="text-muted-foreground mb-1 block text-sm">
                     {t('admin.landings.discountPercent', 'Discount %')}
                   </label>
                   <div className="flex items-center gap-3">
@@ -828,9 +826,9 @@ export default function AdminLandingEditor() {
                       max={99}
                       value={discountPercent}
                       onChange={(e) => setDiscountPercent(Number(e.target.value))}
-                      className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-dark-700 accent-accent-500"
+                      className="bg-muted accent-accent-500 h-2 flex-1 cursor-pointer appearance-none rounded-lg"
                     />
-                    <div className="flex w-20 items-center rounded-lg border border-dark-700 bg-dark-800">
+                    <div className="border-border bg-card flex w-20 items-center rounded-lg border">
                       <input
                         type="number"
                         min={1}
@@ -840,9 +838,9 @@ export default function AdminLandingEditor() {
                           const v = Math.min(99, Math.max(1, Number(e.target.value) || 1));
                           setDiscountPercent(v);
                         }}
-                        className="w-full bg-transparent px-2 py-1.5 text-center text-sm text-dark-100 outline-none"
+                        className="text-foreground w-full bg-transparent px-2 py-1.5 text-center text-sm outline-none"
                       />
-                      <span className="pr-2 text-sm text-dark-400">%</span>
+                      <span className="text-muted-foreground pr-2 text-sm">%</span>
                     </div>
                   </div>
                 </div>
@@ -850,32 +848,32 @@ export default function AdminLandingEditor() {
                 {/* Date range */}
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm text-dark-400">
+                    <label className="text-muted-foreground mb-1 block text-sm">
                       {t('admin.landings.discountStartsAt', 'Start date')}
                     </label>
                     <input
                       type="datetime-local"
                       value={discountStartsAt}
                       onChange={(e) => setDiscountStartsAt(e.target.value)}
-                      className="w-full rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-100 outline-none focus:border-accent-500 [&::-webkit-calendar-picker-indicator]:invert"
+                      className="border-border bg-card text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm outline-none [&::-webkit-calendar-picker-indicator]:invert"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm text-dark-400">
+                    <label className="text-muted-foreground mb-1 block text-sm">
                       {t('admin.landings.discountEndsAt', 'End date')}
                     </label>
                     <input
                       type="datetime-local"
                       value={discountEndsAt}
                       onChange={(e) => setDiscountEndsAt(e.target.value)}
-                      className="w-full rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm text-dark-100 outline-none focus:border-accent-500 [&::-webkit-calendar-picker-indicator]:invert"
+                      className="border-border bg-card text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm outline-none [&::-webkit-calendar-picker-indicator]:invert"
                     />
                   </div>
                 </div>
 
                 {/* Badge text */}
                 <div>
-                  <label className="mb-1 block text-sm text-dark-400">
+                  <label className="text-muted-foreground mb-1 block text-sm">
                     {t('admin.landings.discountBadge', 'Banner text (optional)')}
                   </label>
                   <LocalizedInput
@@ -889,10 +887,10 @@ export default function AdminLandingEditor() {
                 {/* Per-tariff overrides */}
                 {selectedTariffIds.length > 0 && (
                   <div>
-                    <label className="mb-2 block text-sm text-dark-400">
+                    <label className="text-muted-foreground mb-2 block text-sm">
                       {t('admin.landings.discountOverrides', 'Per-tariff overrides')}
                     </label>
-                    <p className="mb-2 text-xs text-dark-500">
+                    <p className="text-muted-foreground mb-2 text-xs">
                       {t(
                         'admin.landings.discountOverridesHint',
                         'Leave empty to use global discount',
@@ -907,12 +905,12 @@ export default function AdminLandingEditor() {
                         return (
                           <div
                             key={tariffId}
-                            className="flex items-center gap-3 rounded-lg border border-dark-700 bg-dark-800/50 px-3 py-2"
+                            className="border-border bg-card/50 flex items-center gap-3 rounded-lg border px-3 py-2"
                           >
-                            <span className="min-w-0 flex-1 truncate text-sm text-dark-200">
+                            <span className="text-foreground min-w-0 flex-1 truncate text-sm">
                               {tariff.name}
                             </span>
-                            <span className="text-xs text-dark-500">
+                            <span className="text-muted-foreground text-xs">
                               {hasOverride ? `${override}%` : `${discountPercent}%`}
                             </span>
                             <input
@@ -934,7 +932,7 @@ export default function AdminLandingEditor() {
                                   };
                                 });
                               }}
-                              className="w-16 rounded border border-dark-600 bg-dark-700 px-2 py-1 text-center text-sm text-dark-100 outline-none focus:border-accent-500"
+                              className="border-border bg-muted text-foreground focus:border-primary w-16 rounded border px-2 py-1 text-center text-sm outline-none"
                             />
                           </div>
                         );
@@ -945,8 +943,8 @@ export default function AdminLandingEditor() {
 
                 {/* Preview */}
                 {selectedTariffIds.length > 0 && (
-                  <div className="rounded-lg border border-dark-600 bg-dark-800/30 p-3">
-                    <p className="mb-2 text-xs font-medium uppercase tracking-wider text-dark-500">
+                  <div className="border-border bg-card/30 rounded-lg border p-3">
+                    <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
                       {t('admin.landings.discountPreview', 'Preview')}
                     </p>
                     {selectedTariffIds.slice(0, 3).map((tariffId) => {
@@ -964,14 +962,14 @@ export default function AdminLandingEditor() {
                       );
                       return (
                         <div key={tariffId} className="flex items-center gap-2 py-1">
-                          <span className="text-sm text-dark-300">{tariff.name}:</span>
-                          <span className="text-xs text-dark-500 line-through">
+                          <span className="text-muted-foreground text-sm">{tariff.name}:</span>
+                          <span className="text-muted-foreground text-xs line-through">
                             {formatPrice(firstPeriod.price_kopeks)}
                           </span>
-                          <span className="text-sm font-semibold text-accent-400">
+                          <span className="text-primary text-sm font-semibold">
                             {formatPrice(discounted)}
                           </span>
-                          <span className="rounded-full bg-accent-500/20 px-1.5 py-0.5 text-[10px] font-medium text-accent-400">
+                          <span className="bg-primary/20 text-primary rounded-full px-1.5 py-0.5 text-[10px] font-medium">
                             -{pct}%
                           </span>
                         </div>
@@ -993,7 +991,9 @@ export default function AdminLandingEditor() {
           <div className="space-y-4">
             {/* Available system methods as toggleable list */}
             <div>
-              <p className="mb-2 text-sm text-dark-500">{t('admin.landings.selectMethods')}</p>
+              <p className="text-muted-foreground mb-2 text-sm">
+                {t('admin.landings.selectMethods')}
+              </p>
               <div className="space-y-2">
                 {availablePaymentMethods.map((sysMethod) => {
                   const isSelected = paymentMethods.some(
@@ -1005,21 +1005,19 @@ export default function AdminLandingEditor() {
                       className={cn(
                         'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                         isSelected
-                          ? 'border-accent-500/50 bg-accent-500/5'
-                          : 'border-dark-700 bg-dark-800/50 hover:border-dark-600',
+                          ? 'border-primary/50 bg-primary/5'
+                          : 'border-border bg-card/50 hover:border-border',
                       )}
                     >
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={isSelected}
-                        onChange={() => togglePaymentMethod(sysMethod.method_id)}
-                        className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-accent-500"
+                        onCheckedChange={() => togglePaymentMethod(sysMethod.method_id)}
                       />
-                      <span className="flex items-center gap-2 text-sm font-medium text-dark-100">
+                      <span className="text-foreground flex items-center gap-2 text-sm font-medium">
                         {sysMethod.display_name ?? sysMethod.default_display_name}
                         {sysMethod.available_sub_options &&
                           sysMethod.available_sub_options.length > 0 && (
-                            <span className="rounded-full bg-dark-700 px-1.5 py-0.5 text-[10px] text-dark-400">
+                            <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[10px]">
                               {sysMethod.available_sub_options.map((o) => o.name).join(' / ')}
                             </span>
                           )}
@@ -1028,7 +1026,9 @@ export default function AdminLandingEditor() {
                   );
                 })}
                 {availablePaymentMethods.length === 0 && (
-                  <p className="text-sm text-dark-600">{t('admin.landings.noSystemMethods')}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t('admin.landings.noSystemMethods')}
+                  </p>
                 )}
               </div>
             </div>
@@ -1036,7 +1036,9 @@ export default function AdminLandingEditor() {
             {/* Selected methods with drag-to-reorder */}
             {paymentMethods.length > 0 && (
               <div>
-                <p className="mb-2 text-sm text-dark-500">{t('admin.landings.methodOrder')}</p>
+                <p className="text-muted-foreground mb-2 text-sm">
+                  {t('admin.landings.methodOrder')}
+                </p>
                 <DndContext sensors={sensors} onDragEnd={handleMethodDragEnd}>
                   <SortableContext items={methodIds} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2">
@@ -1065,7 +1067,9 @@ export default function AdminLandingEditor() {
           onToggle={() => toggleSection('gifts')}
         >
           <div className="flex items-center justify-between">
-            <label className="text-sm text-dark-400">{t('admin.landings.giftEnabled')}</label>
+            <label className="text-muted-foreground text-sm">
+              {t('admin.landings.giftEnabled')}
+            </label>
             <Toggle checked={giftEnabled} onChange={() => setGiftEnabled(!giftEnabled)} />
           </div>
         </Section>
@@ -1087,7 +1091,7 @@ export default function AdminLandingEditor() {
         >
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm text-dark-400">
+              <label className="text-muted-foreground mb-1 block text-sm">
                 {t('admin.landings.footerText')}
               </label>
               <LocalizedInput
@@ -1099,14 +1103,14 @@ export default function AdminLandingEditor() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-dark-400">
+              <label className="text-muted-foreground mb-1 block text-sm">
                 {t('admin.landings.customCss')}
               </label>
               <textarea
                 value={customCss}
                 onChange={(e) => setCustomCss(e.target.value)}
                 rows={6}
-                className="w-full rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 font-mono text-sm text-dark-100 outline-none focus:border-accent-500"
+                className="border-border bg-card text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 font-mono text-sm outline-none"
               />
             </div>
           </div>

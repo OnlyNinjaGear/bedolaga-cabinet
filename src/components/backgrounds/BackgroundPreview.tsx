@@ -22,11 +22,11 @@ export function BackgroundPreview({
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-dark-700/50 bg-dark-900',
+          'border-border/50 bg-background relative overflow-hidden rounded-2xl border',
           className,
         )}
       >
-        <div className="flex h-full items-center justify-center text-dark-400">—</div>
+        <div className="text-muted-foreground flex h-full items-center justify-center">—</div>
       </div>
     );
   }
@@ -37,14 +37,14 @@ export function BackgroundPreview({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border border-dark-700/50 bg-dark-900',
+        'border-border/50 bg-background relative overflow-hidden rounded-2xl border',
         className,
       )}
     >
       <Suspense
         fallback={
           <div className="flex h-full items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         }
       >

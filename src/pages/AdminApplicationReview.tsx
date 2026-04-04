@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { partnerApi, type AdminPartnerApplicationItem } from '../api/partners';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
 
 export default function AdminApplicationReview() {
   const { t } = useTranslation();
@@ -53,12 +54,12 @@ export default function AdminApplicationReview() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.partners.approveDialog.title')}
           </h1>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       </div>
     );
@@ -72,76 +73,78 @@ export default function AdminApplicationReview() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin/partners" />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.partners.actions.review')}
           </h1>
-          <p className="text-sm text-dark-400">{displayName}</p>
+          <p className="text-muted-foreground text-sm">{displayName}</p>
         </div>
       </div>
 
       <div className="space-y-6">
         {/* Application Details */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-          <h3 className="mb-4 font-medium text-dark-200">
+        <div className="border-border bg-card rounded-xl border p-4">
+          <h3 className="text-foreground mb-4 font-medium">
             {t('admin.partners.tabs.applications')}
           </h3>
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="font-medium text-dark-100">{displayName}</span>
-                  {app.username && <span className="text-sm text-dark-500">@{app.username}</span>}
+                  <span className="text-foreground font-medium">{displayName}</span>
+                  {app.username && (
+                    <span className="text-muted-foreground text-sm">@{app.username}</span>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2 text-sm text-dark-400">
+            <div className="text-muted-foreground space-y-2 text-sm">
               {app.company_name && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.companyName')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.company_name}</span>
+                  <span className="text-foreground">{app.company_name}</span>
                 </div>
               )}
               {app.website_url && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.website')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.website_url}</span>
+                  <span className="text-foreground">{app.website_url}</span>
                 </div>
               )}
               {app.telegram_channel && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.channel')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.telegram_channel}</span>
+                  <span className="text-foreground">{app.telegram_channel}</span>
                 </div>
               )}
               {app.description && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.description')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.description}</span>
+                  <span className="text-foreground">{app.description}</span>
                 </div>
               )}
               {app.expected_monthly_referrals != null && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.expectedReferrals')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.expected_monthly_referrals}</span>
+                  <span className="text-foreground">{app.expected_monthly_referrals}</span>
                 </div>
               )}
               {app.desired_commission_percent != null && (
-                <div className="rounded-lg bg-dark-700/50 p-3">
-                  <span className="text-dark-500">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">
                     {t('admin.partners.applicationFields.desiredCommission')}:
                   </span>{' '}
-                  <span className="text-dark-200">{app.desired_commission_percent}%</span>
+                  <span className="text-foreground">{app.desired_commission_percent}%</span>
                 </div>
               )}
             </div>
@@ -149,14 +152,14 @@ export default function AdminApplicationReview() {
         </div>
 
         {/* Approve Section */}
-        <div className="rounded-xl border border-success-500/30 bg-dark-800 p-4">
-          <h3 className="mb-2 text-lg font-semibold text-dark-100">
+        <div className="border-success-500/30 bg-card rounded-xl border p-4">
+          <h3 className="text-foreground mb-2 text-lg font-semibold">
             {t('admin.partners.approveDialog.title')}
           </h3>
-          <p className="mb-4 text-sm text-dark-400">
+          <p className="text-muted-foreground mb-4 text-sm">
             {t('admin.partners.approveDialog.description', { name: displayName })}
           </p>
-          <label className="mb-1 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-1 block text-sm font-medium">
             {t('admin.partners.approveDialog.commissionLabel')}
           </label>
           <input
@@ -165,10 +168,10 @@ export default function AdminApplicationReview() {
             max="100"
             value={commission}
             onChange={(e) => setCommission(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
+            className="border-border bg-muted text-foreground focus:border-primary mb-4 w-full rounded-lg border px-3 py-2 outline-none"
             placeholder="10"
           />
-          <button
+          <Button
             onClick={() => {
               const val = Number(commission);
               if (val >= 1 && val <= 100) {
@@ -181,37 +184,37 @@ export default function AdminApplicationReview() {
               Number(commission) < 1 ||
               Number(commission) > 100
             }
-            className="w-full rounded-lg bg-success-500 px-4 py-3 font-medium text-white transition-colors hover:bg-success-600 disabled:opacity-50"
+            className="bg-success-500 hover:bg-success-600 w-full"
           >
             {approveMutation.isPending ? t('common.saving') : t('admin.partners.actions.approve')}
-          </button>
+          </Button>
         </div>
 
         {approveMutation.isError && (
-          <div className="rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="bg-error-500/10 text-error-400 rounded-lg p-3 text-sm">
             {t('common.error')}
           </div>
         )}
 
         {/* Reject Section */}
-        <div className="rounded-xl border border-error-500/30 bg-dark-800 p-4">
-          <h3 className="mb-2 text-lg font-semibold text-dark-100">
+        <div className="border-error-500/30 bg-card rounded-xl border p-4">
+          <h3 className="text-foreground mb-2 text-lg font-semibold">
             {t('admin.partners.rejectDialog.title')}
           </h3>
-          <p className="mb-4 text-sm text-dark-400">
+          <p className="text-muted-foreground mb-4 text-sm">
             {t('admin.partners.rejectDialog.description', { name: displayName })}
           </p>
-          <label className="mb-1 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-1 block text-sm font-medium">
             {t('admin.partners.rejectDialog.commentLabel')}
           </label>
           <textarea
             value={rejectComment}
             onChange={(e) => setRejectComment(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
+            className="border-border bg-muted text-foreground focus:border-primary mb-4 w-full rounded-lg border px-3 py-2 outline-none"
             rows={3}
             placeholder={t('admin.partners.rejectDialog.commentPlaceholder')}
           />
-          <button
+          <Button
             onClick={() =>
               rejectMutation.mutate({
                 appId: app.id,
@@ -219,13 +222,14 @@ export default function AdminApplicationReview() {
               })
             }
             disabled={rejectMutation.isPending}
-            className="w-full rounded-lg bg-error-500 px-4 py-3 font-medium text-white transition-colors hover:bg-error-600 disabled:opacity-50"
+            variant="destructive"
+            className="w-full"
           >
             {rejectMutation.isPending ? t('common.saving') : t('admin.partners.actions.reject')}
-          </button>
+          </Button>
 
           {rejectMutation.isError && (
-            <div className="mt-4 rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+            <div className="bg-error-500/10 text-error-400 mt-4 rounded-lg p-3 text-sm">
               {t('common.error')}
             </div>
           )}

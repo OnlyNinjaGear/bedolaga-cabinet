@@ -341,7 +341,7 @@ export function Sheet({
       {/* Sheet */}
       <div
         ref={sheetRef}
-        className={`relative w-full max-w-lg overflow-hidden rounded-t-3xl bg-dark-900 shadow-2xl ${
+        className={`bg-background relative w-full max-w-lg overflow-hidden rounded-t-3xl shadow-2xl ${
           isAnimating ? 'transition-transform duration-300 ease-out' : ''
         } ${isVisible ? 'translate-y-0' : 'translate-y-full'} ${className}`}
         style={{
@@ -359,14 +359,14 @@ export function Sheet({
             onTouchEnd={handleTouchEnd}
             onMouseDown={handleMouseDown}
           >
-            <div className="h-1 w-10 rounded-full bg-dark-600" />
+            <div className="bg-muted h-1 w-10 rounded-full" />
           </div>
         )}
 
         {/* Title */}
         {title && (
-          <div className="border-b border-dark-700/50 px-6 pb-4">
-            <h2 className="text-lg font-semibold text-dark-100">{title}</h2>
+          <div className="border-border border-b px-6 pb-4">
+            <h2 className="text-foreground text-lg font-semibold">{title}</h2>
           </div>
         )}
 
@@ -385,8 +385,3 @@ export function Sheet({
 
   return createPortal(sheet, document.body);
 }
-
-// Light theme styles applied via CSS
-// Add to globals.css:
-// .light .sheet-backdrop { @apply bg-black/40; }
-// .light .sheet-container { @apply bg-champagne-100; }

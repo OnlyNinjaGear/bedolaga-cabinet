@@ -3,6 +3,9 @@ import { useSearchParams, Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../api/auth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default function ResetPassword() {
   const { t } = useTranslation();
@@ -50,17 +53,17 @@ export default function ResetPassword() {
   if (!token) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
-        <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
-        <div className="fixed right-4 top-4 z-50">
+        <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
+        <div className="fixed top-4 right-4 z-50">
           <LanguageSwitcher />
         </div>
         <div className="relative w-full max-w-md text-center">
-          <div className="card">
-            <div className="mb-4 text-5xl text-error-400">!</div>
-            <h2 className="mb-2 text-xl font-semibold text-dark-50">
+          <Card>
+            <div className="text-error-400 mb-4 text-5xl">!</div>
+            <h2 className="text-foreground mb-2 text-xl font-semibold">
               {t('resetPassword.invalidToken', 'Invalid reset link')}
             </h2>
-            <p className="mb-6 text-dark-400">
+            <p className="text-muted-foreground mb-6">
               {t(
                 'resetPassword.tokenExpiredOrInvalid',
                 'This password reset link is invalid or has expired.',
@@ -69,7 +72,7 @@ export default function ResetPassword() {
             <Link to="/login" className="btn-primary inline-block w-full">
               {t('auth.backToLogin', 'Back to login')}
             </Link>
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -77,19 +80,19 @@ export default function ResetPassword() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
-      <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-500/10 via-transparent to-transparent" />
-      <div className="fixed right-4 top-4 z-50">
+      <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
+      <div className="from-primary/10 fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] via-transparent to-transparent" />
+      <div className="fixed top-4 right-4 z-50">
         <LanguageSwitcher />
       </div>
 
       <div className="relative w-full max-w-md">
-        <div className="card">
+        <Card>
           {status === 'success' ? (
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-success-500/20">
+              <div className="bg-success-500/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
                 <svg
-                  className="h-8 w-8 text-success-400"
+                  className="text-success-400 h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -98,20 +101,20 @@ export default function ResetPassword() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="mb-2 text-xl font-bold text-dark-50">
+              <h2 className="text-foreground mb-2 text-xl font-bold">
                 {t('resetPassword.success', 'Password changed!')}
               </h2>
-              <p className="mb-4 text-dark-400">
+              <p className="text-muted-foreground mb-4">
                 {t('resetPassword.redirectingToLogin', 'Redirecting to login...')}
               </p>
-              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              <div className="border-primary mx-auto h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           ) : (
             <>
-              <h2 className="mb-2 text-center text-xl font-bold text-dark-50">
+              <h2 className="text-foreground mb-2 text-center text-xl font-bold">
                 {t('resetPassword.title', 'Set new password')}
               </h2>
-              <p className="mb-6 text-center text-dark-400">
+              <p className="text-muted-foreground mb-6 text-center">
                 {t('resetPassword.enterNewPassword', 'Enter your new password below.')}
               </p>
 
@@ -120,13 +123,12 @@ export default function ResetPassword() {
                   <label htmlFor="password" className="label">
                     {t('auth.password', 'Password')}
                   </label>
-                  <input
+                  <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="input"
                     autoComplete="new-password"
                     disabled={status === 'loading'}
                   />
@@ -136,29 +138,24 @@ export default function ResetPassword() {
                   <label htmlFor="confirmPassword" className="label">
                     {t('auth.confirmPassword', 'Confirm Password')}
                   </label>
-                  <input
+                  <Input
                     id="confirmPassword"
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="input"
                     autoComplete="new-password"
                     disabled={status === 'loading'}
                   />
                 </div>
 
                 {error && (
-                  <div className="rounded-xl border border-error-500/30 bg-error-500/10 px-4 py-3 text-sm text-error-400">
+                  <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-xl border px-4 py-3 text-sm">
                     {error}
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={status === 'loading'}
-                  className="btn-primary w-full"
-                >
+                <Button type="submit" disabled={status === 'loading'} className="w-full">
                   {status === 'loading' ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -167,20 +164,20 @@ export default function ResetPassword() {
                   ) : (
                     t('resetPassword.setPassword', 'Set new password')
                   )}
-                </button>
+                </Button>
               </form>
 
               <div className="mt-4 text-center">
                 <Link
                   to="/login"
-                  className="text-sm text-dark-400 transition-colors hover:text-dark-200"
+                  className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                 >
                   {t('auth.backToLogin', 'Back to login')}
                 </Link>
               </div>
             </>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

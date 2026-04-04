@@ -11,6 +11,7 @@ import {
 import { adminSettingsApi, type SettingDefinition } from '../api/adminSettings';
 import { AdminBackButton } from '../components/admin';
 import { Toggle } from '../components/admin/Toggle';
+import { Button } from '@/components/ui/button';
 
 // Icons
 const ChannelIcon = () => (
@@ -156,24 +157,24 @@ function GlobalSettingsSection() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-6">
+      <div className="border-border bg-card/50 rounded-xl border p-6">
         <div className="flex items-center gap-3">
           <div className="animate-spin">
             <RefreshIcon />
           </div>
-          <span className="text-sm text-dark-400">{t('common.loading')}</span>
+          <span className="text-muted-foreground text-sm">{t('common.loading')}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+    <div className="border-border bg-card/50 rounded-xl border p-4">
       <div className="mb-4 flex items-center gap-2.5">
-        <div className="text-dark-300">
+        <div className="text-muted-foreground">
           <SettingsIcon />
         </div>
-        <h2 className="text-sm font-semibold text-dark-100">
+        <h2 className="text-foreground text-sm font-semibold">
           {t('admin.channelSubscriptions.globalSettings.title')}
         </h2>
       </div>
@@ -189,11 +190,11 @@ function GlobalSettingsSection() {
           return (
             <div
               key={key}
-              className="flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-dark-700/30"
+              className="hover:bg-muted/30 flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-dark-200">{t(i18n.label)}</p>
-                <p className="mt-0.5 text-xs text-dark-400">{t(i18n.desc)}</p>
+                <p className="text-foreground text-sm font-medium">{t(i18n.label)}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t(i18n.desc)}</p>
               </div>
               <Toggle
                 checked={enabled}
@@ -230,9 +231,7 @@ function ChannelCard({
   return (
     <div
       className={`rounded-xl border p-4 transition-all ${
-        channel.is_active
-          ? 'border-success-500/50 bg-success-500/5'
-          : 'border-dark-700 bg-dark-800/50'
+        channel.is_active ? 'border-success-500/50 bg-success-500/5' : 'border-border bg-card/50'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -243,28 +242,30 @@ function ChannelCard({
               className={`rounded-full px-2 py-1 text-xs font-medium ${
                 channel.is_active
                   ? 'bg-success-500/20 text-success-400'
-                  : 'bg-dark-500/20 text-dark-400'
+                  : 'bg-muted/20 text-muted-foreground'
               }`}
             >
               {channel.is_active
                 ? t('admin.channelSubscriptions.enabled')
                 : t('admin.channelSubscriptions.disabled')}
             </span>
-            <span className="text-xs text-dark-400">#{channel.id}</span>
-            <span className="text-xs text-dark-500">
+            <span className="text-muted-foreground text-xs">#{channel.id}</span>
+            <span className="text-muted-foreground text-xs">
               {t('admin.channelSubscriptions.sortOrder')}: {channel.sort_order}
             </span>
           </div>
 
           {/* Title / channel_id */}
-          <p className="text-sm font-medium text-dark-100">{displayName}</p>
+          <p className="text-foreground text-sm font-medium">{displayName}</p>
 
           {/* Channel ID (if title exists, show ID separately) */}
-          {channel.title && <p className="mt-0.5 text-xs text-dark-400">{channel.channel_id}</p>}
+          {channel.title && (
+            <p className="text-muted-foreground mt-0.5 text-xs">{channel.channel_id}</p>
+          )}
 
           {/* Link */}
           {hasLink && (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-accent-400">
+            <div className="text-primary mt-1.5 flex items-center gap-1 text-xs">
               <LinkIcon />
               <a
                 href={channel.channel_link!}
@@ -280,13 +281,13 @@ function ChannelCard({
       </div>
 
       {/* Per-channel disable toggles */}
-      <div className="mt-3 space-y-2 border-t border-dark-700/50 pt-3">
+      <div className="border-border/50 mt-3 space-y-2 border-t pt-3">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-dark-300">
+            <p className="text-muted-foreground text-xs font-medium">
               {t('admin.channelSubscriptions.perChannel.disableTrial')}
             </p>
-            <p className="text-xs text-dark-500">
+            <p className="text-muted-foreground text-xs">
               {t('admin.channelSubscriptions.perChannel.disableTrialDesc')}
             </p>
           </div>
@@ -301,10 +302,10 @@ function ChannelCard({
         </div>
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-dark-300">
+            <p className="text-muted-foreground text-xs font-medium">
               {t('admin.channelSubscriptions.perChannel.disablePaid')}
             </p>
-            <p className="text-xs text-dark-500">
+            <p className="text-muted-foreground text-xs">
               {t('admin.channelSubscriptions.perChannel.disablePaidDesc')}
             </p>
           </div>
@@ -320,40 +321,43 @@ function ChannelCard({
       </div>
 
       {/* Action buttons */}
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-dark-700/50 pt-3">
-        <button
-          onClick={() => onEdit(channel)}
-          className="flex items-center gap-1.5 rounded-lg bg-accent-500/20 px-3 py-1.5 text-xs text-accent-400 transition-colors hover:bg-accent-500/30"
-        >
+      <div className="border-border/50 mt-3 flex flex-wrap gap-2 border-t pt-3">
+        <Button size="sm" onClick={() => onEdit(channel)} className="flex items-center gap-1.5">
           <EditIcon />
           {t('admin.channelSubscriptions.edit')}
-        </button>
+        </Button>
 
         {channel.is_active ? (
-          <button
+          <Button
+            size="sm"
+            variant="ghost"
             onClick={() => onToggle(channel.id)}
-            className="flex items-center gap-1.5 rounded-lg bg-warning-500/20 px-3 py-1.5 text-xs text-warning-400 transition-colors hover:bg-warning-500/30"
+            className="bg-warning-500/20 text-warning-400 hover:bg-warning-500/30 flex items-center gap-1.5"
           >
             <XIcon />
             {t('admin.channelSubscriptions.disable')}
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
+            size="sm"
+            variant="ghost"
             onClick={() => onToggle(channel.id)}
-            className="flex items-center gap-1.5 rounded-lg bg-success-500/20 px-3 py-1.5 text-xs text-success-400 transition-colors hover:bg-success-500/30"
+            className="bg-success-500/20 text-success-400 hover:bg-success-500/30 flex items-center gap-1.5"
           >
             <CheckIcon />
             {t('admin.channelSubscriptions.enable')}
-          </button>
+          </Button>
         )}
 
-        <button
+        <Button
+          size="sm"
+          variant="destructive"
           onClick={() => onDelete(channel.id)}
-          className="flex items-center gap-1.5 rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+          className="flex items-center gap-1.5"
         >
           <TrashIcon />
           {t('admin.channelSubscriptions.delete')}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -389,7 +393,7 @@ function ChannelFormFields({
     <>
       {showChannelId && (
         <div>
-          <label className="mb-1 block text-xs font-medium text-dark-300">
+          <label className="text-muted-foreground mb-1 block text-xs font-medium">
             {t('admin.channelSubscriptions.form.channelId')} *
           </label>
           <input
@@ -397,14 +401,14 @@ function ChannelFormFields({
             value={channelId}
             onChange={(e) => setChannelId(e.target.value)}
             placeholder={t('admin.channelSubscriptions.form.channelIdHint')}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+            className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
             autoFocus
           />
         </div>
       )}
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-dark-300">
+        <label className="text-muted-foreground mb-1 block text-xs font-medium">
           {t('admin.channelSubscriptions.form.title')}
         </label>
         <input
@@ -412,13 +416,13 @@ function ChannelFormFields({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('admin.channelSubscriptions.form.title')}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+          className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
           autoFocus={!showChannelId}
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-dark-300">
+        <label className="text-muted-foreground mb-1 block text-xs font-medium">
           {t('admin.channelSubscriptions.form.channelLink')}
         </label>
         <input
@@ -426,13 +430,13 @@ function ChannelFormFields({
           value={channelLink}
           onChange={(e) => setChannelLink(e.target.value)}
           placeholder={t('admin.channelSubscriptions.form.channelLinkHint')}
-          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+          className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
         />
       </div>
 
       {showSortOrder && (
         <div>
-          <label className="mb-1 block text-xs font-medium text-dark-300">
+          <label className="text-muted-foreground mb-1 block text-xs font-medium">
             {t('admin.channelSubscriptions.sortOrder')}
           </label>
           <input
@@ -440,7 +444,7 @@ function ChannelFormFields({
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
             placeholder="0"
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+            className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none"
           />
         </div>
       )}
@@ -473,7 +477,7 @@ function AddChannelForm({
   };
 
   return (
-    <div className="rounded-xl border border-accent-500/30 bg-dark-800/50 p-4">
+    <div className="border-primary/30 bg-card/50 rounded-xl border p-4">
       <div className="space-y-3">
         <ChannelFormFields
           channelId={channelId}
@@ -489,22 +493,14 @@ function AddChannelForm({
         />
 
         <div className="flex gap-2 pt-1">
-          <button
-            onClick={handleSubmit}
-            disabled={!channelId.trim() || isLoading}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button onClick={handleSubmit} disabled={!channelId.trim() || isLoading}>
             <CheckIcon />
             {t('admin.channelSubscriptions.form.submit')}
-          </button>
-          <button
-            onClick={onCancel}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          </Button>
+          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
             <XIcon />
             {t('admin.channelSubscriptions.form.cancel')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -544,10 +540,10 @@ function EditChannelForm({
   };
 
   return (
-    <div className="rounded-xl border border-accent-500/30 bg-dark-800/50 p-4">
-      <p className="mb-3 text-xs text-dark-400">
+    <div className="border-primary/30 bg-card/50 rounded-xl border p-4">
+      <p className="text-muted-foreground mb-3 text-xs">
         {t('admin.channelSubscriptions.editing')}:{' '}
-        <code className="text-dark-300">{channel.channel_id}</code>
+        <code className="text-muted-foreground">{channel.channel_id}</code>
       </p>
       <div className="space-y-3">
         <ChannelFormFields
@@ -564,22 +560,14 @@ function EditChannelForm({
         />
 
         <div className="flex gap-2 pt-1">
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-sm text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button onClick={handleSubmit} disabled={isLoading}>
             <CheckIcon />
             {t('admin.channelSubscriptions.form.save')}
-          </button>
-          <button
-            onClick={onCancel}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          </Button>
+          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
             <XIcon />
             {t('admin.channelSubscriptions.form.cancel')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -684,34 +672,36 @@ export default function AdminChannelSubscriptions() {
         <div className="flex items-center gap-3">
           <AdminBackButton />
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+            <div className="bg-primary/20 text-primary rounded-lg p-2">
               <ChannelIcon />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-dark-100">
+              <h1 className="text-foreground text-xl font-bold">
                 {t('admin.channelSubscriptions.title')}
               </h1>
-              <p className="text-sm text-dark-400">{t('admin.channelSubscriptions.subtitle')}</p>
+              <p className="text-muted-foreground text-sm">
+                {t('admin.channelSubscriptions.subtitle')}
+              </p>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => refetch()}
             aria-label={t('common.refresh')}
-            className="rounded-lg bg-dark-800 p-2 text-dark-400 transition-colors hover:text-dark-100"
           >
             <RefreshIcon />
-          </button>
+          </Button>
           {!showAddForm && !editingChannel && (
-            <button
+            <Button
               onClick={() => setShowAddForm(true)}
               aria-label={t('admin.channelSubscriptions.addChannel')}
-              className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
             >
               <PlusIcon />
               <span className="hidden sm:inline">{t('admin.channelSubscriptions.addChannel')}</span>
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -740,14 +730,14 @@ export default function AdminChannelSubscriptions() {
 
       {/* Channel list */}
       {isLoading ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <div className="mx-auto mb-2 w-fit animate-spin">
             <RefreshIcon />
           </div>
           <p>{t('common.loading')}</p>
         </div>
       ) : channels.length === 0 ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <div className="mx-auto mb-2 w-fit">
             <ChannelIcon />
           </div>

@@ -8,8 +8,8 @@ import { subscriptionApi } from '../../api/subscription';
 import { useTheme } from '../../hooks/useTheme';
 import { useCurrency } from '../../hooks/useCurrency';
 import { useHapticFeedback } from '../../platform/hooks/useHaptic';
-import { getGlassColors } from '../../utils/glassTheme';
 import { getInsufficientBalanceError } from '../../utils/subscriptionHelpers';
+import { Button } from '@/components/ui/button';
 
 interface SubscriptionCardExpiredProps {
   subscription: Subscription;
@@ -26,7 +26,6 @@ export default function SubscriptionCardExpired({
 }: SubscriptionCardExpiredProps) {
   const { t } = useTranslation();
   const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,15 +116,9 @@ export default function SubscriptionCardExpired({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl ${className ?? ''}`}
+      className={`bg-card relative overflow-hidden rounded-3xl shadow-sm ${className ?? ''}`}
       style={{
-        background: g.cardBg,
-        border: isDark
-          ? `1px solid rgba(${accent.r},${accent.g},${accent.b},0.12)`
-          : `1px solid rgba(${accent.r},${accent.g},${accent.b},0.2)`,
-        boxShadow: isDark
-          ? g.shadow
-          : `0 2px 16px rgba(${accent.r},${accent.g},${accent.b},0.1), 0 0 0 1px rgba(${accent.r},${accent.g},${accent.b},0.06)`,
+        border: `1px solid rgba(${accent.r},${accent.g},${accent.b},0.15)`,
         padding: '28px 28px 24px',
       }}
     >
@@ -160,7 +153,7 @@ export default function SubscriptionCardExpired({
       {/* Header */}
       <div className="mb-5 flex items-center gap-3">
         <div
-          className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px]"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px]"
           style={{
             background: `rgba(${accent.r},${accent.g},${accent.b},0.1)`,
             border: `1px solid rgba(${accent.r},${accent.g},${accent.b},0.15)`,
@@ -199,7 +192,7 @@ export default function SubscriptionCardExpired({
             </svg>
           )}
         </div>
-        <h2 className="text-lg font-bold tracking-tight text-dark-50">
+        <h2 className="text-foreground text-lg font-bold tracking-tight">
           {isLimited
             ? t('subscription.trafficLimitedTitle')
             : isDisabledDaily
@@ -212,7 +205,7 @@ export default function SubscriptionCardExpired({
 
       {/* Limited description */}
       {isLimited && (
-        <p className="mb-4 text-sm text-dark-50/60">
+        <p className="text-foreground/60 mb-4 text-sm">
           {t('subscription.trafficLimitedDescription')}
         </p>
       )}
@@ -227,19 +220,19 @@ export default function SubscriptionCardExpired({
         }}
       >
         <div className="flex items-center">
-          <div className="mb-0.5 font-mono text-[10px] font-medium uppercase tracking-wider text-dark-50/30">
+          <div className="text-foreground/30 mb-0.5 font-mono text-[10px] font-medium tracking-wider uppercase">
             {t('dashboard.expired.expiredDate')}
           </div>
-          <div className="ml-3 text-base font-bold tracking-tight text-dark-50/50">
+          <div className="text-foreground/50 ml-3 text-base font-bold tracking-tight">
             {formattedDate}
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-dark-50/30">
+          <span className="text-foreground/30 text-[10px] font-medium tracking-wider uppercase">
             {t('dashboard.expired.balance')}
           </span>
           <span
-            className={`text-sm font-semibold ${hasBalance ? 'text-success-400' : 'text-dark-50/30'}`}
+            className={`text-sm font-semibold ${hasBalance ? 'text-success-400' : 'text-foreground/30'}`}
           >
             {formatAmount(balanceRubles)} {currencySymbol}
           </span>
@@ -249,7 +242,7 @@ export default function SubscriptionCardExpired({
       {/* Renew error */}
       {renewError && (
         <div
-          className="mb-4 rounded-xl border border-error-500/30 bg-error-500/10 p-3 text-center text-sm text-error-400"
+          className="border-error-500/30 bg-error-500/10 text-error-400 mb-4 rounded-xl border p-3 text-center text-sm"
           role="alert"
         >
           {renewError}
@@ -261,7 +254,7 @@ export default function SubscriptionCardExpired({
         {isLimited ? (
           <Link
             to={`/subscriptions/${subscription.id}`}
-            className="flex flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight text-white transition-all duration-300"
+            className="text-primary-foreground flex flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight transition-all duration-300"
             style={{
               background: accent.gradient,
               boxShadow: `0 4px 20px rgba(${accent.r},${accent.g},${accent.b},0.2)`,
@@ -288,11 +281,11 @@ export default function SubscriptionCardExpired({
             {!subscription.is_trial && (
               <>
                 {hasBalance ? (
-                  <button
+                  <Button
                     type="button"
                     onClick={handleQuickRenew}
                     disabled={isRenewing}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight text-white transition-all duration-300 disabled:opacity-50"
+                    className="text-primary-foreground flex h-auto flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight"
                     style={{
                       background: accent.gradient,
                       boxShadow: `0 4px 20px rgba(${accent.r},${accent.g},${accent.b},0.2)`,
@@ -300,7 +293,7 @@ export default function SubscriptionCardExpired({
                   >
                     {isRenewing ? (
                       <span
-                        className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                        className="border-primary-foreground/30 border-t-primary-foreground h-4 w-4 animate-spin rounded-full border-2"
                         aria-hidden="true"
                       />
                     ) : (
@@ -323,12 +316,12 @@ export default function SubscriptionCardExpired({
                       : isDisabledDaily
                         ? t('dashboard.suspended.resume')
                         : t('dashboard.expired.quickRenew')}
-                  </button>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     type="button"
                     onClick={handleTopUp}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight text-white transition-all duration-300"
+                    className="text-primary-foreground flex h-auto flex-1 items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold tracking-tight"
                     style={{
                       background: accent.gradient,
                       boxShadow: `0 4px 20px rgba(${accent.r},${accent.g},${accent.b},0.2)`,
@@ -348,7 +341,7 @@ export default function SubscriptionCardExpired({
                       <path d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                     {t('dashboard.expired.topUp')}
-                  </button>
+                  </Button>
                 )}
               </>
             )}
@@ -356,20 +349,19 @@ export default function SubscriptionCardExpired({
             {/* Tariffs (go to purchase page) — full-width for trials */}
             <Link
               to="/subscription/purchase"
-              className={`flex items-center justify-center rounded-[14px] px-5 py-3.5 text-[15px] font-semibold tracking-tight transition-colors duration-200 ${
-                subscription.is_trial ? 'flex-1 text-white' : 'text-dark-50/50'
-              }`}
               style={
                 subscription.is_trial
                   ? {
                       background: accent.gradient,
                       boxShadow: `0 4px 20px rgba(${accent.r},${accent.g},${accent.b},0.2)`,
                     }
-                  : {
-                      background: g.innerBg,
-                      border: `1px solid ${g.innerBorder}`,
-                    }
+                  : undefined
               }
+              className={`flex items-center justify-center rounded-[14px] px-5 py-3.5 text-[15px] font-semibold tracking-tight transition-colors duration-200 ${
+                subscription.is_trial
+                  ? 'text-primary-foreground flex-1'
+                  : 'bg-muted/30 border-border/50 text-foreground/50 border'
+              }`}
             >
               {t('dashboard.expired.tariffs')}
             </Link>

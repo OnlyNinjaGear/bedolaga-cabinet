@@ -1,11 +1,18 @@
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { usePermissionStore } from '@/store/permissions';
 import { statsApi, type SystemInfo, type DashboardStats } from '@/api/admin';
+import { rbacApi, type AuditLogEntry } from '@/api/rbac';
+import { brandingApi } from '@/api/branding';
+import { tariffsApi } from '@/api/tariffs';
+import { adminPaymentMethodsApi } from '@/api/adminPaymentMethods';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { useTelegramSDK } from '@/hooks/useTelegramSDK';
 import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 
 const CABINET_VERSION = __APP_VERSION__;
 const IS_MAC = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
@@ -283,7 +290,7 @@ const icons = {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-[13px] w-[13px]"
+      className="size-3.25"
       aria-hidden="true"
     >
       <path
@@ -333,6 +340,11 @@ const icons = {
       <path d="M15 8h-5M15 12h-5" />
     </SvgIcon>
   ),
+  heart: (
+    <SvgIcon>
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+    </SvgIcon>
+  ),
   search: (
     <SvgIcon>
       <circle cx="11" cy="11" r="8" />
@@ -348,6 +360,12 @@ const icons = {
     <SvgIcon>
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
+    </SvgIcon>
+  ),
+  bell: (
+    <SvgIcon>
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
     </SvgIcon>
   ),
 } as const;
@@ -375,9 +393,8 @@ const sections: AdminSection[] = [
   {
     id: 'analytics',
     titleKey: 'admin.groups.analytics',
-    accent: 'rgb(var(--color-success-400))',
-    gradient:
-      'linear-gradient(135deg, rgb(var(--color-success-400)), rgb(var(--color-accent-500)))',
+    accent: 'var(--color-success-400)',
+    gradient: 'linear-gradient(135deg, var(--color-success-400), var(--primary))',
     items: [
       {
         name: 'admin.nav.dashboard',
@@ -408,8 +425,8 @@ const sections: AdminSection[] = [
   {
     id: 'users',
     titleKey: 'admin.groups.users',
-    accent: 'rgb(var(--color-accent-400))',
-    gradient: 'linear-gradient(135deg, rgb(var(--color-accent-400)), rgb(var(--color-error-400)))',
+    accent: 'var(--primary)',
+    gradient: 'linear-gradient(135deg, var(--primary), var(--color-error-400))',
     items: [
       { name: 'admin.nav.users', icon: 'users', to: '/admin/users', permission: 'users:read' },
       {
@@ -429,8 +446,8 @@ const sections: AdminSection[] = [
   {
     id: 'tariffs',
     titleKey: 'admin.groups.tariffs',
-    accent: 'rgb(var(--color-warning-400))',
-    gradient: 'linear-gradient(135deg, rgb(var(--color-warning-400)), rgb(var(--color-error-300)))',
+    accent: 'var(--color-warning-400)',
+    gradient: 'linear-gradient(135deg, var(--color-warning-400), var(--color-error-300))',
     items: [
       { name: 'admin.nav.tariffs', icon: 'tag', to: '/admin/tariffs', permission: 'tariffs:read' },
       {
@@ -468,8 +485,9 @@ const sections: AdminSection[] = [
   {
     id: 'marketing',
     titleKey: 'admin.groups.marketing',
-    accent: 'rgb(var(--color-accent-300))',
-    gradient: 'linear-gradient(135deg, rgb(var(--color-accent-300)), rgb(var(--color-accent-600)))',
+    accent: 'var(--primary)',
+    gradient:
+      'linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 60%, black))',
     items: [
       { name: 'admin.nav.news', icon: 'newspaper', to: '/admin/news', permission: 'news:read' },
       {
@@ -514,9 +532,8 @@ const sections: AdminSection[] = [
   {
     id: 'system',
     titleKey: 'admin.groups.system',
-    accent: 'rgb(var(--color-accent-500))',
-    gradient:
-      'linear-gradient(135deg, rgb(var(--color-accent-500)), rgb(var(--color-success-500)))',
+    accent: 'var(--primary)',
+    gradient: 'linear-gradient(135deg, var(--primary), var(--color-success-500))',
     items: [
       {
         name: 'admin.nav.channelSubscriptions',
@@ -528,6 +545,12 @@ const sections: AdminSection[] = [
         name: 'admin.nav.settings',
         icon: 'settings',
         to: '/admin/settings',
+        permission: 'settings:read',
+      },
+      {
+        name: 'admin.nav.seo',
+        icon: 'search',
+        to: '/admin/seo',
         permission: 'settings:read',
       },
       { name: 'admin.nav.apps', icon: 'app', to: '/admin/apps', permission: 'apps:read' },
@@ -555,13 +578,26 @@ const sections: AdminSection[] = [
         to: '/admin/updates',
         permission: 'updates:read',
       },
+      {
+        name: 'admin.nav.health',
+        icon: 'heart',
+        to: '/admin/health',
+        permission: 'settings:read',
+      },
+      {
+        name: 'admin.nav.notifications',
+        icon: 'bell',
+        to: '/admin/notifications',
+        permission: 'settings:read',
+      },
     ],
   },
   {
     id: 'security',
     titleKey: 'admin.groups.security',
-    accent: 'rgb(var(--color-error-400))',
-    gradient: 'linear-gradient(135deg, rgb(var(--color-error-400)), rgb(var(--color-accent-600)))',
+    accent: 'var(--color-error-400)',
+    gradient:
+      'linear-gradient(135deg, var(--color-error-400), color-mix(in srgb, var(--primary) 60%, black))',
     items: [
       { name: 'admin.nav.roles', icon: 'shield', to: '/admin/roles', permission: 'roles:read' },
       {
@@ -632,13 +668,13 @@ const StatsBar = memo(function StatsBar({ systemInfo, dashboardStats, loading }:
         icon: <StatBotIcon />,
         label: t('admin.panel.statsBot'),
         value: systemInfo?.bot_version ?? '--',
-        colorClass: 'text-accent-400 bg-accent-400/10 border-accent-400/20',
+        colorClass: 'text-primary bg-primary/10 border-primary/20',
       },
       {
         icon: <StatCabinetIcon />,
         label: t('admin.panel.statsCabinet'),
         value: `v${CABINET_VERSION}`,
-        colorClass: 'text-accent-300 bg-accent-300/10 border-accent-300/20',
+        colorClass: 'text-primary/70 bg-primary/10 border-primary/20',
       },
       {
         icon: <StatTrialIcon />,
@@ -662,8 +698,8 @@ const StatsBar = memo(function StatsBar({ systemInfo, dashboardStats, loading }:
         <div
           key={i}
           className={cn(
-            'flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-dark-700/50 bg-dark-800/40 px-3 py-2 backdrop-blur-lg transition-all duration-200',
-            'light:border-champagne-300/50 light:bg-champagne-100/60',
+            'border-border/50 bg-card/40 flex min-w-0 flex-1 items-center gap-2 rounded-xl border px-3 py-2 backdrop-blur-lg transition-all duration-200',
+            '',
             loading && 'animate-pulse',
           )}
           style={{ animationDelay: `${i * 60}ms` }}
@@ -677,19 +713,19 @@ const StatsBar = memo(function StatsBar({ systemInfo, dashboardStats, loading }:
             {s.icon}
           </div>
           <div className="flex min-w-0 flex-col gap-0.5 overflow-hidden">
-            <span className="flex items-center gap-1 font-mono text-xs font-bold text-dark-100 light:text-champagne-900">
+            <span className="text-foreground flex items-center gap-1 font-mono text-xs font-bold">
               {'numericValue' in s && s.numericValue !== undefined ? (
                 <AnimatedStat value={s.numericValue} />
               ) : (
                 <span className="truncate">{s.value}</span>
               )}
               {s.delta && (
-                <span className="shrink-0 rounded-md border border-success-400/20 bg-success-400/10 px-1.5 py-px text-2xs font-semibold text-success-400">
+                <span className="border-success-400/20 bg-success-400/10 text-2xs text-success-400 shrink-0 rounded-md border px-1.5 py-px font-semibold">
                   {s.delta}
                 </span>
               )}
             </span>
-            <span className="truncate text-2xs text-dark-500 light:text-champagne-600">
+            <span className="text-2xs text-muted-foreground truncate">
               {s.label}
               {s.delta && ` · ${t('admin.panel.statsToday')}`}
             </span>
@@ -755,7 +791,7 @@ const GlassCard = memo(function GlassCard({ section, index, searchTerm }: GlassC
       return (
         <>
           {text.slice(0, idx)}
-          <mark className="rounded-sm bg-accent-400/30 px-0.5 text-dark-100 light:text-champagne-900">
+          <mark className="bg-primary/30 text-foreground rounded-sm px-0.5">
             {text.slice(idx, idx + searchTerm.length)}
           </mark>
           {text.slice(idx + searchTerm.length)}
@@ -772,7 +808,7 @@ const GlassCard = memo(function GlassCard({ section, index, searchTerm }: GlassC
       ref={cardRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="group/card relative overflow-hidden rounded-2xl border border-dark-700/50 bg-dark-800/30 backdrop-blur-xl transition-all duration-300 hover:border-dark-600/80 hover:shadow-lg light:border-champagne-300/50 light:bg-champagne-100/40 light:hover:border-champagne-400/60"
+      className="group/card border-border/50 bg-card/30 hover:border-border/80 relative overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-300 hover:shadow-lg"
       style={{
         transform: `perspective(800px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         animation: `adminCardEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) ${index * 60}ms both`,
@@ -780,23 +816,23 @@ const GlassCard = memo(function GlassCard({ section, index, searchTerm }: GlassC
     >
       {/* Top glow line */}
       <div
-        className="absolute left-0 right-0 top-0 h-px opacity-50 transition-all duration-300 group-hover/card:h-0.5 group-hover/card:opacity-100"
+        className="absolute top-0 right-0 left-0 h-px opacity-50 transition-all duration-300 group-hover/card:h-0.5 group-hover/card:opacity-100"
         style={{ background: section.gradient }}
       />
 
       {/* Header */}
-      <div className="flex items-center gap-2.5 border-b border-dark-700/30 px-3.5 py-2.5 light:border-champagne-300/30">
+      <div className="border-border/30 flex items-center gap-2.5 border-b px-3.5 py-2.5">
         <div
           className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-md"
           style={{ background: section.gradient }}
         >
           {/* Shine overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/25" />
+          <div className="absolute inset-0 bg-linear-to-br from-transparent via-transparent to-white/25" />
           <span className="relative text-xs font-bold text-white drop-shadow-sm" aria-hidden="true">
             {visibleItems.length}
           </span>
         </div>
-        <h2 className="truncate text-[13px] font-semibold text-dark-100 light:text-champagne-900">
+        <h2 className="text-foreground truncate text-[13px] font-semibold">
           {t(section.titleKey)}
         </h2>
       </div>
@@ -810,8 +846,8 @@ const GlassCard = memo(function GlassCard({ section, index, searchTerm }: GlassC
             className={cn(
               'group/item flex items-center gap-2.5 rounded-xl border border-transparent px-2 py-1.5 transition-all duration-150',
               hoveredItem === i
-                ? 'border-dark-600/50 bg-dark-700/30 light:border-champagne-400/40 light:bg-champagne-200/50'
-                : 'hover:border-dark-600/50 hover:bg-dark-700/30 light:hover:border-champagne-400/40 light:hover:bg-champagne-200/50',
+                ? 'border-border/50 bg-muted/30'
+                : 'hover:border-border/50 hover:bg-muted/30',
             )}
             onMouseEnter={() => setHoveredItem(i)}
             onMouseLeave={() => setHoveredItem(null)}
@@ -821,23 +857,223 @@ const GlassCard = memo(function GlassCard({ section, index, searchTerm }: GlassC
           >
             {/* Icon */}
             <div
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-dark-700/40 bg-dark-800/40 transition-all duration-150 group-hover/item:scale-105 light:border-champagne-400/30 light:bg-champagne-200/50 [&>svg]:h-[13px] [&>svg]:w-[13px]"
+              className="border-border/40 bg-card/40 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 group-hover/item:scale-105 [&>svg]:h-3.25 [&>svg]:w-3.25"
               style={{ color: section.accent }}
             >
               {icons[item.icon]}
             </div>
 
             {/* Label */}
-            <span className="flex-1 truncate text-xs font-medium text-dark-200 transition-colors group-hover/item:text-dark-50 light:text-champagne-700 light:group-hover/item:text-champagne-950">
+            <span className="text-foreground group-hover/item:text-foreground flex-1 truncate text-xs font-medium transition-colors">
               {highlightMatch(t(item.name))}
             </span>
 
             {/* Chevron */}
-            <div className="h-3 w-3 shrink-0 -translate-x-1 text-dark-600 opacity-0 transition-all duration-150 group-hover/item:translate-x-0 group-hover/item:opacity-60 [&>svg]:h-3 [&>svg]:w-3">
+            <div className="text-muted-foreground h-3 w-3 shrink-0 -translate-x-1 opacity-0 transition-all duration-150 group-hover/item:translate-x-0 group-hover/item:opacity-60 [&>svg]:h-3 [&>svg]:w-3">
               {icons.chevron}
             </div>
           </Link>
         ))}
+      </div>
+    </div>
+  );
+});
+
+// ─── Quick Actions Panel ───
+
+const quickActions = [
+  { emoji: '👥', label: 'Пользователи', to: '/admin/users' },
+  { emoji: '💰', label: 'Платежи', to: '/admin/payments' },
+  { emoji: '🎫', label: 'Тикеты', to: '/admin/tickets' },
+  { emoji: '📢', label: 'Рассылки', to: '/admin/broadcasts' },
+  { emoji: '🏷️', label: 'Промокоды', to: '/admin/promocodes' },
+  { emoji: '📊', label: 'Статистика', to: '/admin/sales-stats' },
+  { emoji: '🖥️', label: 'Серверы', to: '/admin/servers' },
+  { emoji: '🔍', label: 'SEO', to: '/admin/seo' },
+  { emoji: '⚙️', label: 'Настройки', to: '/admin/settings' },
+  { emoji: '💚', label: 'Здоровье', to: '/admin/health' },
+  { emoji: '🔔', label: 'Уведомления', to: '/admin/notifications' },
+  { emoji: '🌐', label: 'Лендинги', to: '/admin/landings' },
+];
+
+const QuickActionsPanel = memo(function QuickActionsPanel() {
+  const navigate = useNavigate();
+  return (
+    <div className="shrink-0">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-muted-foreground text-xs font-medium">Быстрые действия</span>
+      </div>
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
+        {quickActions.map((action) => (
+          <Card
+            key={action.to}
+            className="border-border/50 bg-card/40 hover:border-primary/50 hover:bg-card/80 cursor-pointer backdrop-blur-lg transition-all duration-150 hover:shadow-md"
+            onClick={() => navigate(action.to)}
+          >
+            <CardContent className="flex flex-col items-center gap-1.5 p-3">
+              <span className="text-xl leading-none" aria-hidden="true">
+                {action.emoji}
+              </span>
+              <span className="text-foreground/80 text-center text-[11px] leading-tight font-medium">
+                {action.label}
+              </span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+// ─── Admin Tasks Checklist ───
+
+interface TaskStatus {
+  label: string;
+  done: boolean;
+}
+
+const AdminTasksChecklist = memo(function AdminTasksChecklist() {
+  const [tasks, setTasks] = useState<TaskStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkTasks = async () => {
+      const results: TaskStatus[] = [
+        {
+          label: 'Настроен Telegram бот',
+          done: !!import.meta.env.VITE_TELEGRAM_BOT_USERNAME,
+        },
+        { label: 'Загружен логотип', done: false },
+        { label: 'Настроен SEO', done: false },
+        { label: 'Созданы тарифные планы', done: false },
+        { label: 'Настроены платёжные методы', done: false },
+      ];
+
+      try {
+        const branding = await brandingApi.getBranding();
+        results[1].done = branding.has_custom_logo;
+      } catch {
+        /* silent */
+      }
+
+      try {
+        const seo = await brandingApi.getSeoConfig();
+        results[2].done = !!seo.site_title?.trim();
+      } catch {
+        /* silent */
+      }
+
+      try {
+        const tariffResp = await tariffsApi.getTariffs(false);
+        results[3].done = (tariffResp.total ?? tariffResp.tariffs?.length ?? 0) > 0;
+      } catch {
+        /* silent */
+      }
+
+      try {
+        const methods = await adminPaymentMethodsApi.getAll();
+        results[4].done = methods.length > 0;
+      } catch {
+        /* silent */
+      }
+
+      if (!cancelled) {
+        setTasks(results);
+        setLoading(false);
+      }
+    };
+
+    checkTasks();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const completedCount = tasks.filter((t) => t.done).length;
+  const totalCount = tasks.length;
+  const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  if (!loading && completedCount === totalCount) return null;
+
+  return (
+    <div className="hidden shrink-0 sm:block">
+      <div className="border-border/50 bg-card/30 overflow-hidden rounded-xl border backdrop-blur-xl">
+        {/* Header */}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setCollapsed((c) => !c)}
+          className="hover:bg-muted/20 flex h-auto w-full items-center justify-start gap-2.5 rounded-none px-3.5 py-2.5 text-left"
+        >
+          <span className="text-foreground flex-1 text-[13px] font-semibold">
+            Задачи администратора
+          </span>
+          {!loading && (
+            <span className="text-muted-foreground text-xs">
+              {completedCount} из {totalCount} выполнено
+            </span>
+          )}
+          <div
+            className={cn(
+              'text-muted-foreground h-3 w-3 shrink-0 transition-transform duration-200 [&>svg]:h-3 [&>svg]:w-3',
+              collapsed ? 'rotate-90' : '-rotate-90',
+            )}
+          >
+            {icons.chevron}
+          </div>
+        </Button>
+
+        {!collapsed && (
+          <div className="px-3.5 pt-0 pb-3">
+            {/* Progress bar */}
+            {!loading && (
+              <div className="mb-3">
+                <Progress value={progressPct} className="h-1.5" />
+              </div>
+            )}
+
+            {/* Task list */}
+            <div className="flex flex-col gap-1">
+              {loading
+                ? Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-muted/30 h-7 animate-pulse rounded-lg"
+                      style={{ animationDelay: `${i * 80}ms` }}
+                    />
+                  ))
+                : tasks.map((task) => (
+                    <div
+                      key={task.label}
+                      className="flex items-center gap-2.5 rounded-lg px-2 py-1.5"
+                    >
+                      <span
+                        className={cn(
+                          'flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold',
+                          task.done
+                            ? 'bg-success-400/20 text-success-400'
+                            : 'bg-muted/40 text-muted-foreground',
+                        )}
+                        aria-hidden="true"
+                      >
+                        {task.done ? '✓' : '✗'}
+                      </span>
+                      <span
+                        className={cn(
+                          'text-xs',
+                          task.done ? 'text-muted-foreground line-through' : 'text-foreground',
+                        )}
+                      >
+                        {task.label}
+                      </span>
+                    </div>
+                  ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -854,6 +1090,7 @@ export default function AdminPanel() {
   const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState<AuditLogEntry[]>([]);
 
   const safeTop = Math.max(safeAreaInset.top, contentSafeAreaInset.top);
   const safeBottom = Math.max(safeAreaInset.bottom, contentSafeAreaInset.bottom);
@@ -876,6 +1113,16 @@ export default function AdminPanel() {
         if (!cancelled) setLoading(false);
       }
     };
+    // Fetch recent activity separately (non-critical, fails silently)
+    const fetchActivity = async () => {
+      try {
+        const log = await rbacApi.getAuditLog({ limit: 5, offset: 0 });
+        if (!cancelled) setRecentActivity(log.items);
+      } catch {
+        /* no RBAC permission — silently skip */
+      }
+    };
+    fetchActivity();
     fetchData();
     const interval = setInterval(fetchData, 60_000);
     return () => {
@@ -884,13 +1131,9 @@ export default function AdminPanel() {
     };
   }, []);
 
-  // Keyboard shortcuts: Cmd+K to focus search, Escape to clear
+  // Keyboard shortcut: Escape to clear inline search
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
       if (e.key === 'Escape') {
         setSearch('');
         inputRef.current?.blur();
@@ -914,7 +1157,7 @@ export default function AdminPanel() {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div
-        className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-3 overflow-hidden px-4 sm:px-6"
+        className="relative z-10 mx-auto flex w-full max-w-400 flex-1 flex-col gap-3 overflow-hidden px-4 sm:px-6"
         style={{
           paddingTop: safeTop > 0 ? `${safeTop}px` : 'env(safe-area-inset-top, 0px)',
           paddingBottom: safeBottom > 0 ? `${safeBottom}px` : 'env(safe-area-inset-bottom, 0px)',
@@ -938,7 +1181,7 @@ export default function AdminPanel() {
               icon: <StatBotIcon />,
               label: t('admin.panel.statsBot'),
               value: systemInfo?.bot_version ?? '--',
-              cls: 'text-accent-400',
+              cls: 'text-primary',
             },
             {
               icon: <StatTrialIcon />,
@@ -960,44 +1203,96 @@ export default function AdminPanel() {
             <div
               key={i}
               className={cn(
-                'flex items-center gap-2 rounded-xl border border-dark-700/50 bg-dark-800/40 px-2.5 py-2 backdrop-blur-lg',
-                'light:border-champagne-300/50 light:bg-champagne-100/60',
+                'border-border/50 bg-card/40 flex items-center gap-2 rounded-xl border px-2.5 py-2 backdrop-blur-lg',
+                '',
                 loading && 'animate-pulse',
               )}
             >
               <div className={cn('shrink-0', s.cls)}>{s.icon}</div>
               <div className="flex min-w-0 flex-col">
-                <span className="flex items-center gap-1 font-mono text-[11px] font-bold text-dark-100 light:text-champagne-900">
+                <span className="text-foreground flex items-center gap-1 font-mono text-[11px] font-bold">
                   <span className="truncate">{s.value}</span>
                   {'delta' in s && s.delta && (
-                    <span className="shrink-0 rounded border border-success-400/20 bg-success-400/10 px-1 text-2xs font-semibold text-success-400">
+                    <span className="border-success-400/20 bg-success-400/10 text-2xs text-success-400 shrink-0 rounded border px-1 font-semibold">
                       {s.delta}
                     </span>
                   )}
                 </span>
-                <span className="truncate text-2xs text-dark-500 light:text-champagne-600">
-                  {s.label}
-                </span>
+                <span className="text-2xs text-muted-foreground truncate">{s.label}</span>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Quick Actions Panel */}
+        <QuickActionsPanel />
+
+        {/* Admin Tasks Checklist */}
+        <AdminTasksChecklist />
+
+        {/* Recent Activity Feed */}
+        {recentActivity.length > 0 && (
+          <div className="hidden shrink-0 sm:block">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-muted-foreground text-xs font-medium">Последние действия</span>
+              <Link to="/admin/audit-log" className="text-primary hover:text-primary/70 text-xs">
+                Весь журнал →
+              </Link>
+            </div>
+            <div className="scrollbar-hide flex gap-2 overflow-x-auto">
+              {recentActivity.map((entry) => {
+                const timeAgo = (() => {
+                  const diff = Date.now() - new Date(entry.created_at).getTime();
+                  const m = Math.floor(diff / 60000);
+                  if (m < 60) return `${m}м`;
+                  const h = Math.floor(m / 60);
+                  if (h < 24) return `${h}ч`;
+                  return `${Math.floor(h / 24)}д`;
+                })();
+                const isOk = entry.status === 'success' || entry.status === '200';
+                return (
+                  <div
+                    key={entry.id}
+                    className="border-border/50 bg-card/40 flex min-w-45 shrink-0 flex-col gap-1 rounded-xl border px-3 py-2 backdrop-blur-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'h-1.5 w-1.5 shrink-0 rounded-full',
+                          isOk ? 'bg-success-400' : 'bg-error-400',
+                        )}
+                      />
+                      <span className="text-foreground truncate text-xs font-medium">
+                        {entry.action.replace(/_/g, ' ')}
+                      </span>
+                      <span className="text-2xs text-muted-foreground ml-auto shrink-0">
+                        {timeAgo}
+                      </span>
+                    </div>
+                    {(entry.user_first_name || entry.user_email) && (
+                      <span className="text-2xs text-muted-foreground truncate">
+                        {entry.user_first_name || entry.user_email}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Hero + Search */}
         <div className="flex shrink-0 flex-wrap items-center gap-3">
-          <h1 className="bg-gradient-to-r from-dark-50 via-dark-300 to-accent-400 bg-clip-text text-lg font-extrabold tracking-tight text-transparent light:from-champagne-900 light:via-champagne-600 light:to-accent-600 sm:text-xl">
+          <h1 className="from-foreground via-muted to-primary/70 bg-linear-to-r bg-clip-text text-lg font-extrabold tracking-tight text-transparent sm:text-xl">
             {t('admin.panel.title')}
           </h1>
-          <div className="flex items-center gap-1.5 text-xs text-dark-400 light:text-champagne-500">
-            <div
-              className="h-1.5 w-1.5 rounded-full bg-success-400 shadow-[0_0_10px_rgba(var(--color-success-400),0.6)]"
-              style={{ animation: 'adminPulse 2s ease-in-out infinite' }}
-            />
+          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+            <div className="animate-admin-pulse bg-success-400 h-1.5 w-1.5 rounded-full shadow-[0_0_10px_color-mix(in_srgb,var(--color-success-400)_60%,transparent)]" />
             {t('admin.panel.statsOnline')}
           </div>
           {/* Search */}
-          <div className="relative ml-auto min-w-[160px] max-w-[360px] flex-1">
-            <div className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-dark-500 [&>svg]:h-3.5 [&>svg]:w-3.5">
+          <div className="relative ml-auto max-w-90 min-w-40 flex-1">
+            <div className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 [&>svg]:h-3.5 [&>svg]:w-3.5">
               {icons.search}
             </div>
             <input
@@ -1006,20 +1301,35 @@ export default function AdminPanel() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('admin.panel.searchPlaceholder')}
               aria-label={t('admin.panel.searchPlaceholder')}
-              className="w-full rounded-xl border border-dark-700/50 bg-dark-800/40 py-2 pl-8 pr-16 font-sans text-xs text-dark-100 outline-none backdrop-blur-lg transition-all placeholder:text-dark-500 focus:border-accent-500/40 focus:shadow-[0_0_0_3px_rgba(var(--color-accent-500),0.08)] light:border-champagne-300/50 light:bg-champagne-100/60 light:text-champagne-900 light:placeholder:text-champagne-500 light:focus:border-accent-500/40"
+              className="border-border/50 bg-card/40 text-foreground placeholder:text-muted-foreground focus:border-primary/40 w-full rounded-xl border py-2 pr-16 pl-8 font-sans text-xs backdrop-blur-lg transition-all outline-none focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--primary)_8%,transparent)]"
             />
             {search && (
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setSearch('')}
                 aria-label={t('admin.panel.searchClear')}
-                className="absolute right-12 top-1/2 -translate-y-1/2 text-dark-500 transition-colors hover:text-dark-300 [&>svg]:h-3.5 [&>svg]:w-3.5"
+                className="text-muted-foreground hover:text-muted-foreground absolute top-1/2 right-12 h-6 w-6 -translate-y-1/2 [&>svg]:h-3.5 [&>svg]:w-3.5"
               >
                 {icons.x}
-              </button>
+              </Button>
             )}
             <kbd
-              aria-hidden="true"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md border border-dark-700/50 bg-dark-800/60 px-1.5 py-0.5 font-mono text-2xs text-dark-500"
+              role="button"
+              tabIndex={0}
+              aria-label="Открыть глобальный поиск (Ctrl+K)"
+              onClick={() =>
+                document.dispatchEvent(
+                  new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }),
+                )
+              }
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ')
+                  document.dispatchEvent(
+                    new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }),
+                  );
+              }}
+              className="border-border/50 bg-card/60 text-2xs text-muted-foreground hover:border-primary/40 hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer rounded-md border px-1.5 py-0.5 font-mono transition-colors"
             >
               {IS_MAC ? '\u2318' : 'Ctrl+'}K
             </kbd>
@@ -1042,15 +1352,13 @@ export default function AdminPanel() {
               role="status"
               aria-live="polite"
             >
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-dark-700/50 bg-dark-800/40 text-dark-500 backdrop-blur-lg [&>svg]:h-6 [&>svg]:w-6">
+              <div className="border-border/50 bg-card/40 text-muted-foreground mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border backdrop-blur-lg [&>svg]:h-6 [&>svg]:w-6">
                 {icons.search}
               </div>
-              <h3 className="text-sm font-semibold text-dark-200 light:text-champagne-800">
+              <h3 className="text-foreground text-sm font-semibold">
                 {t('admin.panel.searchEmpty')}
               </h3>
-              <p className="text-xs text-dark-500 light:text-champagne-600">
-                {t('admin.panel.searchEmptyHint')}
-              </p>
+              <p className="text-muted-foreground text-xs">{t('admin.panel.searchEmptyHint')}</p>
             </div>
           )}
         </div>

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReferralNetworkStore } from '@/store/referralNetwork';
 import type { NetworkGraphData } from '@/types/referralNetwork';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 interface NetworkFiltersProps {
   data: NetworkGraphData;
@@ -49,22 +51,20 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
       {/* Campaigns */}
       {data.campaigns.length > 0 && (
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-dark-400">
+          <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
             {t('admin.referralNetwork.filters.campaigns')}
           </label>
           <div className="max-h-32 space-y-1 overflow-y-auto">
             {data.campaigns.map((campaign) => (
               <label
                 key={campaign.id}
-                className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-800/50"
+                className="hover:bg-card/50 flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm transition-colors"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={filters.campaigns.includes(campaign.id)}
-                  onChange={() => toggleCampaign(campaign.id)}
-                  className="h-3.5 w-3.5 rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500/30"
+                  onCheckedChange={() => toggleCampaign(campaign.id)}
                 />
-                <span className="truncate text-dark-200">{campaign.name}</span>
+                <span className="text-foreground truncate">{campaign.name}</span>
               </label>
             ))}
           </div>
@@ -73,20 +73,18 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
 
       {/* Partners only */}
       <label className="flex cursor-pointer items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={filters.partnersOnly}
-          onChange={(e) => updateFilters({ partnersOnly: e.target.checked })}
-          className="h-3.5 w-3.5 rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500/30"
+          onCheckedChange={(checked) => updateFilters({ partnersOnly: checked as boolean })}
         />
-        <span className="text-dark-200">{t('admin.referralNetwork.filters.partnersOnly')}</span>
+        <span className="text-foreground">{t('admin.referralNetwork.filters.partnersOnly')}</span>
       </label>
 
       {/* Min referrals */}
       <div>
-        <label className="mb-1.5 flex items-center justify-between text-xs font-medium text-dark-400">
+        <label className="text-muted-foreground mb-1.5 flex items-center justify-between text-xs font-medium">
           <span>{t('admin.referralNetwork.filters.minReferrals')}</span>
-          <span className="font-mono text-dark-300">{filters.minReferrals}</span>
+          <span className="text-muted-foreground font-mono">{filters.minReferrals}</span>
         </label>
         <input
           type="range"
@@ -94,31 +92,25 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
           max={50}
           value={filters.minReferrals}
           onChange={(e) => updateFilters({ minReferrals: Number(e.target.value) })}
-          className="w-full accent-accent-500"
+          className="accent-accent-500 w-full"
         />
       </div>
 
       {/* Reset */}
-      <button
-        onClick={resetFilters}
-        className="w-full rounded-lg border border-dark-700/50 py-1.5 text-xs font-medium text-dark-400 transition-colors hover:border-dark-600 hover:text-dark-200"
-      >
+      <Button onClick={resetFilters} variant="outline" size="sm" className="w-full">
         {t('admin.referralNetwork.filters.reset')}
-      </button>
+      </Button>
     </div>
   );
 
   return (
     <div ref={panelRef} className={`relative shrink-0 ${className ?? ''}`}>
       {/* Trigger button — always rendered */}
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t('admin.referralNetwork.filters.title')}
-        className={`relative flex items-center gap-2 rounded-lg border px-2.5 py-2 text-sm transition-colors ${
-          isOpen
-            ? 'border-accent-500/50 bg-dark-800 text-dark-100'
-            : 'border-dark-700/50 bg-dark-800/80 text-dark-300 hover:border-dark-600 hover:text-dark-100'
-        }`}
+        variant={isOpen ? 'default' : 'outline'}
+        className="relative gap-2"
       >
         <svg
           className="h-4 w-4"
@@ -135,22 +127,23 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
         </svg>
         <span className="hidden sm:inline">{t('admin.referralNetwork.filters.title')}</span>
         {hasActiveFilters && (
-          <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-accent-500" />
+          <span className="bg-primary absolute -top-1 -right-1 h-2 w-2 rounded-full" />
         )}
-      </button>
+      </Button>
 
       {/* Desktop: absolute dropdown below button */}
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 hidden sm:block">
-          <div className="w-64 rounded-xl border border-dark-700/50 bg-dark-900/95 p-4 shadow-xl backdrop-blur-md">
+        <div className="absolute top-full right-0 z-50 mt-2 hidden sm:block">
+          <div className="border-border/50 bg-background/95 w-64 rounded-xl border p-4 shadow-xl backdrop-blur-md">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-dark-100">
+              <h3 className="text-foreground text-sm font-semibold">
                 {t('admin.referralNetwork.filters.title')}
               </h3>
-              <button
+              <Button
                 onClick={() => setIsOpen(false)}
                 aria-label={t('common.close')}
-                className="text-dark-500 transition-colors hover:text-dark-300"
+                variant="ghost"
+                size="icon"
               >
                 <svg
                   className="h-4 w-4"
@@ -161,7 +154,7 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             {panelContent}
           </div>
@@ -172,15 +165,16 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
       {isOpen && (
         <div className="fixed inset-x-0 top-0 z-50 sm:hidden">
           <div className="fixed inset-0 bg-black/60" onClick={() => setIsOpen(false)} />
-          <div className="relative mx-3 mt-3 rounded-xl border border-dark-700/50 bg-dark-900/95 p-4 backdrop-blur-md">
+          <div className="border-border/50 bg-background/95 relative mx-3 mt-3 rounded-xl border p-4 backdrop-blur-md">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-dark-100">
+              <h3 className="text-foreground text-sm font-semibold">
                 {t('admin.referralNetwork.filters.title')}
               </h3>
-              <button
+              <Button
                 onClick={() => setIsOpen(false)}
                 aria-label={t('common.close')}
-                className="rounded-lg p-1 text-dark-500 transition-colors hover:bg-dark-800 hover:text-dark-300"
+                variant="ghost"
+                size="icon"
               >
                 <svg
                   className="h-5 w-5"
@@ -191,7 +185,7 @@ export function NetworkFilters({ data, className }: NetworkFiltersProps) {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             {panelContent}
           </div>

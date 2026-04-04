@@ -23,6 +23,9 @@ import TelegramLoginButton from '../components/TelegramLoginButton';
 import OAuthProviderIcon from '../components/OAuthProviderIcon';
 import { saveOAuthState } from '../utils/oauth';
 import { getPendingReferralCode } from '../utils/referral';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -313,7 +316,7 @@ export default function Login() {
 
   return (
     <div
-      className="flex min-h-[100dvh] items-center justify-center px-4 sm:px-6 lg:px-8"
+      className="flex min-h-dvh items-center justify-center px-4 sm:px-6 lg:px-8"
       style={{
         paddingTop:
           safeTop > 0 ? `${safeTop + 16}px` : 'calc(1rem + env(safe-area-inset-top, 0px))',
@@ -322,8 +325,8 @@ export default function Login() {
       }}
     >
       {/* Background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-500/10 via-transparent to-transparent" />
+      <div className="from-background via-background to-background fixed inset-0 bg-linear-to-br" />
+      <div className="from-primary/10 fixed inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] via-transparent to-transparent" />
 
       {/* Language switcher */}
       <div
@@ -338,10 +341,10 @@ export default function Login() {
       <div className="relative w-full max-w-md space-y-5">
         {/* Logo & branding */}
         <div className="text-center">
-          <div className="relative mx-auto mb-3 flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-dark-700/50 bg-dark-800/80 shadow-md">
+          <div className="border-border/50 bg-card/80 relative mx-auto mb-3 flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border shadow-md">
             {/* Letter fallback */}
             <span
-              className={`absolute text-lg font-bold text-accent-400 transition-opacity duration-200 ${branding?.has_custom_logo && logoLoaded ? 'opacity-0' : 'opacity-100'}`}
+              className={`text-primary absolute text-lg font-bold transition-opacity duration-200 ${branding?.has_custom_logo && logoLoaded ? 'opacity-0' : 'opacity-100'}`}
             >
               {appLogo}
             </span>
@@ -355,14 +358,14 @@ export default function Login() {
               />
             )}
           </div>
-          {appName && <h1 className="text-2xl font-bold text-dark-50">{appName}</h1>}
+          {appName && <h1 className="text-foreground text-2xl font-bold">{appName}</h1>}
 
           {/* Referral Banner */}
           {referralCode && isEmailAuthEnabled && (
-            <div className="mt-3 rounded-xl border border-accent-500/30 bg-accent-500/10 p-2.5">
-              <div className="flex items-center justify-center gap-2 text-accent-400">
+            <div className="border-primary/30 bg-primary/10 mt-3 rounded-xl border p-2.5">
+              <div className="text-primary flex items-center justify-center gap-2">
                 <svg
-                  className="h-4 w-4 flex-shrink-0"
+                  className="h-4 w-4 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -382,10 +385,10 @@ export default function Login() {
 
         {/* Check Email Screen */}
         {registeredEmail ? (
-          <div className="card text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-success-500/20">
+          <Card className="text-center">
+            <div className="bg-success-500/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl">
               <svg
-                className="h-7 w-7 text-success-400"
+                className="text-success-400 h-7 w-7"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -398,34 +401,35 @@ export default function Login() {
                 />
               </svg>
             </div>
-            <h2 className="mb-2 text-lg font-bold text-dark-50">
+            <h2 className="text-foreground mb-2 text-lg font-bold">
               {t('auth.checkEmail', 'Check your email')}
             </h2>
-            <p className="mb-3 text-sm text-dark-400">
+            <p className="text-muted-foreground mb-3 text-sm">
               {t('auth.verificationSent', 'We sent a verification link to:')}
             </p>
-            <p className="mb-4 text-sm font-medium text-accent-400">{registeredEmail}</p>
-            <p className="mb-5 text-xs text-dark-500">
+            <p className="text-primary mb-4 text-sm font-medium">{registeredEmail}</p>
+            <p className="text-muted-foreground mb-5 text-xs">
               {t(
                 'auth.clickLinkToVerify',
                 'Click the link in the email to verify your account and log in.',
               )}
             </p>
-            <button
+            <Button
+              variant="secondary"
+              className="w-full"
               onClick={() => {
                 setRegisteredEmail(null);
                 setAuthMode('login');
               }}
-              className="btn-secondary w-full"
             >
               {t('auth.backToLogin', 'Back to login')}
-            </button>
-          </div>
+            </Button>
+          </Card>
         ) : (
           /* Main auth card */
-          <div className="card">
+          <Card>
             {error && (
-              <div className="mb-4 rounded-xl border border-error-500/30 bg-error-500/10 px-4 py-2.5 text-sm text-error-400">
+              <div className="border-error-500/30 bg-error-500/10 text-error-400 mb-4 rounded-xl border px-4 py-2.5 text-sm">
                 {error}
               </div>
             )}
@@ -434,15 +438,12 @@ export default function Login() {
             <div className="space-y-3">
               {isLoading && isTelegramWebApp ? (
                 <div className="py-6 text-center">
-                  <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
-                  <p className="text-sm text-dark-400">{t('auth.authenticating')}</p>
+                  <div className="border-primary mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                  <p className="text-muted-foreground text-sm">{t('auth.authenticating')}</p>
                 </div>
               ) : isTelegramWebApp && error ? (
                 <div className="space-y-3 text-center">
-                  <button
-                    onClick={handleRetryTelegramAuth}
-                    className="btn-primary mx-auto flex items-center gap-2 px-5 py-2.5"
-                  >
+                  <Button onClick={handleRetryTelegramAuth} className="mx-auto">
                     <svg
                       className="h-4 w-4"
                       fill="none"
@@ -457,8 +458,8 @@ export default function Login() {
                       />
                     </svg>
                     {t('auth.tryAgain')}
-                  </button>
-                  <p className="text-xs text-dark-500">
+                  </Button>
+                  <p className="text-muted-foreground text-xs">
                     {t(
                       'auth.telegramReopenHint',
                       'If the problem persists, close and reopen the app',
@@ -474,29 +475,30 @@ export default function Login() {
             {oauthProviders.length > 0 && (
               <>
                 <div className="my-4 flex items-center gap-3">
-                  <div className="h-px flex-1 bg-dark-700" />
-                  <span className="text-xs text-dark-500">{t('auth.or', 'or')}</span>
-                  <div className="h-px flex-1 bg-dark-700" />
+                  <div className="bg-muted h-px flex-1" />
+                  <span className="text-muted-foreground text-xs">{t('auth.or', 'or')}</span>
+                  <div className="bg-muted h-px flex-1" />
                 </div>
                 <div className="flex items-stretch gap-2">
                   {oauthProviders.map((provider) => (
-                    <button
+                    <Button
                       key={provider.name}
                       type="button"
+                      variant="outline"
                       onClick={() => handleOAuthLogin(provider.name)}
                       disabled={oauthLoading !== null}
-                      className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-xl border border-dark-700 bg-dark-800/80 py-2.5 transition-all hover:border-dark-600 hover:bg-dark-700 disabled:opacity-50"
+                      className="flex h-auto flex-1 flex-col items-center justify-center gap-1.5 py-2.5"
                       title={provider.display_name}
                     >
                       {oauthLoading === provider.name ? (
-                        <span className="h-5 w-5 animate-spin rounded-full border-2 border-dark-400 border-t-white" />
+                        <span className="border-border h-5 w-5 animate-spin rounded-full border-2 border-t-white" />
                       ) : (
                         <OAuthProviderIcon provider={provider.name} className="h-5 w-5" />
                       )}
-                      <span className="text-[10px] leading-none text-dark-500">
+                      <span className="text-muted-foreground text-[10px] leading-none">
                         {provider.display_name}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </>
@@ -506,14 +508,16 @@ export default function Login() {
             {isEmailAuthEnabled && (
               <>
                 <div className="my-4 flex items-center gap-3">
-                  <div className="h-px flex-1 bg-dark-700" />
-                  <button
+                  <div className="bg-muted h-px flex-1" />
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowEmailForm(!showEmailForm)}
-                    className="flex items-center gap-1.5 rounded-full border border-dark-700 bg-dark-800/60 px-3.5 py-1.5 text-xs font-medium text-dark-300 transition-all hover:border-dark-600 hover:bg-dark-700 hover:text-dark-200"
+                    className="h-auto rounded-full px-3.5 py-1.5 text-xs"
                   >
                     <svg
-                      className="h-3.5 w-3.5 text-dark-400"
+                      className="text-muted-foreground h-3.5 w-3.5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -527,7 +531,7 @@ export default function Login() {
                     </svg>
                     <span>{t('auth.loginWithEmail')}</span>
                     <svg
-                      className={`h-3 w-3 text-dark-400 transition-transform duration-300 ${showEmailForm ? 'rotate-180' : ''}`}
+                      className={`text-muted-foreground h-3 w-3 transition-transform duration-300 ${showEmailForm ? 'rotate-180' : ''}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -535,8 +539,8 @@ export default function Login() {
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
-                  </button>
-                  <div className="h-px flex-1 bg-dark-700" />
+                  </Button>
+                  <div className="bg-muted h-px flex-1" />
                 </div>
 
                 {/* Collapsible email form */}
@@ -547,14 +551,14 @@ export default function Login() {
                   style={{ transform: 'translateZ(0)' }}
                 >
                   <div className="overflow-hidden">
-                    <div className="space-y-4 pb-1 pt-1">
+                    <div className="space-y-4 pt-1 pb-1">
                       {showForgotPassword ? (
                         /* Forgot password screen - replaces login/register */
                         forgotPasswordSent ? (
                           <div className="space-y-4 text-center">
-                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-success-500/20">
+                            <div className="bg-success-500/20 mx-auto flex h-12 w-12 items-center justify-center rounded-2xl">
                               <svg
-                                className="h-6 w-6 text-success-400"
+                                className="text-success-400 h-6 w-6"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -567,26 +571,22 @@ export default function Login() {
                                 />
                               </svg>
                             </div>
-                            <p className="text-sm font-medium text-dark-100">
+                            <p className="text-foreground text-sm font-medium">
                               {t('auth.checkEmail', 'Check your email')}
                             </p>
-                            <p className="text-xs text-dark-400">
+                            <p className="text-muted-foreground text-xs">
                               {t(
                                 'auth.passwordResetSent',
                                 'If an account exists with this email, we sent password reset instructions.',
                               )}
                             </p>
-                            <button
-                              type="button"
-                              onClick={closeForgotPasswordModal}
-                              className="text-sm text-accent-400 transition-colors hover:text-accent-300"
-                            >
+                            <Button type="button" variant="link" onClick={closeForgotPasswordModal}>
                               {t('common.back', 'Back')}
-                            </button>
+                            </Button>
                           </div>
                         ) : (
                           <div className="space-y-4">
-                            <p className="text-center text-sm text-dark-400">
+                            <p className="text-muted-foreground text-center text-sm">
                               {t(
                                 'auth.forgotPasswordHint',
                                 'Enter your email and we will send you instructions to reset your password.',
@@ -597,23 +597,22 @@ export default function Login() {
                                 <label htmlFor="forgotEmail" className="label">
                                   Email
                                 </label>
-                                <input
+                                <Input
                                   id="forgotEmail"
                                   type="email"
                                   value={forgotPasswordEmail}
                                   onChange={(e) => setForgotPasswordEmail(e.target.value)}
                                   placeholder="you@example.com"
-                                  className="input"
                                   autoFocus
                                 />
                               </div>
                               {forgotPasswordError && (
-                                <p className="text-sm text-error-400">{forgotPasswordError}</p>
+                                <p className="text-error-400 text-sm">{forgotPasswordError}</p>
                               )}
-                              <button
+                              <Button
                                 type="submit"
                                 disabled={forgotPasswordLoading}
-                                className="btn-primary w-full py-2.5"
+                                className="w-full"
                               >
                                 {forgotPasswordLoading ? (
                                   <span className="flex items-center justify-center gap-2">
@@ -623,45 +622,40 @@ export default function Login() {
                                 ) : (
                                   t('auth.sendResetLink', 'Send reset link')
                                 )}
-                              </button>
+                              </Button>
                             </form>
                             <div className="text-center">
-                              <button
+                              <Button
                                 type="button"
+                                variant="ghost"
                                 onClick={closeForgotPasswordModal}
-                                className="text-sm text-dark-400 transition-colors hover:text-dark-200"
+                                className="text-muted-foreground hover:text-foreground text-sm"
                               >
                                 {t('common.back', 'Back')}
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         )
                       ) : (
                         /* Normal login / register */
                         <>
-                          <div className="flex rounded-lg bg-dark-800 p-1">
-                            <button
+                          <div className="bg-card flex rounded-lg p-1">
+                            <Button
                               type="button"
-                              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                                authMode === 'login'
-                                  ? 'bg-accent-500 text-white'
-                                  : 'text-dark-400 hover:text-dark-200'
-                              }`}
+                              variant={authMode === 'login' ? 'default' : 'ghost'}
+                              className="flex-1 rounded-md"
                               onClick={() => setAuthMode('login')}
                             >
                               {t('auth.login')}
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               type="button"
-                              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                                authMode === 'register'
-                                  ? 'bg-accent-500 text-white'
-                                  : 'text-dark-400 hover:text-dark-200'
-                              }`}
+                              variant={authMode === 'register' ? 'default' : 'ghost'}
+                              className="flex-1 rounded-md"
                               onClick={() => setAuthMode('register')}
                             >
                               {t('auth.register', 'Register')}
-                            </button>
+                            </Button>
                           </div>
 
                           <form className="space-y-3" onSubmit={handleEmailSubmit}>
@@ -670,12 +664,11 @@ export default function Login() {
                                 <label htmlFor="firstName" className="label">
                                   {t('auth.firstName', 'First Name')}
                                 </label>
-                                <input
+                                <Input
                                   id="firstName"
                                   name="firstName"
                                   type="text"
                                   autoComplete="given-name"
-                                  className="input"
                                   placeholder={t(
                                     'auth.firstNamePlaceholder',
                                     'Your name (optional)',
@@ -690,13 +683,12 @@ export default function Login() {
                               <label htmlFor="email" className="label">
                                 {t('auth.email')}
                               </label>
-                              <input
+                              <Input
                                 id="email"
                                 name="email"
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="input"
                                 placeholder="you@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -707,7 +699,7 @@ export default function Login() {
                               <label htmlFor="password" className="label">
                                 {t('auth.password')}
                               </label>
-                              <input
+                              <Input
                                 id="password"
                                 name="password"
                                 type="password"
@@ -715,7 +707,6 @@ export default function Login() {
                                   authMode === 'login' ? 'current-password' : 'new-password'
                                 }
                                 required
-                                className="input"
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -727,13 +718,12 @@ export default function Login() {
                                 <label htmlFor="confirmPassword" className="label">
                                   {t('auth.confirmPassword', 'Confirm Password')}
                                 </label>
-                                <input
+                                <Input
                                   id="confirmPassword"
                                   name="confirmPassword"
                                   type="password"
                                   autoComplete="new-password"
                                   required
-                                  className="input"
                                   placeholder="••••••••"
                                   value={confirmPassword}
                                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -741,11 +731,7 @@ export default function Login() {
                               </div>
                             )}
 
-                            <button
-                              type="submit"
-                              disabled={isLoading}
-                              className="btn-primary w-full py-2.5"
-                            >
+                            <Button type="submit" disabled={isLoading} className="w-full">
                               {isLoading ? (
                                 <span className="flex items-center justify-center gap-2">
                                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -756,11 +742,11 @@ export default function Login() {
                               ) : (
                                 t('auth.register', 'Register')
                               )}
-                            </button>
+                            </Button>
                           </form>
 
                           {authMode === 'register' && (
-                            <p className="text-center text-xs text-dark-500">
+                            <p className="text-muted-foreground text-center text-xs">
                               {t(
                                 'auth.verificationEmailNotice',
                                 'After registration, a verification email will be sent to your address',
@@ -770,13 +756,13 @@ export default function Login() {
 
                           {authMode === 'login' && (
                             <div className="text-center">
-                              <button
+                              <Button
                                 type="button"
+                                variant="link"
                                 onClick={() => setShowForgotPassword(true)}
-                                className="text-sm text-accent-400 transition-colors hover:text-accent-300"
                               >
                                 {t('auth.forgotPassword', 'Forgot password?')}
-                              </button>
+                              </Button>
                             </div>
                           )}
                         </>
@@ -786,7 +772,7 @@ export default function Login() {
                 </div>
               </>
             )}
-          </div>
+          </Card>
         )}
       </div>
     </div>

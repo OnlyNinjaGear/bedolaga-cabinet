@@ -4,6 +4,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { rbacApi, AccessPolicy, CreatePolicyPayload, UpdatePolicyPayload } from '@/api/rbac';
 import { AdminBackButton } from '@/components/admin';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // === Types ===
 
@@ -137,17 +145,19 @@ function IpTagInput({ values, onChange }: IpTagInputProps) {
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-dark-600 bg-dark-900 px-3 py-2">
+    <div className="border-border bg-background flex flex-wrap items-center gap-1.5 rounded-lg border px-3 py-2">
       {values.map((ip) => (
         <span
           key={ip}
-          className="inline-flex items-center gap-1 rounded-md bg-dark-700 px-2 py-0.5 text-xs text-dark-200"
+          className="bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs"
         >
           {ip}
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => removeIp(ip)}
-            className="text-dark-400 transition-colors hover:text-dark-200"
+            className="text-muted-foreground hover:text-foreground h-4 w-4 p-0"
             aria-label={t('admin.policies.conditions.removeIp', { ip })}
           >
             <svg
@@ -159,7 +169,7 @@ function IpTagInput({ values, onChange }: IpTagInputProps) {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </button>
+          </Button>
         </span>
       ))}
       <input
@@ -167,7 +177,7 @@ function IpTagInput({ values, onChange }: IpTagInputProps) {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="min-w-[120px] flex-1 bg-transparent text-sm text-dark-100 placeholder-dark-500 outline-none"
+        className="text-foreground placeholder-muted-foreground min-w-30 flex-1 bg-transparent text-sm outline-none"
         placeholder={values.length === 0 ? t('admin.policies.conditions.ipPlaceholder') : ''}
       />
     </div>
@@ -183,16 +193,17 @@ interface ConditionToggleProps {
 
 function ConditionToggle({ label, enabled, onToggle, children }: ConditionToggleProps) {
   return (
-    <div className="rounded-lg border border-dark-700/50 bg-dark-800/30">
-      <button
+    <div className="border-border/50 bg-card/30 rounded-lg border">
+      <Button
         type="button"
+        variant="ghost"
         onClick={onToggle}
-        className="flex w-full items-center justify-between px-3 py-2"
+        className="flex h-auto w-full items-center justify-between rounded-none px-3 py-2 hover:bg-transparent"
       >
-        <span className="text-sm font-medium text-dark-200">{label}</span>
+        <span className="text-foreground text-sm font-medium">{label}</span>
         <div
           className={`relative h-5 w-9 rounded-full transition-colors ${
-            enabled ? 'bg-accent-500' : 'bg-dark-600'
+            enabled ? 'bg-primary' : 'bg-muted'
           }`}
         >
           <div
@@ -201,8 +212,8 @@ function ConditionToggle({ label, enabled, onToggle, children }: ConditionToggle
             }`}
           />
         </div>
-      </button>
-      {enabled && <div className="border-t border-dark-700/50 px-3 py-2.5">{children}</div>}
+      </Button>
+      {enabled && <div className="border-border/50 border-t px-3 py-2.5">{children}</div>}
     </div>
   );
 }
@@ -377,7 +388,7 @@ export default function AdminPolicyEdit() {
   if (isEdit && isLoadingPolicy) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -388,7 +399,7 @@ export default function AdminPolicyEdit() {
       <div className="flex items-center gap-3">
         <AdminBackButton to="/admin/policies" />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {isEdit ? t('admin.policies.modal.editTitle') : t('admin.policies.modal.createTitle')}
           </h1>
         </div>
@@ -397,11 +408,14 @@ export default function AdminPolicyEdit() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic info */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label htmlFor="policy-name" className="mb-1 block text-sm font-medium text-dark-200">
+              <label
+                htmlFor="policy-name"
+                className="text-foreground mb-1 block text-sm font-medium"
+              >
                 {t('admin.policies.form.name')}
               </label>
               <input
@@ -409,7 +423,7 @@ export default function AdminPolicyEdit() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+                className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 transition-colors outline-none"
                 placeholder={t('admin.policies.form.namePlaceholder')}
                 autoFocus
               />
@@ -419,7 +433,7 @@ export default function AdminPolicyEdit() {
             <div>
               <label
                 htmlFor="policy-description"
-                className="mb-1 block text-sm font-medium text-dark-200"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 {t('admin.policies.form.description')}
               </label>
@@ -427,7 +441,7 @@ export default function AdminPolicyEdit() {
                 id="policy-description"
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+                className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 transition-colors outline-none"
                 placeholder={t('admin.policies.form.descriptionPlaceholder')}
                 rows={2}
               />
@@ -435,86 +449,97 @@ export default function AdminPolicyEdit() {
 
             {/* Effect toggle */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-dark-200">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 {t('admin.policies.form.effect')}
               </label>
               <div className="flex gap-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setFormData((prev) => ({ ...prev, effect: 'allow' }))}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex-1 rounded-lg transition-colors ${
                     formData.effect === 'allow'
-                      ? 'border-success-500/50 bg-success-500/10 text-success-400'
-                      : 'border-dark-600 bg-dark-900 text-dark-400 hover:border-dark-500'
+                      ? 'border-success-500/50 bg-success-500/10 text-success-400 hover:bg-success-500/10'
+                      : 'bg-background text-muted-foreground hover:border-border'
                   }`}
                 >
                   {t('admin.policies.effectAllow')}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setFormData((prev) => ({ ...prev, effect: 'deny' }))}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex-1 rounded-lg transition-colors ${
                     formData.effect === 'deny'
-                      ? 'border-red-500/50 bg-red-500/10 text-red-400'
-                      : 'border-dark-600 bg-dark-900 text-dark-400 hover:border-dark-500'
+                      ? 'border-red-500/50 bg-red-500/10 text-red-400 hover:bg-red-500/10'
+                      : 'bg-background text-muted-foreground hover:border-border'
                   }`}
                 >
                   {t('admin.policies.effectDeny')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
         {/* Resource & Actions */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
           <div className="space-y-4">
             {/* Resource dropdown */}
             <div>
               <label
                 htmlFor="policy-resource"
-                className="mb-1 block text-sm font-medium text-dark-200"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 {t('admin.policies.form.resource')}
               </label>
-              <select
-                id="policy-resource"
-                value={formData.resource}
-                onChange={(e) => handleResourceChange(e.target.value)}
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 outline-none transition-colors focus:border-accent-500"
+              <Select
+                value={formData.resource || '__none__'}
+                onValueChange={(v) => handleResourceChange(v === '__none__' ? '' : v)}
               >
-                <option value="">{t('admin.policies.form.selectResource')}</option>
-                {permissionRegistry?.map((section) => (
-                  <option key={section.section} value={section.section}>
-                    {t(`admin.roles.form.permissionSections.${section.section}`, section.section)}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2">
+                  <SelectValue placeholder={t('admin.policies.form.selectResource')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">
+                    {t('admin.policies.form.selectResource')}
+                  </SelectItem>
+                  {permissionRegistry?.map((section) => (
+                    <SelectItem key={section.section} value={section.section}>
+                      {t(`admin.roles.form.permissionSections.${section.section}`, section.section)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Actions checkboxes */}
             {formData.resource && selectedResourceActions.length > 0 && (
               <div>
-                <label className="mb-1 block text-sm font-medium text-dark-200">
+                <label className="text-foreground mb-1 block text-sm font-medium">
                   {t('admin.policies.form.actions')}
                 </label>
-                <div className="flex flex-wrap gap-2 rounded-lg border border-dark-600 bg-dark-900/50 p-3">
+                <div className="border-border bg-background/50 flex flex-wrap gap-2 rounded-lg border p-3">
                   {selectedResourceActions.map((action) => {
                     const selected = formData.actions.includes(action);
                     return (
-                      <button
+                      <Button
                         key={action}
                         type="button"
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleToggleAction(action)}
-                        className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                        className={`h-auto rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                           selected
-                            ? 'bg-accent-500/20 text-accent-400'
-                            : 'bg-dark-700/50 text-dark-400 hover:bg-dark-700 hover:text-dark-300'
+                            ? 'bg-primary/20 text-primary hover:bg-primary/20'
+                            : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-muted-foreground'
                         }`}
                         aria-pressed={selected}
                       >
                         {t(`admin.roles.form.permissionActions.${action}`, action)}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -523,35 +548,45 @@ export default function AdminPolicyEdit() {
 
             {/* Role dropdown */}
             <div>
-              <label htmlFor="policy-role" className="mb-1 block text-sm font-medium text-dark-200">
+              <label
+                htmlFor="policy-role"
+                className="text-foreground mb-1 block text-sm font-medium"
+              >
                 {t('admin.policies.form.role')}
               </label>
-              <select
-                id="policy-role"
-                value={formData.role_id ?? ''}
-                onChange={(e) =>
+              <Select
+                value={formData.role_id != null ? String(formData.role_id) : '__global__'}
+                onValueChange={(v) =>
                   setFormData((prev) => ({
                     ...prev,
-                    role_id: e.target.value ? Number(e.target.value) : null,
+                    role_id: v === '__global__' ? null : Number(v),
                   }))
                 }
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 outline-none transition-colors focus:border-accent-500"
               >
-                <option value="">{t('admin.policies.form.globalOption')}</option>
-                {roles?.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-dark-500">{t('admin.policies.form.roleHint')}</p>
+                <SelectTrigger className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__global__">
+                    {t('admin.policies.form.globalOption')}
+                  </SelectItem>
+                  {roles?.map((role) => (
+                    <SelectItem key={role.id} value={String(role.id)}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {t('admin.policies.form.roleHint')}
+              </p>
             </div>
 
             {/* Priority */}
             <div>
               <label
                 htmlFor="policy-priority"
-                className="mb-1 block text-sm font-medium text-dark-200"
+                className="text-foreground mb-1 block text-sm font-medium"
               >
                 {t('admin.policies.form.priority')}
               </label>
@@ -567,16 +602,18 @@ export default function AdminPolicyEdit() {
                     priority: Math.min(999, Math.max(0, Number(e.target.value) || 0)),
                   }))
                 }
-                className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 outline-none transition-colors focus:border-accent-500"
+                className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 transition-colors outline-none"
               />
-              <p className="mt-1 text-xs text-dark-500">{t('admin.policies.form.priorityHint')}</p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {t('admin.policies.form.priorityHint')}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Conditions */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
-          <label className="mb-3 block text-sm font-medium text-dark-200">
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
+          <label className="text-foreground mb-3 block text-sm font-medium">
             {t('admin.policies.form.conditions')}
           </label>
           <div className="space-y-2">
@@ -610,10 +647,10 @@ export default function AdminPolicyEdit() {
                       },
                     }))
                   }
-                  className="rounded-lg border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary rounded-lg border px-2 py-1.5 text-sm outline-none"
                   aria-label={t('admin.policies.conditions.timeStart')}
                 />
-                <span className="text-dark-500">-</span>
+                <span className="text-muted-foreground">-</span>
                 <input
                   type="time"
                   value={formData.conditions.time_range?.end ?? '18:00'}
@@ -629,7 +666,7 @@ export default function AdminPolicyEdit() {
                       },
                     }))
                   }
-                  className="rounded-lg border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary rounded-lg border px-2 py-1.5 text-sm outline-none"
                   aria-label={t('admin.policies.conditions.timeEnd')}
                 />
               </div>
@@ -692,10 +729,10 @@ export default function AdminPolicyEdit() {
                       },
                     }))
                   }
-                  className="w-24 rounded-lg border border-dark-600 bg-dark-900 px-2 py-1.5 text-sm text-dark-100 outline-none focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary w-24 rounded-lg border px-2 py-1.5 text-sm outline-none"
                   aria-label={t('admin.policies.conditions.rateLimitValue')}
                 />
-                <span className="text-xs text-dark-500">
+                <span className="text-muted-foreground text-xs">
                   {t('admin.policies.conditions.perHour')}
                 </span>
               </div>
@@ -719,9 +756,11 @@ export default function AdminPolicyEdit() {
                 {[1, 2, 3, 4, 5, 6, 0].map((day) => {
                   const selected = (formData.conditions.weekdays ?? []).includes(day);
                   return (
-                    <button
+                    <Button
                       key={day}
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() =>
                         setFormData((prev) => {
                           const current = prev.conditions.weekdays ?? [];
@@ -734,15 +773,15 @@ export default function AdminPolicyEdit() {
                           };
                         })
                       }
-                      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={`h-auto rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                         selected
-                          ? 'bg-accent-500/20 text-accent-400'
-                          : 'bg-dark-700/50 text-dark-400 hover:bg-dark-700 hover:text-dark-300'
+                          ? 'bg-primary/20 text-primary hover:bg-primary/20'
+                          : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-muted-foreground'
                       }`}
                       aria-pressed={selected}
                     >
                       {t(`admin.policies.conditions.day${day}`)}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -751,23 +790,15 @@ export default function AdminPolicyEdit() {
         </div>
 
         {/* Error & Submit */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-6">
-          {formError && <p className="mb-4 text-sm text-error-400">{formError}</p>}
+        <div className="border-border bg-card rounded-xl border p-4 sm:p-6">
+          {formError && <p className="text-error-400 mb-4 text-sm">{formError}</p>}
           <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => navigate('/admin/policies')}
-              className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-            >
+            <Button type="button" variant="ghost" onClick={() => navigate('/admin/policies')}>
               {t('admin.policies.form.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-            >
+            </Button>
+            <Button type="submit" disabled={isSaving}>
               {isSaving ? t('admin.policies.form.saving') : t('admin.policies.form.save')}
-            </button>
+            </Button>
           </div>
         </div>
       </form>

@@ -4,6 +4,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { withdrawalApi } from '../api/withdrawals';
 import { useCurrency } from '../hooks/useCurrency';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export default function ReferralWithdrawalRequest() {
   const { t } = useTranslation();
@@ -49,8 +52,10 @@ export default function ReferralWithdrawalRequest() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <h1 className="text-2xl font-bold text-dark-50">{t('referral.withdrawal.requestTitle')}</h1>
-      <p className="text-sm text-dark-400">
+      <h1 className="text-foreground text-2xl font-bold">
+        {t('referral.withdrawal.requestTitle')}
+      </h1>
+      <p className="text-muted-foreground text-sm">
         {t('referral.withdrawal.requestDesc', {
           available: balance ? formatWithCurrency(balance.available_total / 100) : '',
         })}
@@ -59,14 +64,14 @@ export default function ReferralWithdrawalRequest() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="bento-card space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.withdrawal.fields.amount')}
             </label>
-            <input
+            <Input
               type="number"
               min={balance ? Math.ceil(balance.min_amount_kopeks / 100) : 0}
               max={balance ? Math.floor(balance.available_total / 100) : 0}
-              className="input w-full"
+              className="w-full"
               value={form.amount_rubles || ''}
               onChange={(e) =>
                 setForm({
@@ -78,7 +83,7 @@ export default function ReferralWithdrawalRequest() {
                 currency: currencySymbol,
               })}
             />
-            <p className="mt-1 text-xs text-dark-500">
+            <p className="text-muted-foreground mt-1 text-xs">
               {t('referral.withdrawal.fields.amountHint', {
                 min: balance ? Math.ceil(balance.min_amount_kopeks / 100) : 0,
                 currency: currencySymbol,
@@ -86,11 +91,11 @@ export default function ReferralWithdrawalRequest() {
             </p>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {balance?.requisites_text || t('referral.withdrawal.fields.paymentDetails')}
             </label>
-            <textarea
-              className="input min-h-[80px] w-full"
+            <Textarea
+              className="min-h-20 w-full"
               value={form.payment_details}
               onChange={(e) => setForm({ ...form, payment_details: e.target.value })}
               placeholder={t('referral.withdrawal.fields.paymentDetailsPlaceholder')}
@@ -101,38 +106,33 @@ export default function ReferralWithdrawalRequest() {
         </div>
 
         {withdrawMutation.isError && (
-          <div className="rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="bg-error-500/10 text-error-400 rounded-lg p-3 text-sm">
             {t('referral.withdrawal.requestError')}
           </div>
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
             type="button"
             onClick={() => navigate('/referral')}
-            className="btn-secondary flex-1 px-5"
+            variant="outline"
+            className="flex-1 px-5"
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             disabled={
               withdrawMutation.isPending ||
               form.payment_details.length < 5 ||
               form.amount_rubles <= 0
             }
-            className={`btn-primary flex-1 px-5 ${
-              withdrawMutation.isPending ||
-              form.payment_details.length < 5 ||
-              form.amount_rubles <= 0
-                ? 'opacity-50'
-                : ''
-            }`}
+            className="flex-1 px-5"
           >
             {withdrawMutation.isPending
               ? t('referral.withdrawal.requesting')
               : t('referral.withdrawal.submitRequest')}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

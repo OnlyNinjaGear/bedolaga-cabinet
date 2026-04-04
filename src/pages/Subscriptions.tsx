@@ -2,24 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { Navigate, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { subscriptionApi } from '../api/subscription';
-import { useTheme } from '../hooks/useTheme';
-import { getGlassColors } from '../utils/glassTheme';
 import SubscriptionListCard from '../components/subscription/SubscriptionListCard';
+import { Button } from '@/components/ui/button';
 
 function EmptyState({ onBuy }: { onBuy: () => void }) {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
 
   return (
-    <div
-      className="rounded-2xl border p-10 text-center"
-      style={{ background: g.cardBg, borderColor: g.cardBorder }}
-    >
-      <div
-        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
-        style={{ background: g.innerBg }}
-      >
+    <div className="border-border bg-card rounded-2xl border p-10 text-center">
+      <div className="bg-muted/30 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
         <svg
           className="h-8 w-8 opacity-40"
           viewBox="0 0 24 24"
@@ -34,18 +25,15 @@ function EmptyState({ onBuy }: { onBuy: () => void }) {
           />
         </svg>
       </div>
-      <h3 className="mb-2 text-xl font-semibold" style={{ color: g.text }}>
+      <h3 className="text-foreground mb-2 text-xl font-semibold">
         {t('subscriptions.empty', 'Нет подписок')}
       </h3>
-      <p className="mb-6 text-sm" style={{ color: g.textSecondary }}>
+      <p className="text-muted-foreground mb-6 text-sm">
         {t('subscriptions.emptyDesc', 'У вас пока нет активных подписок')}
       </p>
-      <button
-        onClick={onBuy}
-        className="rounded-xl bg-accent-500 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-600"
-      >
+      <Button onClick={onBuy} className="px-8">
         {t('subscriptions.buy', 'Купить подписку')}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -53,8 +41,6 @@ function EmptyState({ onBuy }: { onBuy: () => void }) {
 export default function Subscriptions() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
 
   const { data, isLoading } = useQuery({
     queryKey: ['subscriptions-list'],
@@ -75,18 +61,14 @@ export default function Subscriptions() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold" style={{ color: g.text }}>
+        <h1 className="text-foreground text-2xl font-bold">
           {t('subscriptions.title', 'Мои подписки')}
         </h1>
         {!isLoading && subscriptions.length > 0 && (
-          <button
+          <Button
+            variant="outline"
             onClick={() => navigate('/subscription/purchase')}
-            className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
-            style={{
-              background: 'rgba(var(--color-accent-400), 0.1)',
-              color: 'rgb(var(--color-accent-400))',
-              border: '1px solid rgba(var(--color-accent-400), 0.2)',
-            }}
+            className="gap-1.5"
           >
             <svg
               className="h-4 w-4"
@@ -98,7 +80,7 @@ export default function Subscriptions() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             {t('subscriptions.buyAnother', 'Новый тариф')}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -106,11 +88,7 @@ export default function Subscriptions() {
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-36 animate-pulse rounded-2xl"
-              style={{ background: g.innerBg }}
-            />
+            <div key={i} className="bg-muted/30 h-36 animate-pulse rounded-2xl" />
           ))}
         </div>
       )}

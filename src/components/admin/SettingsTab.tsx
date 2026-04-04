@@ -47,13 +47,13 @@ export function SettingsTab({
   if (searchQuery.trim()) {
     if (filteredSettings.length === 0) {
       return (
-        <div className="rounded-xl border border-dark-700/30 bg-dark-800/30 p-12 text-center">
-          <p className="text-dark-400">{t('admin.settings.noSettings')}</p>
+        <div className="border-border/30 bg-card/30 rounded-xl border p-12 text-center">
+          <p className="text-muted-foreground">{t('admin.settings.noSettings')}</p>
         </div>
       );
     }
     return (
-      <div className="overflow-hidden rounded-xl border border-dark-700/40">
+      <div className="border-border/40 overflow-hidden rounded-xl border">
         {filteredSettings.map((setting, idx) => (
           <SettingsTableRow
             key={setting.key}
@@ -76,8 +76,8 @@ export function SettingsTab({
 
   if (allCategorySettings.length === 0) {
     return (
-      <div className="rounded-xl border border-dark-700/30 bg-dark-800/30 p-12 text-center">
-        <p className="text-dark-400">{t('admin.settings.noSettings')}</p>
+      <div className="border-border/30 bg-card/30 rounded-xl border p-12 text-center">
+        <p className="text-muted-foreground">{t('admin.settings.noSettings')}</p>
       </div>
     );
   }
@@ -95,11 +95,11 @@ export function SettingsTab({
           <div key={category.key} className="mb-4">
             {categories.length > 1 && (
               <div className="mb-2 flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-dark-200">{category.label}</h3>
-                <span className="text-xs text-dark-500">{category.settings.length}</span>
+                <h3 className="text-foreground text-sm font-semibold">{category.label}</h3>
+                <span className="text-muted-foreground text-xs">{category.settings.length}</span>
               </div>
             )}
-            <div className="overflow-hidden rounded-xl border border-dark-700/40">
+            <div className="border-border/40 overflow-hidden rounded-xl border">
               {category.settings.map((setting, idx) => (
                 <SettingsTableRow
                   key={setting.key}

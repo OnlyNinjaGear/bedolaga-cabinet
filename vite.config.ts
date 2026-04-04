@@ -1,11 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import packageJson from './package.json';
+import { mockBrandingPlugin } from './dev/mock-branding';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss(), mockBrandingPlugin()],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },
@@ -22,10 +24,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://app.ninjagear.ru',
         changeOrigin: true,
-        // Strip /api prefix: /api/cabinet/auth -> /cabinet/auth
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
       },
     },
   },

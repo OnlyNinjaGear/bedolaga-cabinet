@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/auth';
 import { useToast } from '../components/Toast';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
+import { Button as ShadcnButton } from '@/components/ui/button';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 import { cn } from '@/lib/utils';
 import ProviderIcon from '../components/ProviderIcon';
@@ -109,7 +110,7 @@ function RadioIndicator({ selected }: { selected: boolean }) {
     <div
       className={cn(
         'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-        selected ? 'border-accent-500 bg-accent-500' : 'border-dark-500',
+        selected ? 'border-primary bg-primary' : 'border-border',
       )}
     >
       {selected && <div className="h-2 w-2 rounded-full bg-white" />}
@@ -131,19 +132,19 @@ function AccountCard({ account, label, isSelected, onSelect, showRadio }: Accoun
   const { t } = useTranslation();
 
   return (
-    <Card className={cn('transition-colors', isSelected && 'border-accent-500/50')}>
+    <Card className={cn('transition-colors', isSelected && 'border-primary/50')}>
       <CardHeader>
         <CardTitle>{label}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Auth methods */}
         <div>
-          <span className="text-sm text-dark-400">{t('merge.authMethods')}:</span>
+          <span className="text-muted-foreground text-sm">{t('merge.authMethods')}:</span>
           <div className="mt-1.5 flex flex-wrap gap-2">
             {account.auth_methods.map((method) => (
               <span
                 key={method}
-                className="inline-flex items-center gap-1.5 rounded-md bg-dark-800 px-2.5 py-1 text-xs text-dark-200"
+                className="bg-card text-foreground inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs"
               >
                 <ProviderBadgeIcon provider={method} />
                 {t(`profile.accounts.providers.${method}`)}
@@ -155,47 +156,48 @@ function AccountCard({ account, label, isSelected, onSelect, showRadio }: Accoun
         {/* Subscription */}
         {account.subscription ? (
           <div className="space-y-1">
-            <span className="text-sm text-dark-400">{t('merge.subscription')}:</span>
-            <p className="font-medium text-dark-100">
+            <span className="text-muted-foreground text-sm">{t('merge.subscription')}:</span>
+            <p className="text-foreground font-medium">
               {account.subscription.tariff_name ?? account.subscription.status}
             </p>
             {account.subscription.end_date && (
-              <p className="text-sm text-dark-400">
+              <p className="text-muted-foreground text-sm">
                 {t('merge.until', { date: formatDate(account.subscription.end_date) })}
               </p>
             )}
-            <p className="text-sm text-dark-400">
+            <p className="text-muted-foreground text-sm">
               {t('merge.traffic')}: {account.subscription.traffic_limit_gb} GB, {t('merge.devices')}
               : {account.subscription.device_limit}
             </p>
           </div>
         ) : (
           <div>
-            <span className="text-sm text-dark-400">{t('merge.subscription')}:</span>
-            <p className="text-sm text-dark-500">{t('merge.noSubscription')}</p>
+            <span className="text-muted-foreground text-sm">{t('merge.subscription')}:</span>
+            <p className="text-muted-foreground text-sm">{t('merge.noSubscription')}</p>
           </div>
         )}
 
         {/* Balance */}
         <div className="flex items-baseline gap-1.5">
-          <span className="text-sm text-dark-400">{t('merge.balance')}:</span>
-          <span className="font-medium text-dark-100">
+          <span className="text-muted-foreground text-sm">{t('merge.balance')}:</span>
+          <span className="text-foreground font-medium">
             {formatBalance(account.balance_kopeks)} &#8381;
           </span>
         </div>
 
         {/* Radio selection */}
         {showRadio && account.subscription && (
-          <button
+          <ShadcnButton
             type="button"
             role="radio"
             aria-checked={isSelected}
             onClick={onSelect}
-            className="mt-2 flex w-full items-center gap-2.5 rounded-lg bg-dark-800/50 px-3 py-2.5 text-left transition-colors hover:bg-dark-800"
+            variant="ghost"
+            className="mt-2 flex h-auto w-full items-center justify-start gap-2.5 px-3 py-2.5"
           >
             <RadioIndicator selected={isSelected} />
-            <span className="text-sm text-dark-200">{t('merge.keepThisSubscription')}</span>
-          </button>
+            <span className="text-foreground text-sm">{t('merge.keepThisSubscription')}</span>
+          </ShadcnButton>
         )}
       </CardContent>
     </Card>
@@ -214,8 +216,8 @@ function LoadingSkeleton() {
     >
       <motion.div variants={staggerItem}>
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 animate-pulse rounded bg-dark-700" />
-          <div className="h-7 w-48 animate-pulse rounded bg-dark-700" />
+          <div className="bg-muted h-7 w-7 animate-pulse rounded" />
+          <div className="bg-muted h-7 w-48 animate-pulse rounded" />
         </div>
       </motion.div>
 
@@ -223,21 +225,21 @@ function LoadingSkeleton() {
         <motion.div key={i} variants={staggerItem}>
           <Card>
             <div className="space-y-4">
-              <div className="h-5 w-40 animate-pulse rounded bg-dark-700" />
-              <div className="h-4 w-64 animate-pulse rounded bg-dark-700" />
-              <div className="h-4 w-48 animate-pulse rounded bg-dark-700" />
-              <div className="h-4 w-32 animate-pulse rounded bg-dark-700" />
+              <div className="bg-muted h-5 w-40 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-64 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-48 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-32 animate-pulse rounded" />
             </div>
           </Card>
         </motion.div>
       ))}
 
       <motion.div variants={staggerItem}>
-        <div className="h-12 w-full animate-pulse rounded-xl bg-dark-700" />
+        <div className="bg-muted h-12 w-full animate-pulse rounded-xl" />
       </motion.div>
 
       <motion.div variants={staggerItem} className="flex justify-center">
-        <div className="h-4 w-32 animate-pulse rounded bg-dark-700" />
+        <div className="bg-muted h-4 w-32 animate-pulse rounded" />
       </motion.div>
     </motion.div>
   );
@@ -256,19 +258,19 @@ function ExpiredState() {
       animate="animate"
     >
       <motion.div variants={staggerItem}>
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-warning-500/20">
-          <ClockIcon className="h-8 w-8 text-warning-400" />
+        <div className="bg-warning-500/20 flex h-16 w-16 items-center justify-center rounded-full">
+          <ClockIcon className="text-warning-400 h-8 w-8" />
         </div>
       </motion.div>
 
       <motion.div variants={staggerItem} className="text-center">
-        <p className="text-lg font-medium text-dark-100">{t('merge.expired')}</p>
+        <p className="text-foreground text-lg font-medium">{t('merge.expired')}</p>
       </motion.div>
 
       <motion.div variants={staggerItem}>
         <Link
           to="/profile/accounts"
-          className="text-sm text-accent-400 transition-colors hover:text-accent-300"
+          className="text-primary hover:text-primary/70 text-sm transition-colors"
         >
           {t('profile.accounts.goToAccounts')}
         </Link>
@@ -290,19 +292,19 @@ function ErrorState() {
       animate="animate"
     >
       <motion.div variants={staggerItem}>
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-error-500/20">
-          <WarningIcon className="h-8 w-8 text-error-400" />
+        <div className="bg-error-500/20 flex h-16 w-16 items-center justify-center rounded-full">
+          <WarningIcon className="text-error-400 h-8 w-8" />
         </div>
       </motion.div>
 
       <motion.div variants={staggerItem} className="text-center">
-        <p className="text-lg font-medium text-dark-100">{t('merge.error')}</p>
+        <p className="text-foreground text-lg font-medium">{t('merge.error')}</p>
       </motion.div>
 
       <motion.div variants={staggerItem}>
         <Link
           to="/profile/accounts"
-          className="text-sm text-accent-400 transition-colors hover:text-accent-300"
+          className="text-primary hover:text-primary/70 text-sm transition-colors"
         >
           {t('profile.accounts.goToAccounts')}
         </Link>
@@ -468,10 +470,10 @@ export default function MergeAccounts() {
       <motion.div variants={staggerItem}>
         <Card className="border-warning-500/30 bg-warning-500/5">
           <div className="flex items-start gap-3">
-            <WarningIcon className="mt-0.5 h-6 w-6 shrink-0 text-warning-400" />
+            <WarningIcon className="text-warning-400 mt-0.5 h-6 w-6 shrink-0" />
             <div>
-              <h1 className="text-xl font-bold text-dark-50">{t('merge.title')}</h1>
-              <p className="mt-1 text-sm text-dark-400">{t('merge.description')}</p>
+              <h1 className="text-foreground text-xl font-bold">{t('merge.title')}</h1>
+              <p className="text-muted-foreground mt-1 text-sm">{t('merge.description')}</p>
             </div>
           </div>
         </Card>
@@ -480,8 +482,8 @@ export default function MergeAccounts() {
       {/* Subscription choice prompt (when both have subs) */}
       {bothHaveSubscriptions && !selectedUserId && (
         <motion.div variants={staggerItem}>
-          <div className="rounded-xl border border-accent-500/30 bg-accent-500/10 px-4 py-3">
-            <p className="text-sm font-medium text-accent-400">{t('merge.chooseSubscription')}</p>
+          <div className="border-primary/30 bg-primary/10 rounded-xl border px-4 py-3">
+            <p className="text-primary text-sm font-medium">{t('merge.chooseSubscription')}</p>
           </div>
         </motion.div>
       )}
@@ -521,26 +523,26 @@ export default function MergeAccounts() {
           <CardContent>
             <ul className="space-y-3">
               <li className="flex items-start gap-2.5">
-                <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success-400" />
-                <span className="text-sm text-dark-200">{t('merge.allAuthMethodsMerged')}</span>
+                <CheckCircleIcon className="text-success-400 mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-foreground text-sm">{t('merge.allAuthMethodsMerged')}</span>
               </li>
               <li className="flex items-start gap-2.5">
-                <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success-400" />
-                <span className="text-sm text-dark-200">
+                <CheckCircleIcon className="text-success-400 mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-foreground text-sm">
                   {t('merge.balanceSummed', { amount: formatBalance(combinedBalance) })}
                 </span>
               </li>
               {bothHaveSubscriptions && (
                 <li className="flex items-start gap-2.5">
-                  <WarningIcon className="mt-0.5 h-4 w-4 shrink-0 text-warning-400" />
-                  <span className="text-sm text-dark-200">
+                  <WarningIcon className="text-warning-400 mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="text-foreground text-sm">
                     {t('merge.unselectedSubscriptionDeleted')}
                   </span>
                 </li>
               )}
               <li className="flex items-start gap-2.5">
-                <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-success-400" />
-                <span className="text-sm text-dark-200">{t('merge.historyPreserved')}</span>
+                <CheckCircleIcon className="text-success-400 mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-foreground text-sm">{t('merge.historyPreserved')}</span>
               </li>
             </ul>
           </CardContent>
@@ -561,19 +563,20 @@ export default function MergeAccounts() {
 
       {/* Cancel link */}
       <motion.div variants={staggerItem} className="flex justify-center">
-        <button
+        <ShadcnButton
           type="button"
+          variant="ghost"
           onClick={handleCancel}
-          className="text-sm text-dark-400 transition-colors hover:text-dark-200"
+          className="text-muted-foreground text-sm"
         >
           {t('merge.cancel')}
-        </button>
+        </ShadcnButton>
       </motion.div>
 
       {/* Countdown timer */}
       <motion.div variants={staggerItem} className="flex items-center justify-center gap-1.5 pb-6">
-        <ClockIcon className="h-4 w-4 text-dark-500" />
-        <span className="text-sm text-dark-500">
+        <ClockIcon className="text-muted-foreground h-4 w-4" />
+        <span className="text-muted-foreground text-sm">
           {t('merge.expiresIn', { minutes: formatCountdown(expiresIn) })}
         </span>
       </motion.div>

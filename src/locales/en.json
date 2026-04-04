@@ -1112,7 +1112,10 @@
       "salesStats": "Sales Statistics",
       "landings": "Landings",
       "referralNetwork": "Referral Network",
-      "news": "News"
+      "news": "News",
+      "health": "System Health",
+      "notifications": "Notifications",
+      "seo": "SEO / Open Graph"
     },
     "panel": {
       "title": "Admin Panel",
@@ -1159,7 +1162,30 @@
       "salesStatsDesc": "Sales analytics and trends",
       "landingsDesc": "Quick purchase landing pages",
       "referralNetworkDesc": "Referral graph and campaign visualization",
-      "newsDesc": "Manage news articles and publications"
+      "newsDesc": "Manage news articles and publications",
+      "healthDesc": "Service health monitoring"
+    },
+    "health": {
+      "title": "System Health",
+      "subtitle": "Service health monitoring",
+      "overall": "Overall Status",
+      "services": "Services",
+      "metrics": "System Metrics",
+      "database": "Database",
+      "redis": "Redis",
+      "api": "API",
+      "bot": "Bot",
+      "uptime": "Uptime",
+      "memory": "Memory",
+      "cpu": "CPU",
+      "version": "Version",
+      "lastChecked": "Last checked",
+      "notConfigured": "Health check endpoint not configured",
+      "status": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "down": "Down"
+      }
     },
     "salesStats": {
       "title": "Sales Statistics",
@@ -1916,6 +1942,7 @@
       "favorites": "Favorites",
       "branding": "Branding",
       "theme": "Theme",
+      "seo": "SEO / OG",
       "payments": "Payments",
       "subscriptions": "Subscriptions",
       "interface": "Interface",
@@ -1990,6 +2017,16 @@
         "sys_backup": "Backup",
         "sys_version": "Version",
         "sys_logging": "Logging"
+      },
+      "presets": {
+        "zinc": "Zinc",
+        "slate": "Slate",
+        "stone": "Stone",
+        "neutral": "Neutral",
+        "blue": "Blue",
+        "green": "Green",
+        "rose": "Rose",
+        "violet": "Violet"
       },
       "categories": {
         "TELEGRAM_WIDGET": "Telegram Login Widget",
@@ -2941,7 +2978,8 @@
           "sync": "Synchronization",
           "tickets": "Tickets",
           "gifts": "Gifts",
-          "referrals": "Referrals"
+          "referrals": "Referrals",
+          "timeline": "Timeline"
         },
         "noTickets": "No tickets from this user",
         "ticketsCount": "tickets",
@@ -3123,6 +3161,10 @@
           "searchPlaceholder": "Search by name, email, or Telegram ID...",
           "alreadyReferred": "already has referrer",
           "noUsersFound": "No users found"
+        },
+        "timeline": {
+          "title": "Activity Timeline",
+          "empty": "No activity events found"
         }
       }
     },
@@ -3681,6 +3723,17 @@
         "page": "Page {{current}} of {{total}}",
         "prev": "Previous",
         "next": "Next"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "System notifications and alerts",
+      "markAllRead": "Mark all as read",
+      "noNotifications": "No notifications",
+      "noUnread": "No unread notifications",
+      "tabs": {
+        "all": "All",
+        "unread": "Unread"
       }
     }
   },

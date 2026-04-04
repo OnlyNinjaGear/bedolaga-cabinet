@@ -32,34 +32,36 @@ export function TopReferrals({ referrals }: TopReferralsProps) {
   if (referrals.length === 0) {
     return (
       <div className="bento-card py-6 text-center">
-        <div className="text-sm text-dark-400">{t('referral.partner.stats.noReferrals')}</div>
+        <div className="text-muted-foreground text-sm">
+          {t('referral.partner.stats.noReferrals')}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="bento-card">
-      <h4 className="mb-3 text-sm font-semibold text-dark-200">
+      <h4 className="text-foreground mb-3 text-sm font-semibold">
         {t('referral.partner.stats.topReferrals')}
       </h4>
       <div className="space-y-2">
         {referrals.map((ref) => (
           <div
             key={ref.id}
-            className="flex items-center justify-between rounded-xl border border-dark-700/30 bg-dark-800/30 p-3"
+            className="border-border/30 bg-card/30 flex items-center justify-between rounded-xl border p-3"
           >
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="min-w-0 truncate text-sm font-medium text-dark-100">
+                <span className="text-foreground min-w-0 truncate text-sm font-medium">
                   {ref.full_name}
                 </span>
                 <StatusBadge hasPaid={ref.has_paid} isActive={ref.is_active} />
               </div>
-              <div className="mt-0.5 text-xs text-dark-500">
+              <div className="text-muted-foreground mt-0.5 text-xs">
                 {new Date(ref.created_at).toLocaleDateString(i18n.language)}
               </div>
             </div>
-            <div className="text-sm font-semibold text-success-400">
+            <div className="text-success-400 text-sm font-semibold">
               {formatWithCurrency(ref.total_earnings_kopeks / PARTNER_STATS.KOPEKS_DIVISOR)}
             </div>
           </div>

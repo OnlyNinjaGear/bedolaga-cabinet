@@ -25,9 +25,7 @@ export function CardsBlock({
           <div
             key={index}
             className={`rounded-2xl border p-4 sm:p-5 ${
-              isLight
-                ? 'border-dark-700/60 bg-white/80 shadow-sm'
-                : 'border-dark-700/50 bg-dark-800/50'
+              isLight ? 'border-border/60 bg-card/80 shadow-sm' : 'border-border/50 bg-card/50'
             }`}
           >
             <div className="flex items-start gap-3 sm:gap-4">
@@ -38,8 +36,8 @@ export function CardsBlock({
                 isMobile={isMobile}
               />
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-dark-100">{getLocalizedText(block.title)}</h3>
-                <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-dark-400">
+                <h3 className="text-foreground font-semibold">{getLocalizedText(block.title)}</h3>
+                <p className="text-muted-foreground mt-1 text-sm leading-relaxed whitespace-pre-line">
                   {getLocalizedText(block.description)}
                 </p>
                 {renderBlockButtons(block.buttons, 'light')}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 
 interface OnboardingStep {
   target: string; // data-onboarding attribute value
@@ -185,39 +186,41 @@ export default function Onboarding({ steps, onComplete, onSkip }: OnboardingProp
               key={s.target}
               className={`h-1 rounded-full transition-all duration-300 ${
                 index === currentStep
-                  ? 'w-6 bg-accent-500'
+                  ? 'bg-primary w-6'
                   : index < currentStep
-                    ? 'w-2 bg-accent-500/50'
-                    : 'w-2 bg-dark-700'
+                    ? 'bg-primary/50 w-2'
+                    : 'bg-muted w-2'
               }`}
             />
           ))}
         </div>
 
         {/* Content */}
-        <h3 className="mb-2 text-lg font-semibold text-dark-50">{step.title}</h3>
-        <p className="mb-5 text-sm text-dark-400">{step.description}</p>
+        <h3 className="text-foreground mb-2 text-lg font-semibold">{step.title}</h3>
+        <p className="text-muted-foreground mb-5 text-sm">{step.description}</p>
 
         {/* Actions */}
         <div className="flex items-center justify-between">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleSkip}
-            className="text-sm text-dark-500 transition-colors hover:text-dark-300"
+            className="text-muted-foreground hover:text-muted-foreground text-sm"
           >
             {t('onboarding.skip', 'Skip')}
-          </button>
+          </Button>
 
           <div className="flex gap-2">
             {currentStep > 0 && (
-              <button onClick={handlePrev} className="btn-ghost px-3 py-1.5 text-sm">
+              <Button variant="ghost" size="sm" onClick={handlePrev}>
                 {t('common.back', 'Back')}
-              </button>
+              </Button>
             )}
-            <button onClick={handleNext} className="btn-primary px-4 py-1.5 text-sm">
+            <Button size="sm" onClick={handleNext}>
               {currentStep === steps.length - 1
                 ? t('onboarding.finish', 'Finish')
                 : t('common.next', 'Next')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { brandingApi } from '../api/branding';
+import { Button } from '@/components/ui/button';
 
 type Status = 'countdown' | 'fallback' | 'error';
 
@@ -163,12 +164,12 @@ export default function DeepLinkRedirect() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       {/* Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-500/10 via-transparent to-transparent" />
+      <div className="from-background via-background to-background fixed inset-0 bg-gradient-to-br" />
+      <div className="from-primary/10 fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] via-transparent to-transparent" />
 
       <div className="relative w-full max-w-sm text-center">
         {/* Logo with pulse animation */}
-        <div className="mx-auto mb-6 flex h-20 w-20 animate-pulse items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-accent-400 to-accent-600 shadow-lg shadow-accent-500/30">
+        <div className="from-primary/80 to-primary/80 shadow-primary/30 mx-auto mb-6 flex h-20 w-20 animate-pulse items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br shadow-lg">
           {branding?.has_custom_logo && logoUrl ? (
             <img src={logoUrl} alt={projectName || 'Logo'} className="h-full w-full object-cover" />
           ) : (
@@ -176,48 +177,48 @@ export default function DeepLinkRedirect() {
           )}
         </div>
 
-        <h1 className="mb-1 text-2xl font-bold text-dark-50">{projectName || 'VPN'}</h1>
+        <h1 className="text-foreground mb-1 text-2xl font-bold">{projectName || 'VPN'}</h1>
 
         {status !== 'error' && (
-          <p className="mb-6 text-dark-400">
+          <p className="text-muted-foreground mb-6">
             {t('deepLink.connecting')} {appName}...
           </p>
         )}
 
         {/* Countdown State */}
         {status === 'countdown' && (
-          <div className="card !bg-dark-800/80 p-6 backdrop-blur-sm">
+          <div className="card !bg-card/80 p-6 backdrop-blur-sm">
             {/* App icon */}
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-500/20">
-              <span className="text-2xl font-bold text-accent-400">{appIcon}</span>
+            <div className="bg-primary/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <span className="text-primary text-2xl font-bold">{appIcon}</span>
             </div>
 
             {/* Spinner */}
-            <div className="border-3 mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-dark-700 border-t-accent-500" />
+            <div className="border-border border-t-accent-500 mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-3" />
 
             {/* Timer */}
             <div className="mb-4">
-              <p className="mb-2 text-sm text-dark-500">{t('deepLink.redirecting')}</p>
+              <p className="text-muted-foreground mb-2 text-sm">{t('deepLink.redirecting')}</p>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-4xl font-bold text-accent-400">{countdown}</span>
-                <span className="text-dark-400">{t('deepLink.seconds')}</span>
+                <span className="text-primary text-4xl font-bold">{countdown}</span>
+                <span className="text-muted-foreground">{t('deepLink.seconds')}</span>
               </div>
             </div>
 
             {/* Progress bar */}
-            <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-dark-700">
+            <div className="bg-muted mb-4 h-1.5 w-full overflow-hidden rounded-full">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-accent-400 to-accent-600 transition-all duration-1000 ease-linear"
+                className="from-primary/80 to-primary/80 h-full rounded-full bg-gradient-to-r transition-all duration-1000 ease-linear"
                 style={{ width: `${progress}%` }}
               />
             </div>
 
-            <p className="mb-4 text-sm text-dark-500">{t('deepLink.manual')}</p>
+            <p className="text-muted-foreground mb-4 text-sm">{t('deepLink.manual')}</p>
 
             {/* Open now button */}
-            <button
+            <Button
               onClick={openDeepLink}
-              className="btn-primary flex w-full items-center justify-center gap-2 py-3"
+              className="flex w-full items-center justify-center gap-2"
             >
               <svg
                 className="h-5 w-5"
@@ -233,23 +234,23 @@ export default function DeepLinkRedirect() {
                 />
               </svg>
               {t('deepLink.openApp')}
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Fallback State - App didn't open */}
         {status === 'fallback' && (
-          <div className="card !bg-dark-800/80 p-6 backdrop-blur-sm">
+          <div className="card !bg-card/80 p-6 backdrop-blur-sm">
             {/* App icon */}
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-500/20">
-              <span className="text-2xl font-bold text-accent-400">{appIcon}</span>
+            <div className="bg-primary/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <span className="text-primary text-2xl font-bold">{appIcon}</span>
             </div>
 
             <div className="space-y-3">
               {/* Copy subscription link */}
-              <button
+              <Button
                 onClick={handleCopyLink}
-                className="btn-primary flex w-full items-center justify-center gap-2 py-3"
+                className="flex w-full items-center justify-center gap-2"
               >
                 {copied ? (
                   <>
@@ -286,12 +287,13 @@ export default function DeepLinkRedirect() {
                     {t('deepLink.copyLink')}
                   </>
                 )}
-              </button>
+              </Button>
 
               {/* Try again button */}
-              <button
+              <Button
+                variant="secondary"
                 onClick={openDeepLink}
-                className="btn-secondary flex w-full items-center justify-center gap-2"
+                className="flex w-full items-center justify-center gap-2"
               >
                 <svg
                   className="h-5 w-5"
@@ -307,21 +309,18 @@ export default function DeepLinkRedirect() {
                   />
                 </svg>
                 {t('deepLink.tryAgain')}
-              </button>
+              </Button>
 
               {/* Back to cabinet */}
-              <button
-                onClick={() => navigate('/subscriptions')}
-                className="w-full py-2 text-sm text-dark-500 transition-colors hover:text-dark-300"
-              >
+              <Button variant="ghost" onClick={() => navigate('/subscriptions')} className="w-full">
                 {t('deepLink.backToCabinet')}
-              </button>
+              </Button>
             </div>
 
             {/* Instructions */}
-            <div className="mt-6 rounded-xl border border-dark-700 bg-dark-900/50 p-4 text-left">
-              <h3 className="mb-2 text-sm font-medium text-dark-200">{t('deepLink.howToAdd')}</h3>
-              <ol className="list-inside list-decimal space-y-1.5 text-xs text-dark-400">
+            <div className="border-border bg-background/50 mt-6 rounded-xl border p-4 text-left">
+              <h3 className="text-foreground mb-2 text-sm font-medium">{t('deepLink.howToAdd')}</h3>
+              <ol className="text-muted-foreground list-inside list-decimal space-y-1.5 text-xs">
                 <li>{t('deepLink.step1')}</li>
                 <li>
                   {t('deepLink.step2')} {appName}
@@ -335,10 +334,10 @@ export default function DeepLinkRedirect() {
 
         {/* Error State */}
         {status === 'error' && (
-          <div className="card !bg-dark-800/80 p-6 backdrop-blur-sm">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error-500/20">
+          <div className="card !bg-card/80 p-6 backdrop-blur-sm">
+            <div className="bg-error-500/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
               <svg
-                className="h-8 w-8 text-error-400"
+                className="text-error-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -351,16 +350,16 @@ export default function DeepLinkRedirect() {
                 />
               </svg>
             </div>
-            <p className="mb-2 font-medium text-dark-200">{t('deepLink.errorTitle')}</p>
-            <p className="mb-6 text-sm text-dark-400">{t('deepLink.errorDesc')}</p>
-            <button onClick={() => navigate('/subscriptions')} className="btn-primary w-full">
+            <p className="text-foreground mb-2 font-medium">{t('deepLink.errorTitle')}</p>
+            <p className="text-muted-foreground mb-6 text-sm">{t('deepLink.errorDesc')}</p>
+            <Button onClick={() => navigate('/subscriptions')} className="w-full">
               {t('deepLink.goToSubscription')}
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Footer */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-dark-600">
+        <div className="text-muted-foreground mt-8 flex items-center justify-center gap-2">
           <svg
             className="h-4 w-4"
             fill="none"

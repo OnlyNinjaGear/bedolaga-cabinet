@@ -9,7 +9,7 @@ export { Root as Select, Group as SelectGroup } from '@radix-ui/react-select';
 
 // Icons
 const ChevronDownIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-dark-400">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-muted-foreground">
     <path
       d="M4 6L8 10L12 6"
       stroke="currentColor"
@@ -21,7 +21,7 @@ const ChevronDownIcon = () => (
 );
 
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-accent-400">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
     <path
       d="M3.5 8.5L6.5 11.5L12.5 4.5"
       stroke="currentColor"
@@ -47,11 +47,11 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          'flex h-10 w-full items-center justify-between gap-2 rounded-linear px-3',
-          'border border-dark-700/50 bg-dark-800/80',
-          'text-sm text-dark-100 placeholder:text-dark-400',
-          'hover:border-dark-600/50 hover:bg-dark-700/80',
-          'focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:ring-offset-2 focus:ring-offset-dark-950',
+          'rounded-linear flex h-10 w-full items-center justify-between gap-2 px-3',
+          'border-input bg-background border',
+          'text-foreground placeholder:text-muted-foreground text-sm',
+          'hover:border-border hover:bg-muted',
+          'focus:ring-ring/50 focus:ring-offset-background focus:ring-2 focus:ring-offset-2 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'transition-all duration-200',
           '[&>span]:line-clamp-1',
@@ -81,8 +81,8 @@ export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
         ref={ref}
         className={cn(
           'relative z-50 max-h-80 min-w-[8rem] overflow-hidden',
-          'rounded-linear-lg border border-dark-700/50 bg-dark-900/95 backdrop-blur-linear',
-          'text-dark-100 shadow-linear-lg',
+          'rounded-linear-lg border-border bg-popover backdrop-blur-linear border',
+          'text-popover-foreground shadow-linear-lg',
           position === 'popper' &&
             'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
           className,
@@ -125,12 +125,12 @@ export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        'relative flex w-full cursor-pointer select-none items-center rounded-linear py-2 pl-3 pr-8',
-        'text-sm text-dark-200 outline-none',
-        'hover:bg-dark-800/80 hover:text-dark-100',
-        'focus:bg-dark-800/80 focus:text-dark-100',
+        'rounded-linear relative flex w-full cursor-pointer items-center py-2 pr-8 pl-3 select-none',
+        'text-foreground text-sm outline-none',
+        'hover:bg-muted hover:text-foreground',
+        'focus:bg-muted focus:text-foreground',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-        'data-[state=checked]:text-accent-400',
+        'data-[state=checked]:text-primary',
         'transition-colors duration-150',
         className,
       )}
@@ -155,7 +155,7 @@ export const SelectLabel = forwardRef<HTMLDivElement, SelectLabelProps>(
   ({ className, ...props }, ref) => (
     <SelectPrimitive.Label
       ref={ref}
-      className={cn('px-3 py-1.5 text-xs font-medium text-dark-400', className)}
+      className={cn('text-muted-foreground px-3 py-1.5 text-xs font-medium', className)}
       {...props}
     />
   ),
@@ -170,7 +170,7 @@ export const SelectSeparator = forwardRef<HTMLDivElement, SelectSeparatorProps>(
   ({ className, ...props }, ref) => (
     <SelectPrimitive.Separator
       ref={ref}
-      className={cn('-mx-1 my-1 h-px bg-dark-700/50', className)}
+      className={cn('bg-border -mx-1 my-1 h-px', className)}
       {...props}
     />
   ),

@@ -52,7 +52,7 @@ export function DailyChart({ data, chartId, title, earningsLabel, countLabel }: 
 
   return (
     <div className="bento-card">
-      <h4 className="mb-3 text-sm font-semibold text-dark-200">{resolvedTitle}</h4>
+      <h4 className="text-foreground mb-3 text-sm font-semibold">{resolvedTitle}</h4>
       <ResponsiveContainer width="100%" height={PARTNER_STATS.CHART.HEIGHT}>
         <AreaChart data={chartData} margin={PARTNER_STATS.CHART.MARGIN}>
           <defs>

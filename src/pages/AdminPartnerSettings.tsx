@@ -5,6 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { partnerApi } from '../api/partners';
 import { AdminBackButton } from '../components/admin';
 import { toNumber } from '../utils/inputHelpers';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type NumberOrEmpty = number | '';
 
@@ -95,7 +100,7 @@ export default function AdminPartnerSettings() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -105,16 +110,18 @@ export default function AdminPartnerSettings() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/partners" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partners.settings')}</h1>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.partners.settings')}</h1>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-6 text-center">
           <p className="text-error-400">{t('admin.partners.settingsLoadError')}</p>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => navigate('/admin/partners')}
-            className="mt-4 text-sm text-dark-400 hover:text-dark-200"
+            className="mt-4"
           >
             {t('common.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -125,38 +132,36 @@ export default function AdminPartnerSettings() {
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin/partners" />
-        <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+        <div className="bg-primary/20 text-primary rounded-lg p-2">
           <SettingsIcon />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.partners.settings')}</h1>
-          <p className="text-sm text-dark-400">{t('admin.partners.settingsSubtitle')}</p>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.partners.settings')}</h1>
+          <p className="text-muted-foreground text-sm">{t('admin.partners.settingsSubtitle')}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Referral Program Section */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.partners.settingsSection.referralProgram')}
           </h3>
 
           {/* Program Enabled */}
           <div className="mb-4">
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.referral_program_enabled}
-                onChange={(e) =>
-                  setFormData({ ...formData, referral_program_enabled: e.target.checked })
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, referral_program_enabled: checked as boolean })
                 }
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
               />
               <div>
-                <div className="font-medium text-dark-100">
+                <div className="text-foreground font-medium">
                   {t('admin.partners.settingsFields.programEnabled')}
                 </div>
-                <div className="text-sm text-dark-500">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.partners.settingsFields.programEnabledDesc')}
                 </div>
               </div>
@@ -166,46 +171,44 @@ export default function AdminPartnerSettings() {
           {/* Partner Section Visible */}
           <div>
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.partner_section_visible}
-                onChange={(e) =>
-                  setFormData({ ...formData, partner_section_visible: e.target.checked })
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, partner_section_visible: checked as boolean })
                 }
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
               />
               <div>
-                <div className="font-medium text-dark-100">
+                <div className="text-foreground font-medium">
                   {t('admin.partners.settingsFields.partnerVisible')}
                 </div>
-                <div className="text-sm text-dark-500">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.partners.settingsFields.partnerVisibleDesc')}
                 </div>
               </div>
             </label>
           </div>
-        </div>
+        </Card>
 
         {/* Withdrawal Settings Section */}
-        <div className="card">
-          <h3 className="mb-4 text-lg font-semibold text-dark-100">
+        <Card>
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
             {t('admin.partners.settingsSection.withdrawalSettings')}
           </h3>
 
           {/* Withdrawal Enabled */}
           <div className="mb-6">
             <label className="flex cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={formData.withdrawal_enabled}
-                onChange={(e) => setFormData({ ...formData, withdrawal_enabled: e.target.checked })}
-                className="h-5 w-5 rounded border-dark-700 bg-dark-800 text-accent-500 focus:ring-2 focus:ring-accent-500 focus:ring-offset-0"
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, withdrawal_enabled: checked as boolean })
+                }
               />
               <div>
-                <div className="font-medium text-dark-100">
+                <div className="text-foreground font-medium">
                   {t('admin.partners.settingsFields.withdrawalEnabled')}
                 </div>
-                <div className="text-sm text-dark-500">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.partners.settingsFields.withdrawalEnabledDesc')}
                 </div>
               </div>
@@ -214,10 +217,10 @@ export default function AdminPartnerSettings() {
 
           {/* Min Amount */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.partners.settingsFields.minAmount')}
             </label>
-            <input
+            <Input
               type="number"
               min={0}
               max={100000000}
@@ -229,20 +232,19 @@ export default function AdminPartnerSettings() {
                 const num = parseInt(val);
                 if (!isNaN(num)) setFormData({ ...formData, withdrawal_min_amount_kopeks: num });
               }}
-              className="input"
               disabled={!formData.withdrawal_enabled}
             />
-            <p className="mt-1 text-xs text-dark-500">
+            <p className="text-muted-foreground mt-1 text-xs">
               {t('admin.partners.settingsFields.minAmountDesc')}
             </p>
           </div>
 
           {/* Cooldown Days */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.partners.settingsFields.cooldownDays')}
             </label>
-            <input
+            <Input
               type="number"
               min={0}
               max={365}
@@ -253,49 +255,40 @@ export default function AdminPartnerSettings() {
                 const num = parseInt(val);
                 if (!isNaN(num)) setFormData({ ...formData, withdrawal_cooldown_days: num });
               }}
-              className="input"
               disabled={!formData.withdrawal_enabled}
             />
-            <p className="mt-1 text-xs text-dark-500">
+            <p className="text-muted-foreground mt-1 text-xs">
               {t('admin.partners.settingsFields.cooldownDaysDesc')}
             </p>
           </div>
 
           {/* Requisites Text */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.partners.settingsFields.requisitesText')}
             </label>
-            <textarea
+            <Textarea
               value={formData.withdrawal_requisites_text}
               onChange={(e) =>
                 setFormData({ ...formData, withdrawal_requisites_text: e.target.value })
               }
-              className="input min-h-[80px] w-full"
+              className="min-h-20 w-full"
               maxLength={2000}
               disabled={!formData.withdrawal_enabled}
               placeholder={t('admin.partners.settingsFields.requisitesTextPlaceholder')}
             />
-            <p className="mt-1 text-xs text-dark-500">
+            <p className="text-muted-foreground mt-1 text-xs">
               {t('admin.partners.settingsFields.requisitesTextDesc')}
             </p>
           </div>
-        </div>
+        </Card>
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => navigate('/admin/partners')}
-            className="btn-secondary"
-          >
+          <Button type="button" variant="secondary" onClick={() => navigate('/admin/partners')}>
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!isValid || updateMutation.isPending}
-            className="btn-primary"
-          >
+          </Button>
+          <Button type="submit" disabled={!isValid || updateMutation.isPending}>
             {updateMutation.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -304,11 +297,11 @@ export default function AdminPartnerSettings() {
             ) : (
               t('common.save')
             )}
-          </button>
+          </Button>
         </div>
 
         {updateMutation.isError && (
-          <div className="rounded-lg border border-error-500/30 bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-lg border p-3 text-sm">
             {t('admin.partners.settingsUpdateError')}
           </div>
         )}

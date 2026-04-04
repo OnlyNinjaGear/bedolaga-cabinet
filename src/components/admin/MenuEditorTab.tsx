@@ -29,6 +29,7 @@ import {
 } from '../../api/menuLayout';
 import { Toggle } from './Toggle';
 import { useNotify } from '../../platform/hooks/useNotify';
+import { Button } from '@/components/ui/button';
 
 const GripIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -131,17 +132,19 @@ function MaxPerRowSelector({ value, onChange }: MaxPerRowSelectorProps) {
   return (
     <div className="flex gap-1">
       {[1, 2, 3].map((n) => (
-        <button
+        <Button
           key={n}
           onClick={() => onChange(n)}
-          className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-semibold transition-all ${
+          variant={value === n ? 'default' : 'ghost'}
+          size="icon"
+          className={`h-7 w-7 text-xs font-semibold ${
             value === n
-              ? 'bg-accent-500 text-white'
-              : 'bg-dark-700/50 text-dark-400 hover:bg-dark-600 hover:text-dark-300'
+              ? ''
+              : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-muted-foreground'
           }`}
         >
           {n}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -176,99 +179,98 @@ function ButtonChip({
     (isBuiltin ? t(`admin.buttons.sections.${button.id}`) : button.id);
 
   const styleOption = STYLE_OPTIONS.find((s) => s.value === button.style);
-  const colorDotClass = styleOption?.colorClass || 'bg-dark-500';
+  const colorDotClass = styleOption?.colorClass || 'bg-muted';
 
   return (
     <div
       className={`overflow-hidden rounded-xl border transition-colors ${
-        button.enabled
-          ? 'border-dark-700/50 bg-dark-800/50'
-          : 'border-dark-700/30 bg-dark-800/30 opacity-60'
+        button.enabled ? 'border-border/50 bg-card/50' : 'border-border/30 bg-card/30 opacity-60'
       }`}
     >
       {/* Collapsed header */}
       <div className="flex items-center gap-2 px-3 py-2.5">
         <div className="flex shrink-0 flex-col">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onMoveUp ?? undefined}
             disabled={!onMoveUp}
             aria-label={t('admin.menuEditor.moveUp')}
-            className={`rounded-lg p-1.5 transition-colors ${
-              onMoveUp
-                ? 'text-dark-400 hover:bg-dark-700/50 hover:text-dark-300'
-                : 'cursor-default text-dark-700'
-            }`}
+            className="text-muted-foreground hover:text-muted-foreground h-auto p-1.5 disabled:cursor-default disabled:opacity-100"
           >
             <ArrowUpIcon />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onMoveDown ?? undefined}
             disabled={!onMoveDown}
             aria-label={t('admin.menuEditor.moveDown')}
-            className={`rounded-lg p-1.5 transition-colors ${
-              onMoveDown
-                ? 'text-dark-400 hover:bg-dark-700/50 hover:text-dark-300'
-                : 'cursor-default text-dark-700'
-            }`}
+            className="text-muted-foreground hover:text-muted-foreground h-auto p-1.5 disabled:cursor-default disabled:opacity-100"
           >
             <ArrowDownIcon />
-          </button>
+          </Button>
         </div>
         <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${colorDotClass}`} />
-        <span className="min-w-0 flex-1 truncate text-sm font-medium text-dark-100">
+        <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
           {displayName}
         </span>
         {!isBuiltin && (
-          <span className="text-dark-500" title="URL">
+          <span className="text-muted-foreground" title="URL">
             <LinkIcon />
           </span>
         )}
         <Toggle checked={button.enabled} onChange={() => onUpdate({ enabled: !button.enabled })} />
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onToggleExpand}
-          className="rounded-lg p-1 text-dark-400 transition-colors hover:bg-dark-700/50 hover:text-dark-300"
+          className="text-muted-foreground hover:text-muted-foreground h-auto p-1"
         >
           <ChevronIcon expanded={isExpanded} />
-        </button>
+        </Button>
         {!isBuiltin && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onRemove}
-            className="rounded-lg p-1 text-dark-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-auto p-1"
           >
             <TrashIcon />
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Expanded body */}
       {isExpanded && (
-        <div className="space-y-3 border-t border-dark-700/30 px-3 py-3">
+        <div className="border-border/30 space-y-3 border-t px-3 py-3">
           {/* Color selector */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
               {t('admin.buttons.color')}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {STYLE_OPTIONS.map((opt) => (
-                <button
+                <Button
                   key={opt.value}
+                  variant="ghost"
                   onClick={() => onUpdate({ style: opt.value })}
-                  className={`flex h-7 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all ${
+                  className={`h-7 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium ${
                     button.style === opt.value
-                      ? 'border-accent-500 bg-accent-500/10 text-accent-400'
-                      : 'border-dark-600 bg-dark-700/50 text-dark-300 hover:border-dark-500'
+                      ? 'border-primary bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                      : 'border-border bg-muted/50 text-muted-foreground'
                   }`}
                 >
                   <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${opt.colorClass}`} />
                   {t(`admin.buttons.styles.${opt.value}`)}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Emoji ID */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
               {t('admin.buttons.emojiId')}
             </label>
             <input
@@ -276,7 +278,7 @@ function ButtonChip({
               value={button.icon_custom_emoji_id}
               onChange={(e) => onUpdate({ icon_custom_emoji_id: e.target.value })}
               placeholder={t('admin.buttons.emojiPlaceholder')}
-              className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+              className="border-border bg-muted/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
             />
           </div>
 
@@ -284,32 +286,35 @@ function ButtonChip({
           {!isBuiltin && (
             <>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-dark-300">URL</label>
+                <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
+                  URL
+                </label>
                 <input
                   type="url"
                   value={button.url || ''}
                   onChange={(e) => onUpdate({ url: e.target.value || null })}
                   placeholder="https://..."
-                  className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-2 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+                  className="border-border bg-muted/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-dark-300">
+                <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
                   {t('admin.menuEditor.openIn')}
                 </label>
                 <div className="flex gap-1.5">
                   {(['external', 'webapp'] as const).map((mode) => (
-                    <button
+                    <Button
                       key={mode}
+                      variant="ghost"
                       onClick={() => onUpdate({ open_in: mode })}
-                      className={`flex h-7 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all ${
+                      className={`h-7 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium ${
                         button.open_in === mode
-                          ? 'border-accent-500 bg-accent-500/10 text-accent-400'
-                          : 'border-dark-600 bg-dark-700/50 text-dark-300 hover:border-dark-500'
+                          ? 'border-primary bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                          : 'border-border bg-muted/50 text-muted-foreground'
                       }`}
                     >
                       {t(`admin.menuEditor.openMode.${mode}`)}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -318,13 +323,13 @@ function ButtonChip({
 
           {/* Localized labels */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1.5 block text-xs font-medium">
               {t('admin.buttons.customLabels')}
             </label>
             <div className="space-y-2">
               {BOT_LOCALES.map((locale) => (
                 <div key={locale} className="flex items-center gap-2">
-                  <span className="w-7 shrink-0 text-center text-[10px] font-semibold uppercase text-dark-500">
+                  <span className="text-muted-foreground w-7 shrink-0 text-center text-[10px] font-semibold uppercase">
                     {locale}
                   </span>
                   <input
@@ -337,11 +342,13 @@ function ButtonChip({
                     }
                     placeholder={t('admin.menuEditor.buttonTextPlaceholder')}
                     maxLength={100}
-                    className="w-full rounded-lg border border-dark-600 bg-dark-700/50 px-3 py-1.5 text-sm text-dark-100 placeholder-dark-500 transition-colors focus:border-accent-500 focus:outline-none"
+                    className="border-border bg-muted/50 text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border px-3 py-1.5 text-sm transition-colors focus:outline-none"
                   />
                 </div>
               ))}
-              <p className="text-[10px] text-dark-500">{t('admin.menuEditor.customLabelsHint')}</p>
+              <p className="text-muted-foreground text-[10px]">
+                {t('admin.menuEditor.customLabelsHint')}
+              </p>
             </div>
           </div>
         </div>
@@ -397,21 +404,21 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`overflow-hidden rounded-2xl border bg-dark-800/50 transition-all ${
-        isDragging ? 'border-accent-500/50 shadow-xl shadow-accent-500/20' : 'border-dark-700/50'
+      className={`bg-card/50 overflow-hidden rounded-2xl border transition-all ${
+        isDragging ? 'border-primary/50 shadow-primary/20 shadow-xl' : 'border-border/50'
       }`}
     >
       {/* Row header */}
-      <div className="flex items-center gap-3 border-b border-dark-700/30 px-4 py-3">
+      <div className="border-border/30 flex items-center gap-3 border-b px-4 py-3">
         <button
           {...attributes}
           {...listeners}
-          className="flex-shrink-0 cursor-grab touch-none rounded-lg p-1.5 text-dark-500 hover:bg-dark-700/50 hover:text-dark-300 active:cursor-grabbing"
+          className="text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground shrink-0 cursor-grab touch-none rounded-lg p-1.5 active:cursor-grabbing"
           title={t('admin.menuEditor.dragToReorder')}
         >
           <GripIcon />
         </button>
-        <span className="text-sm font-semibold text-dark-200">
+        <span className="text-foreground text-sm font-semibold">
           {t('admin.menuEditor.row')} {rowIndex + 1}
         </span>
         <div className="flex-1" />
@@ -420,12 +427,14 @@ function SortableRow({
           onChange={(value) => onUpdateRow(row.id, { max_per_row: value })}
         />
         {!allBuiltin && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onRemoveRow(row.id)}
-            className="rounded-lg p-1.5 text-dark-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-auto p-1.5"
           >
             <TrashIcon />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -476,54 +485,58 @@ function InlineAddPanel({ rowId, usedBuiltinIds, onAddBuiltin, onAddCustom }: In
 
   if (!isOpen) {
     return (
-      <button
+      <Button
+        variant="ghost"
         onClick={() => setIsOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-dark-700/50 py-2.5 text-sm text-dark-500 transition-colors hover:border-dark-600 hover:text-dark-400"
+        className="border-border/50 text-muted-foreground hover:border-border hover:text-muted-foreground h-auto w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-2.5 text-sm"
       >
         <PlusIcon />
         {t('admin.menuEditor.addButton')}
-      </button>
+      </Button>
     );
   }
 
   return (
-    <div className="space-y-1 rounded-xl border border-dark-700/50 bg-dark-900/30 p-2">
+    <div className="border-border/50 bg-background/30 space-y-1 rounded-xl border p-2">
       {availableBuiltins.length > 0 && (
         <>
-          <p className="px-2 pb-0.5 text-xs font-medium text-dark-500">
+          <p className="text-muted-foreground px-2 pb-0.5 text-xs font-medium">
             {t('admin.menuEditor.builtinButtons')}
           </p>
           {availableBuiltins.map((id) => (
-            <button
+            <Button
               key={id}
+              variant="ghost"
               onClick={() => {
                 onAddBuiltin(rowId, id);
                 setIsOpen(false);
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-dark-200 transition-colors hover:bg-dark-700/50"
+              className="text-foreground h-auto w-full justify-start gap-2 px-3 py-2 text-sm"
             >
               {t(`admin.buttons.sections.${id}`)}
-            </button>
+            </Button>
           ))}
-          <div className="my-1 border-t border-dark-700/30" />
+          <div className="border-border/30 my-1 border-t" />
         </>
       )}
-      <button
+      <Button
+        variant="ghost"
         onClick={() => {
           onAddCustom(rowId);
           setIsOpen(false);
         }}
-        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-dark-200 transition-colors hover:bg-dark-700/50"
+        className="text-foreground h-auto w-full justify-start gap-2 px-3 py-2 text-sm"
       >
         <LinkIcon />
         {t('admin.menuEditor.addUrlButton')}
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="ghost"
         onClick={() => setIsOpen(false)}
-        className="flex w-full items-center justify-center rounded-lg py-1.5 text-xs text-dark-500 transition-colors hover:text-dark-400"
+        className="text-muted-foreground hover:text-muted-foreground h-auto w-full justify-center py-1.5 text-xs"
       >
         {t('common.cancel')}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -764,7 +777,7 @@ export function MenuEditorTab() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12 text-dark-400">
+      <div className="text-muted-foreground flex items-center justify-center py-12">
         <svg className="mr-2 h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
           <circle
             className="opacity-25"
@@ -787,7 +800,7 @@ export function MenuEditorTab() {
 
   if (isError) {
     return (
-      <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+      <div className="border-destructive/30 bg-destructive/10 text-destructive rounded-xl border px-4 py-3 text-sm">
         {t('common.error')}
       </div>
     );
@@ -796,7 +809,7 @@ export function MenuEditorTab() {
   return (
     <div className="space-y-4">
       {/* Drag hint */}
-      <div className="flex items-center gap-2 text-sm text-dark-500">
+      <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <GripIcon />
         {t('admin.menuEditor.dragHint')}
       </div>
@@ -830,47 +843,40 @@ export function MenuEditorTab() {
       </DndContext>
 
       {/* Add row */}
-      <button
+      <Button
+        variant="ghost"
         onClick={addRow}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-dark-700/50 py-4 text-sm font-medium text-dark-500 transition-colors hover:border-dark-600 hover:text-dark-400"
+        className="border-border/50 text-muted-foreground hover:border-border hover:text-muted-foreground h-auto w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed py-4 text-sm font-medium"
       >
         <PlusIcon />
         {t('admin.menuEditor.addRow')}
-      </button>
+      </Button>
 
       {/* Save / Cancel */}
       {hasUnsavedChanges && (
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleSave}
-            disabled={updateMutation.isPending}
-            className="rounded-xl bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
-          >
+          <Button onClick={handleSave} disabled={updateMutation.isPending}>
             {updateMutation.isPending ? t('common.saving') : t('common.save')}
-          </button>
-          <button
-            onClick={handleCancel}
-            disabled={updateMutation.isPending}
-            className="rounded-xl bg-dark-700 px-4 py-2 text-sm font-medium text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-50"
-          >
+          </Button>
+          <Button variant="secondary" onClick={handleCancel} disabled={updateMutation.isPending}>
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Reset */}
       <div className="flex justify-end">
-        <button
+        <Button
+          variant="secondary"
           onClick={() => {
             if (window.confirm(t('admin.menuEditor.resetConfirm'))) {
               resetMutation.mutate();
             }
           }}
           disabled={resetMutation.isPending}
-          className="rounded-xl bg-dark-700 px-4 py-2 text-sm text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-50"
         >
           {t('admin.buttons.resetAll')}
-        </button>
+        </Button>
       </div>
     </div>
   );

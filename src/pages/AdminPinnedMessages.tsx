@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { adminPinnedMessagesApi, PinnedMessageResponse } from '../api/adminPinnedMessages';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
 
 // Icons
 const PinIcon = () => (
@@ -144,9 +145,7 @@ function PinnedMessageCard({
   return (
     <div
       className={`rounded-xl border p-4 transition-all ${
-        message.is_active
-          ? 'border-success-500/50 bg-success-500/5'
-          : 'border-dark-700 bg-dark-800/50'
+        message.is_active ? 'border-success-500/50 bg-success-500/5' : 'border-border bg-card/50'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -157,96 +156,114 @@ function PinnedMessageCard({
               className={`rounded-full px-2 py-1 text-xs font-medium ${
                 message.is_active
                   ? 'bg-success-500/20 text-success-400'
-                  : 'bg-dark-500/20 text-dark-400'
+                  : 'bg-muted/20 text-muted-foreground'
               }`}
             >
               {message.is_active
                 ? t('admin.pinnedMessages.active')
                 : t('admin.pinnedMessages.inactive')}
             </span>
-            <span className="text-xs text-dark-400">#{message.id}</span>
+            <span className="text-muted-foreground text-xs">#{message.id}</span>
             {message.media_type && (
-              <span className="text-dark-400">
+              <span className="text-muted-foreground">
                 {message.media_type === 'photo' ? <PhotoIcon /> : <VideoIcon />}
               </span>
             )}
             {message.send_before_menu && (
-              <span className="text-dark-500" title={t('admin.pinnedMessages.sendBeforeMenu')}>
+              <span
+                className="text-muted-foreground"
+                title={t('admin.pinnedMessages.sendBeforeMenu')}
+              >
                 <MenuIcon />
               </span>
             )}
             {message.send_on_every_start && (
-              <span className="text-dark-500" title={t('admin.pinnedMessages.sendOnEveryStart')}>
+              <span
+                className="text-muted-foreground"
+                title={t('admin.pinnedMessages.sendOnEveryStart')}
+              >
                 <RepeatIcon />
               </span>
             )}
           </div>
 
           {/* Content preview */}
-          <p className="line-clamp-3 text-sm text-dark-100">
+          <p className="text-foreground line-clamp-3 text-sm">
             {message.content || t('admin.pinnedMessages.noContent')}
           </p>
 
           {/* Date */}
-          <div className="mt-2 text-xs text-dark-400">
+          <div className="text-muted-foreground mt-2 text-xs">
             {new Date(message.created_at).toLocaleDateString()}
           </div>
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-dark-700/50 pt-3">
-        <button
+      <div className="border-border/50 mt-3 flex flex-wrap gap-2 border-t pt-3">
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={() => onEdit(message.id)}
-          className="flex items-center gap-1.5 rounded-lg bg-dark-700 px-3 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
+          className="flex items-center gap-1.5"
         >
           <EditIcon />
           {t('admin.pinnedMessages.editMessage')}
-        </button>
+        </Button>
 
         {message.is_active ? (
           <>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onDeactivate}
-              className="flex items-center gap-1.5 rounded-lg bg-warning-500/20 px-3 py-1.5 text-xs text-warning-400 transition-colors hover:bg-warning-500/30"
+              className="text-warning-400 hover:bg-warning-500/20 hover:text-warning-400 flex items-center gap-1.5"
             >
               <XIcon />
               {t('admin.pinnedMessages.deactivate')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onUnpin}
-              className="flex items-center gap-1.5 rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+              className="text-error-400 hover:bg-error-500/20 hover:text-error-400 flex items-center gap-1.5"
             >
               <UnpinIcon />
               {t('admin.pinnedMessages.unpinAll')}
-            </button>
+            </Button>
           </>
         ) : (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onActivate(message.id)}
-            className="flex items-center gap-1.5 rounded-lg bg-success-500/20 px-3 py-1.5 text-xs text-success-400 transition-colors hover:bg-success-500/30"
+            className="text-success-400 hover:bg-success-500/20 hover:text-success-400 flex items-center gap-1.5"
           >
             <CheckIcon />
             {t('admin.pinnedMessages.activate')}
-          </button>
+          </Button>
         )}
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => onBroadcast(message.id)}
-          className="flex items-center gap-1.5 rounded-lg bg-accent-500/20 px-3 py-1.5 text-xs text-accent-400 transition-colors hover:bg-accent-500/30"
+          className="flex items-center gap-1.5"
         >
           <BroadcastIcon />
           {t('admin.pinnedMessages.broadcastToAll')}
-        </button>
+        </Button>
 
         {!message.is_active && (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onDelete(message.id)}
-            className="flex items-center gap-1.5 rounded-lg bg-error-500/20 px-3 py-1.5 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+            className="text-error-400 hover:bg-error-500/20 hover:text-error-400 flex items-center gap-1.5"
           >
             <TrashIcon />
             {t('admin.pinnedMessages.delete')}
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -345,40 +362,36 @@ export default function AdminPinnedMessages() {
         <div className="flex items-center gap-3">
           <AdminBackButton />
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-error-500/20 p-2 text-error-400">
+            <div className="bg-error-500/20 text-error-400 rounded-lg p-2">
               <PinIcon />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-dark-100">{t('admin.pinnedMessages.title')}</h1>
-              <p className="text-sm text-dark-400">{t('admin.pinnedMessages.subtitle')}</p>
+              <h1 className="text-foreground text-xl font-bold">
+                {t('admin.pinnedMessages.title')}
+              </h1>
+              <p className="text-muted-foreground text-sm">{t('admin.pinnedMessages.subtitle')}</p>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => refetch()}
-            className="rounded-lg bg-dark-800 p-2 text-dark-400 transition-colors hover:text-dark-100"
-          >
+          <Button variant="ghost" size="icon" onClick={() => refetch()}>
             <RefreshIcon />
-          </button>
-          <button
-            onClick={() => navigate('/admin/pinned-messages/create')}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-          >
+          </Button>
+          <Button onClick={() => navigate('/admin/pinned-messages/create')}>
             <PlusIcon />
             <span className="hidden sm:inline">{t('admin.pinnedMessages.create')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Messages list */}
       {isLoading ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <RefreshIcon />
           <p className="mt-2">{t('common.loading')}</p>
         </div>
       ) : messages.length === 0 ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <div className="mx-auto mb-2 w-fit">
             <PinIcon />
           </div>
@@ -403,24 +416,26 @@ export default function AdminPinnedMessages() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <button
+        <div className="border-border bg-card/50 flex items-center justify-center gap-2 rounded-xl border p-4">
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="rounded-lg bg-dark-700 px-3 py-1 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('admin.pinnedMessages.prev')}
-          </button>
-          <span className="text-dark-400">
+          </Button>
+          <span className="text-muted-foreground">
             {page + 1} / {totalPages}
           </span>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-lg bg-dark-700 px-3 py-1 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('admin.pinnedMessages.next')}
-          </button>
+          </Button>
         </div>
       )}
     </div>

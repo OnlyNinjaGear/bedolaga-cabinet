@@ -21,8 +21,11 @@ export function DonutChart({
   if (data.length === 0) {
     return (
       <div className="bento-card">
-        <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
-        <div className="flex items-center justify-center text-sm text-dark-400" style={{ height }}>
+        <h4 className="text-foreground mb-3 text-sm font-semibold">{title}</h4>
+        <div
+          className="text-muted-foreground flex items-center justify-center text-sm"
+          style={{ height }}
+        >
           {t('common.noData')}
         </div>
       </div>
@@ -31,7 +34,7 @@ export function DonutChart({
 
   return (
     <div className="bento-card">
-      <h4 className="mb-3 text-sm font-semibold text-dark-200">{title}</h4>
+      <h4 className="text-foreground mb-3 text-sm font-semibold">{title}</h4>
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie
@@ -66,7 +69,7 @@ export function DonutChart({
       </ResponsiveContainer>
       <div className="mt-2 flex flex-wrap justify-center gap-3">
         {data.map((entry, index) => (
-          <div key={entry.name} className="flex items-center gap-1.5 text-xs text-dark-400">
+          <div key={entry.name} className="text-muted-foreground flex items-center gap-1.5 text-xs">
             <div
               className="h-2.5 w-2.5 rounded-full"
               style={{

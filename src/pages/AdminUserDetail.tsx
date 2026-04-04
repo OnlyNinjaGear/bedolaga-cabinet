@@ -18,10 +18,21 @@ import {
 import { adminApi, type AdminTicket, type AdminTicketDetail } from '../api/admin';
 import { promocodesApi, type PromoGroup } from '../api/promocodes';
 import { promoOffersApi } from '../api/promoOffers';
+import { rbacApi, type AuditLogEntry } from '../api/rbac';
 import { ticketsApi } from '../api/tickets';
 import { AdminBackButton } from '../components/admin';
 import { createNumberInputHandler, toNumber } from '../utils/inputHelpers';
 import { usePermissionStore } from '../store/permissions';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 // ============ Helpers ============
 
@@ -116,11 +127,11 @@ function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
     active: 'bg-success-500/20 text-success-400 border-success-500/30',
     blocked: 'bg-error-500/20 text-error-400 border-error-500/30',
-    deleted: 'bg-dark-600 text-dark-400 border-dark-500',
-    trial: 'bg-accent-500/20 text-accent-400 border-accent-500/30',
+    deleted: 'bg-muted text-muted-foreground border-border',
+    trial: 'bg-primary/20 text-primary border-primary/30',
     expired: 'bg-warning-500/20 text-warning-400 border-warning-500/30',
     limited: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    disabled: 'bg-dark-600 text-dark-400 border-dark-500',
+    disabled: 'bg-muted text-muted-foreground border-border',
   };
 
   return (
@@ -134,19 +145,19 @@ function GiftStatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   const styles: Record<string, string> = {
     pending: 'bg-warning-500/20 text-warning-400 border-warning-500/30',
-    paid: 'bg-accent-500/20 text-accent-400 border-accent-500/30',
+    paid: 'bg-primary/20 text-primary border-primary/30',
     delivered: 'bg-success-500/20 text-success-400 border-success-500/30',
-    pending_activation: 'bg-accent-500/20 text-accent-400 border-accent-500/30',
+    pending_activation: 'bg-primary/20 text-primary border-primary/30',
     failed: 'bg-error-500/20 text-error-400 border-error-500/30',
-    expired: 'bg-dark-600 text-dark-400 border-dark-500',
+    expired: 'bg-muted text-muted-foreground border-border',
   };
-  const fallback = 'bg-dark-600 text-dark-400 border-dark-500';
+  const fallback = 'bg-muted text-muted-foreground border-border';
 
   const label = t(`admin.users.detail.gifts.status.${status}`, { defaultValue: '' }) || status;
 
   return (
     <span
-      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${styles[status] || fallback}`}
+      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium tracking-wider uppercase ${styles[status] || fallback}`}
     >
       {label}
     </span>
@@ -189,15 +200,15 @@ function GiftCard({
   };
 
   return (
-    <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4 transition-colors hover:bg-dark-800/70">
+    <div className="border-border/50 bg-card/50 hover:bg-card/70 rounded-xl border p-4 transition-colors">
       {/* Header */}
       <div className="mb-3 flex items-start justify-between">
         <div className="flex items-center gap-2">
           <div
-            className={`flex h-8 w-8 items-center justify-center rounded-lg ${isSent ? 'bg-accent-500/15' : 'bg-success-500/15'}`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg ${isSent ? 'bg-primary/15' : 'bg-success-500/15'}`}
           >
             <svg
-              className={`h-4 w-4 ${isSent ? 'text-accent-400' : 'text-success-400'}`}
+              className={`h-4 w-4 ${isSent ? 'text-primary' : 'text-success-400'}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -211,8 +222,8 @@ function GiftCard({
             </svg>
           </div>
           <div>
-            <div className="text-sm font-medium text-dark-100">{gift.tariff_name || '—'}</div>
-            <div className="text-xs text-dark-500">
+            <div className="text-foreground text-sm font-medium">{gift.tariff_name || '—'}</div>
+            <div className="text-muted-foreground text-xs">
               {gift.period_days} {t('admin.users.detail.gifts.days')} · {gift.device_limit}{' '}
               {t('admin.users.detail.gifts.devices')}
             </div>
@@ -224,42 +235,50 @@ function GiftCard({
       {/* Details grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
         <div>
-          <span className="text-dark-500">{otherPartyLabel}:</span>{' '}
-          <span className="text-dark-300">{otherPartyName}</span>
+          <span className="text-muted-foreground">{otherPartyLabel}:</span>{' '}
+          <span className="text-muted-foreground">{otherPartyName}</span>
           {otherPartyId && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => onNavigateToUser(otherPartyId)}
-              className="ml-1 text-accent-400 hover:text-accent-300"
+              className="text-primary hover:text-primary/70 ml-1 h-auto p-0"
             >
               #{otherPartyId}
-            </button>
+            </Button>
           )}
         </div>
         <div>
-          <span className="text-dark-500">{t('admin.users.detail.gifts.amount')}:</span>{' '}
-          <span className="text-dark-300">{formatWithCurrency(gift.amount_kopeks / 100)}</span>
+          <span className="text-muted-foreground">{t('admin.users.detail.gifts.amount')}:</span>{' '}
+          <span className="text-muted-foreground">
+            {formatWithCurrency(gift.amount_kopeks / 100)}
+          </span>
         </div>
         <div>
-          <span className="text-dark-500">{t('admin.users.detail.gifts.paymentMethod')}:</span>{' '}
-          <span className="text-dark-300">{gift.payment_method || '—'}</span>
+          <span className="text-muted-foreground">
+            {t('admin.users.detail.gifts.paymentMethod')}:
+          </span>{' '}
+          <span className="text-muted-foreground">{gift.payment_method || '—'}</span>
         </div>
         <div>
-          <span className="text-dark-500">{t('admin.users.detail.gifts.createdAt')}:</span>{' '}
-          <span className="text-dark-300">
+          <span className="text-muted-foreground">{t('admin.users.detail.gifts.createdAt')}:</span>{' '}
+          <span className="text-muted-foreground">
             {gift.created_at ? new Date(gift.created_at).toLocaleString(locale, dateOpts) : '—'}
           </span>
         </div>
         {gift.paid_at && (
           <div>
-            <span className="text-dark-500">{t('admin.users.detail.gifts.paidAt')}:</span>{' '}
-            <span className="text-dark-300">
+            <span className="text-muted-foreground">{t('admin.users.detail.gifts.paidAt')}:</span>{' '}
+            <span className="text-muted-foreground">
               {new Date(gift.paid_at).toLocaleString(locale, dateOpts)}
             </span>
           </div>
         )}
         {gift.delivered_at && (
           <div>
-            <span className="text-dark-500">{t('admin.users.detail.gifts.deliveredAt')}:</span>{' '}
+            <span className="text-muted-foreground">
+              {t('admin.users.detail.gifts.deliveredAt')}:
+            </span>{' '}
             <span className="text-success-400">
               {new Date(gift.delivered_at).toLocaleString(locale, dateOpts)}
             </span>
@@ -269,18 +288,29 @@ function GiftCard({
 
       {/* Gift message */}
       {gift.gift_message && (
-        <div className="mt-3 rounded-lg bg-dark-900/50 p-2.5 text-xs italic text-dark-400">
+        <div className="bg-background/50 text-muted-foreground mt-3 rounded-lg p-2.5 text-xs italic">
           &ldquo;{gift.gift_message}&rdquo;
         </div>
       )}
 
       {/* Token */}
-      <div className="mt-2 font-mono text-[10px] text-dark-600">GIFT-{gift.token}</div>
+      <div className="text-muted-foreground mt-2 font-mono text-[10px]">GIFT-{gift.token}</div>
     </div>
   );
 }
 
 // ============ Main Page ============
+
+function relativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'только что';
+  if (mins < 60) return `${mins} мин назад`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} ч назад`;
+  const days = Math.floor(hours / 24);
+  return `${days} дн назад`;
+}
 
 export default function AdminUserDetail() {
   const { t } = useTranslation();
@@ -296,7 +326,7 @@ export default function AdminUserDetail() {
   const [user, setUser] = useState<UserDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    'info' | 'subscription' | 'balance' | 'sync' | 'tickets' | 'gifts' | 'referrals'
+    'info' | 'subscription' | 'balance' | 'sync' | 'tickets' | 'gifts' | 'referrals' | 'timeline'
   >('info');
   const [syncStatus, setSyncStatus] = useState<PanelSyncStatusResponse | null>(null);
   const [tariffs, setTariffs] = useState<UserAvailableTariff[]>([]);
@@ -382,6 +412,10 @@ export default function AdminUserDetail() {
   // Gifts
   const [giftsData, setGiftsData] = useState<AdminUserGiftsResponse | null>(null);
   const [giftsLoading, setGiftsLoading] = useState(false);
+
+  // Timeline
+  const [timelineData, setTimelineData] = useState<AuditLogEntry[]>([]);
+  const [timelineLoading, setTimelineLoading] = useState(false);
 
   const userId = id ? parseInt(id, 10) : null;
 
@@ -521,6 +555,18 @@ export default function AdminUserDetail() {
     }
   }, [userId]);
 
+  const loadTimeline = useCallback(async () => {
+    if (!userId) return;
+    try {
+      setTimelineLoading(true);
+      const data = await rbacApi.getAuditLog({ user_id: userId, limit: 50, offset: 0 });
+      setTimelineData(data.items);
+    } catch {
+    } finally {
+      setTimelineLoading(false);
+    }
+  }, [userId]);
+
   const loadPromoGroups = useCallback(async () => {
     try {
       const data = await promocodesApi.getPromoGroups({ limit: 100 });
@@ -590,6 +636,7 @@ export default function AdminUserDetail() {
     if (activeTab === 'tickets') loadTickets();
     if (activeTab === 'gifts') loadGifts();
     if (activeTab === 'referrals') loadReferralsList();
+    if (activeTab === 'timeline') loadTimeline();
   }, [
     activeTab,
     loadSyncStatus,
@@ -600,6 +647,7 @@ export default function AdminUserDetail() {
     loadPromoGroups,
     loadGifts,
     loadReferralsList,
+    loadTimeline,
     hasPermission,
   ]);
 
@@ -1183,7 +1231,7 @@ export default function AdminUserDetail() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -1191,13 +1239,8 @@ export default function AdminUserDetail() {
   if (!user) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-        <p className="text-dark-400">{t('admin.users.notFound')}</p>
-        <button
-          onClick={() => navigate('/admin/users')}
-          className="rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-        >
-          {t('common.back')}
-        </button>
+        <p className="text-muted-foreground">{t('admin.users.notFound')}</p>
+        <Button onClick={() => navigate('/admin/users')}>{t('common.back')}</Button>
       </div>
     );
   }
@@ -1208,21 +1251,21 @@ export default function AdminUserDetail() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AdminBackButton to="/admin/users" />
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-accent-500 to-accent-700 text-lg font-bold text-white">
+          <div className="from-primary to-primary/90 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br text-lg font-bold text-white">
             {user.first_name?.[0] || user.username?.[0] || '?'}
           </div>
           <div>
-            <div className="font-semibold text-dark-100">{user.full_name}</div>
-            <div className="flex items-center gap-2 text-sm text-dark-400">
+            <div className="text-foreground font-semibold">{user.full_name}</div>
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <TelegramIcon />
               {user.telegram_id}
               {user.username && <span>@{user.username}</span>}
             </div>
           </div>
         </div>
-        <button onClick={loadUser} className="rounded-lg p-2 transition-colors hover:bg-dark-700">
+        <Button variant="ghost" size="icon" onClick={loadUser}>
           <RefreshIcon className={loading ? 'animate-spin' : ''} />
-        </button>
+        </Button>
       </div>
 
       {/* Tabs */}
@@ -1230,16 +1273,28 @@ export default function AdminUserDetail() {
         className="scrollbar-hide -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 py-1"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        {(['info', 'subscription', 'balance', 'sync', 'tickets', 'gifts', 'referrals'] as const)
+        {(
+          [
+            'info',
+            'subscription',
+            'balance',
+            'sync',
+            'tickets',
+            'gifts',
+            'referrals',
+            'timeline',
+          ] as const
+        )
           .filter((tab) => tab !== 'sync' || hasPermission('users:sync'))
           .map((tab) => (
-            <button
+            <Button
               key={tab}
+              variant="ghost"
               onClick={() => setActiveTab(tab)}
-              className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+              className={`shrink-0 rounded-xl text-sm font-medium whitespace-nowrap ${
                 activeTab === tab
-                  ? 'bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/30'
-                  : 'bg-dark-800/50 text-dark-400 active:bg-dark-700'
+                  ? 'bg-primary/15 text-primary ring-ring/30 hover:bg-primary/15 hover:text-primary ring-1'
+                  : 'bg-card/50 text-muted-foreground active:bg-muted'
               }`}
             >
               {tab === 'info' && t('admin.users.detail.tabs.info')}
@@ -1249,7 +1304,8 @@ export default function AdminUserDetail() {
               {tab === 'tickets' && t('admin.users.detail.tabs.tickets')}
               {tab === 'gifts' && t('admin.users.detail.tabs.gifts')}
               {tab === 'referrals' && t('admin.users.detail.tabs.referrals')}
-            </button>
+              {tab === 'timeline' && t('admin.users.detail.tabs.timeline')}
+            </Button>
           ))}
       </div>
 
@@ -1259,194 +1315,216 @@ export default function AdminUserDetail() {
         {activeTab === 'info' && (
           <div className="space-y-4">
             {/* Status */}
-            <div className="flex items-center justify-between rounded-xl bg-dark-800/50 p-3">
-              <span className="text-dark-400">{t('admin.users.detail.status')}</span>
+            <div className="bg-card/50 flex items-center justify-between rounded-xl p-3">
+              <span className="text-muted-foreground">{t('admin.users.detail.status')}</span>
               <div className="flex items-center gap-2">
                 <StatusBadge status={user.status} />
                 {user.status === 'active' ? (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleBlockUser}
                     disabled={actionLoading}
-                    className="rounded-lg bg-error-500/20 px-3 py-1 text-xs text-error-400 transition-colors hover:bg-error-500/30"
+                    className="bg-error-500/20 text-error-400 hover:bg-error-500/30"
                   >
                     {t('admin.users.actions.block')}
-                  </button>
+                  </Button>
                 ) : user.status === 'blocked' ? (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleUnblockUser}
                     disabled={actionLoading}
-                    className="rounded-lg bg-success-500/20 px-3 py-1 text-xs text-success-400 transition-colors hover:bg-success-500/30"
+                    className="bg-success-500/20 text-success-400 hover:bg-success-500/30 h-auto rounded-lg px-3 py-1 text-xs"
                   >
                     {t('admin.users.actions.unblock')}
-                  </button>
+                  </Button>
                 ) : null}
               </div>
             </div>
 
             {/* Details grid */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">Email</div>
-                <div className="text-dark-100">{user.email || '-'}</div>
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">Email</div>
+                <div className="text-foreground">{user.email || '-'}</div>
               </div>
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">{t('admin.users.detail.language')}</div>
-                <div className="text-dark-100">{user.language}</div>
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
+                  {t('admin.users.detail.language')}
+                </div>
+                <div className="text-foreground">{user.language}</div>
               </div>
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
                   {t('admin.users.detail.registration')}
                 </div>
-                <div className="text-dark-100">{formatDate(user.created_at)}</div>
+                <div className="text-foreground">{formatDate(user.created_at)}</div>
               </div>
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
                   {t('admin.users.detail.lastActivity')}
                 </div>
-                <div className="text-dark-100">{formatDate(user.last_activity)}</div>
+                <div className="text-foreground">{formatDate(user.last_activity)}</div>
               </div>
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
                   {t('admin.users.detail.totalSpent')}
                 </div>
-                <div className="text-dark-100">
+                <div className="text-foreground">
                   {formatWithCurrency(user.total_spent_kopeks / 100)}
                 </div>
               </div>
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-1 text-xs text-dark-500">
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
                   {t('admin.users.detail.purchases')}
                 </div>
-                <div className="text-dark-100">{user.purchase_count}</div>
+                <div className="text-foreground">{user.purchase_count}</div>
               </div>
             </div>
 
             {/* Campaign */}
             {user.campaign_name && (
-              <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-3">
-                <div className="mb-1 text-xs text-dark-500">{t('admin.users.detail.campaign')}</div>
-                <div className="text-sm font-medium text-accent-400">{user.campaign_name}</div>
+              <div className="border-primary/20 bg-primary/5 rounded-xl border p-3">
+                <div className="text-muted-foreground mb-1 text-xs">
+                  {t('admin.users.detail.campaign')}
+                </div>
+                <div className="text-primary text-sm font-medium">{user.campaign_name}</div>
               </div>
             )}
 
             {/* Promo Group */}
-            <div className="rounded-xl bg-dark-800/50 p-3">
+            <div className="bg-card/50 rounded-xl p-3">
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs text-dark-500">{t('admin.users.detail.promoGroup')}</span>
+                <span className="text-muted-foreground text-xs">
+                  {t('admin.users.detail.promoGroup')}
+                </span>
                 {hasPermission('users:promo_group') && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setEditingPromoGroup(!editingPromoGroup)}
-                    className="text-xs text-accent-400 transition-colors hover:text-accent-300"
+                    className="text-primary hover:text-primary/70 h-auto p-0 text-xs"
                   >
                     {editingPromoGroup
                       ? t('common.cancel')
                       : t('admin.users.detail.changePromoGroup')}
-                  </button>
+                  </Button>
                 )}
               </div>
               {editingPromoGroup ? (
                 <div className="mt-2 space-y-2">
-                  <select
-                    value={user.promo_group?.id ?? ''}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      handleChangePromoGroup(val ? parseInt(val, 10) : null);
-                    }}
+                  <Select
+                    value={user.promo_group?.id != null ? String(user.promo_group.id) : '__none__'}
+                    onValueChange={(v) =>
+                      handleChangePromoGroup(v === '__none__' ? null : parseInt(v, 10))
+                    }
                     disabled={actionLoading}
-                    className="input text-sm"
                   >
-                    <option value="">{t('admin.users.detail.selectPromoGroup')}</option>
-                    {promoGroups.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.name}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">
+                        {t('admin.users.detail.selectPromoGroup')}
+                      </SelectItem>
+                      {promoGroups.map((g) => (
+                        <SelectItem key={g.id} value={String(g.id)}>
+                          {g.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {user.promo_group && (
-                    <button
+                    <Button
+                      variant="secondary"
+                      className="w-full"
                       onClick={() => handleChangePromoGroup(null)}
                       disabled={actionLoading}
-                      className="w-full rounded-lg bg-dark-700 py-1.5 text-xs text-dark-300 transition-colors hover:bg-dark-600"
                     >
                       {t('admin.users.detail.removePromoGroup')}
-                    </button>
+                    </Button>
                   )}
                 </div>
               ) : (
-                <div className="text-sm font-medium text-dark-100">
+                <div className="text-foreground text-sm font-medium">
                   {user.promo_group?.name || (
-                    <span className="text-dark-500">{t('admin.users.detail.noPromoGroup')}</span>
+                    <span className="text-muted-foreground">
+                      {t('admin.users.detail.noPromoGroup')}
+                    </span>
                   )}
                 </div>
               )}
             </div>
 
             {/* Referral */}
-            <div className="rounded-xl bg-dark-800/50 p-3">
+            <div className="bg-card/50 rounded-xl p-3">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium text-dark-200">
+                <span className="text-foreground text-sm font-medium">
                   {t('admin.users.detail.referral.title')}
                 </span>
                 {hasPermission('users:referral') && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       if (!editingReferralCommission) {
                         setReferralCommissionValue(user.referral.commission_percent ?? '');
                       }
                       setEditingReferralCommission(!editingReferralCommission);
                     }}
-                    className="text-xs text-accent-400 transition-colors hover:text-accent-300"
+                    className="text-primary hover:text-primary/70 h-auto p-0 text-xs"
                   >
                     {editingReferralCommission ? t('common.cancel') : t('common.edit')}
-                  </button>
+                  </Button>
                 )}
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
-                  <div className="text-lg font-bold text-dark-100">
+                  <div className="text-foreground text-lg font-bold">
                     {user.referral.referrals_count}
                   </div>
-                  <div className="text-xs text-dark-500">
+                  <div className="text-muted-foreground text-xs">
                     {t('admin.users.detail.referral.referrals')}
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-dark-100">
+                  <div className="text-foreground text-lg font-bold">
                     {formatWithCurrency(user.referral.total_earnings_kopeks / 100)}
                   </div>
-                  <div className="text-xs text-dark-500">
+                  <div className="text-muted-foreground text-xs">
                     {t('admin.users.detail.referral.earned')}
                   </div>
                 </div>
                 <div>
                   {editingReferralCommission ? (
                     <div className="space-y-1">
-                      <input
+                      <Input
                         type="number"
                         value={referralCommissionValue}
                         onChange={createNumberInputHandler(setReferralCommissionValue, 0)}
                         placeholder="0-100"
-                        className="input w-full text-center text-sm"
+                        className="w-full text-center text-sm"
                         min={0}
                         max={100}
                         disabled={actionLoading}
                       />
-                      <button
+                      <Button
+                        className="w-full"
                         onClick={handleUpdateReferralCommission}
                         disabled={actionLoading}
-                        className="w-full rounded-lg bg-accent-500 px-2 py-1 text-xs text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
                       >
                         {actionLoading ? t('common.loading') : t('common.save')}
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <>
-                      <div className="text-lg font-bold text-dark-100">
+                      <div className="text-foreground text-lg font-bold">
                         {user.referral.commission_percent != null
                           ? `${user.referral.commission_percent}%`
                           : t('admin.users.detail.referral.default')}
                       </div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.referral.commission')}
                       </div>
                     </>
@@ -1457,41 +1535,42 @@ export default function AdminUserDetail() {
 
             {/* Referrals list */}
             {user.referral.referrals_count > 0 && (
-              <div className="rounded-xl bg-dark-800/50 p-3">
-                <div className="mb-2 text-sm font-medium text-dark-200">
+              <div className="bg-card/50 rounded-xl p-3">
+                <div className="text-foreground mb-2 text-sm font-medium">
                   {t('admin.users.detail.referralsList')}
                 </div>
                 {referralsLoading ? (
                   <div className="flex justify-center py-4">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                    <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
                   </div>
                 ) : referrals.length === 0 ? (
-                  <div className="py-2 text-center text-xs text-dark-500">
+                  <div className="text-muted-foreground py-2 text-center text-xs">
                     {t('admin.users.detail.noReferrals')}
                   </div>
                 ) : (
                   <div className="max-h-48 space-y-2 overflow-y-auto">
                     {referrals.map((ref) => (
-                      <button
+                      <Button
                         key={ref.id}
+                        variant="ghost"
                         onClick={() => navigate(`/admin/users/${ref.id}`)}
-                        className="flex w-full items-center justify-between rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                        className="bg-muted/50 hover:bg-muted h-auto w-full justify-between rounded-lg p-2 text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-dark-600 text-xs font-bold text-dark-300">
+                          <div className="bg-muted text-muted-foreground flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold">
                             {ref.first_name?.[0] || ref.username?.[0] || '?'}
                           </div>
                           <div>
-                            <div className="text-sm text-dark-100">{ref.full_name}</div>
-                            <div className="text-xs text-dark-500">
+                            <div className="text-foreground text-sm">{ref.full_name}</div>
+                            <div className="text-muted-foreground text-xs">
                               {formatDate(ref.created_at)}
                             </div>
                           </div>
                         </div>
-                        <div className="text-xs text-dark-400">
+                        <div className="text-muted-foreground text-xs">
                           {formatWithCurrency(ref.total_spent_kopeks / 100)}
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -1500,22 +1579,22 @@ export default function AdminUserDetail() {
 
             {/* Restrictions */}
             {(user.restriction_topup || user.restriction_subscription) && (
-              <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-3">
-                <div className="mb-2 text-sm font-medium text-error-400">
+              <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-3">
+                <div className="text-error-400 mb-2 text-sm font-medium">
                   {t('admin.users.detail.restrictions.title')}
                 </div>
                 {user.restriction_topup && (
-                  <div className="text-xs text-error-300">
+                  <div className="text-error-300 text-xs">
                     {t('admin.users.detail.restrictions.topup')}
                   </div>
                 )}
                 {user.restriction_subscription && (
-                  <div className="text-xs text-error-300">
+                  <div className="text-error-300 text-xs">
                     {t('admin.users.detail.restrictions.subscription')}
                   </div>
                 )}
                 {user.restriction_reason && (
-                  <div className="mt-1 text-xs text-dark-400">
+                  <div className="text-muted-foreground mt-1 text-xs">
                     {t('admin.users.detail.restrictions.reason')}: {user.restriction_reason}
                   </div>
                 )}
@@ -1523,63 +1602,67 @@ export default function AdminUserDetail() {
             )}
 
             {/* Actions */}
-            <div className="rounded-xl bg-dark-800/50 p-4">
-              <div className="mb-3 text-sm font-medium text-dark-200">
+            <div className="bg-card/50 rounded-xl p-4">
+              <div className="text-foreground mb-3 text-sm font-medium">
                 {t('admin.users.detail.actions.title')}
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => handleInlineConfirm('resetTrial', handleResetTrial)}
                   disabled={actionLoading}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:opacity-50 ${
+                  className={`h-auto rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-50 ${
                     confirmingAction === 'resetTrial'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-blue-500 text-white hover:bg-blue-500 hover:text-white'
                       : 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25'
                   }`}
                 >
                   {confirmingAction === 'resetTrial'
                     ? t('admin.users.detail.actions.areYouSure')
                     : t('admin.users.userActions.resetTrial')}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => handleInlineConfirm('resetSubscription', handleResetSubscription)}
                   disabled={actionLoading}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:opacity-50 ${
+                  className={`h-auto rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-50 ${
                     confirmingAction === 'resetSubscription'
-                      ? 'bg-amber-500 text-white'
+                      ? 'bg-amber-500 text-white hover:bg-amber-500 hover:text-white'
                       : 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'
                   }`}
                 >
                   {confirmingAction === 'resetSubscription'
                     ? t('admin.users.detail.actions.areYouSure')
                     : t('admin.users.userActions.resetSubscription')}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => handleInlineConfirm('disable', handleDisableUser)}
                   disabled={actionLoading}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:opacity-50 ${
+                  className={`h-auto rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-50 ${
                     confirmingAction === 'disable'
-                      ? 'bg-dark-500 text-white'
-                      : 'bg-dark-700 text-dark-300 hover:bg-dark-600'
+                      ? 'bg-muted hover:bg-muted text-white hover:text-white'
+                      : 'bg-muted text-muted-foreground hover:bg-muted'
                   }`}
                 >
                   {confirmingAction === 'disable'
                     ? t('admin.users.detail.actions.areYouSure')
                     : t('admin.users.userActions.disable')}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => handleInlineConfirm('fullDelete', handleFullDeleteUser)}
                   disabled={actionLoading}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:opacity-50 ${
+                  className={`h-auto rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-50 ${
                     confirmingAction === 'fullDelete'
-                      ? 'bg-rose-500 text-white'
+                      ? 'bg-rose-500 text-white hover:bg-rose-500 hover:text-white'
                       : 'bg-rose-500/15 text-rose-400 hover:bg-rose-500/25'
                   }`}
                 >
                   {confirmingAction === 'fullDelete'
                     ? t('admin.users.detail.actions.areYouSure')
                     : t('admin.users.userActions.delete')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -1593,23 +1676,24 @@ export default function AdminUserDetail() {
               <>
                 <div className="space-y-3">
                   {userSubscriptions.map((sub) => (
-                    <button
+                    <Button
                       key={sub.id}
+                      variant="ghost"
                       onClick={() => {
                         setActiveSubscriptionId(sub.id);
                         setSubscriptionDetailView(true);
                       }}
-                      className="w-full rounded-xl border border-dark-700/50 bg-dark-800/50 p-4 text-left transition-all hover:border-dark-600"
+                      className="border-border/50 bg-card/50 hover:border-border h-auto w-full justify-start rounded-xl border p-4 text-left"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-dark-100">
+                          <span className="text-foreground text-sm font-semibold">
                             {sub.tariff_name || `#${sub.id}`}
                           </span>
                           <StatusBadge status={sub.status} />
                         </div>
                         <svg
-                          className="h-4 w-4 text-dark-500"
+                          className="text-muted-foreground h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -1622,7 +1706,7 @@ export default function AdminUserDetail() {
                           />
                         </svg>
                       </div>
-                      <div className="mt-2 flex items-center gap-4 text-xs text-dark-400">
+                      <div className="text-muted-foreground mt-2 flex items-center gap-4 text-xs">
                         <span>
                           {sub.traffic_used_gb.toFixed(1)} / {sub.traffic_limit_gb}{' '}
                           {t('common.units.gb')}
@@ -1633,60 +1717,65 @@ export default function AdminUserDetail() {
                           {t('admin.users.detail.subscription.devices', 'устройств')}
                         </span>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
                 {/* Create new subscription — at list level */}
                 {hasPermission('users:subscription') && (
-                  <div className="rounded-xl bg-dark-800/50 p-4">
-                    <div className="mb-3 text-sm font-medium text-dark-200">
+                  <div className="bg-card/50 rounded-xl p-4">
+                    <div className="text-foreground mb-3 text-sm font-medium">
                       {t('admin.users.detail.subscription.createNew', 'Создать подписку')}
                     </div>
                     <div className="space-y-3">
-                      <select
-                        value={selectedTariffId || ''}
-                        onChange={(e) =>
-                          setSelectedTariffId(e.target.value ? parseInt(e.target.value) : null)
+                      <Select
+                        value={selectedTariffId != null ? String(selectedTariffId) : '__none__'}
+                        onValueChange={(v) =>
+                          setSelectedTariffId(v === '__none__' ? null : parseInt(v))
                         }
-                        className="input"
                       >
-                        <option value="">
-                          {t('admin.users.detail.subscription.selectTariff')}
-                        </option>
-                        {tariffs
-                          .filter((tariffItem) => {
-                            const purchasedIds = new Set(
-                              userSubscriptions
-                                .filter((s) => s.is_active || s.status === 'trial')
-                                .map((s) => s.tariff_id),
-                            );
-                            return !purchasedIds.has(tariffItem.id);
-                          })
-                          .map((tariffItem) => (
-                            <option key={tariffItem.id} value={tariffItem.id}>
-                              {tariffItem.name}
-                            </option>
-                          ))}
-                      </select>
-                      <input
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t('admin.users.detail.subscription.selectTariff')}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">
+                            {t('admin.users.detail.subscription.selectTariff')}
+                          </SelectItem>
+                          {tariffs
+                            .filter((tariffItem) => {
+                              const purchasedIds = new Set(
+                                userSubscriptions
+                                  .filter((s) => s.is_active || s.status === 'trial')
+                                  .map((s) => s.tariff_id),
+                              );
+                              return !purchasedIds.has(tariffItem.id);
+                            })
+                            .map((tariffItem) => (
+                              <SelectItem key={tariffItem.id} value={String(tariffItem.id)}>
+                                {tariffItem.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
                         type="number"
                         value={subDays}
                         onChange={createNumberInputHandler(setSubDays, 1)}
                         placeholder={t('admin.users.detail.subscription.days')}
-                        className="input"
                         min={1}
                         max={3650}
                       />
-                      <button
+                      <Button
                         onClick={() => handleUpdateSubscription('create')}
                         disabled={actionLoading}
-                        className="btn-primary w-full"
+                        className="w-full"
                       >
                         {actionLoading
                           ? t('admin.users.detail.subscription.creating')
                           : t('admin.users.detail.subscription.create')}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -1698,9 +1787,11 @@ export default function AdminUserDetail() {
               <>
                 {/* Back to list (multi-subscription) */}
                 {subscriptionDetailView && userSubscriptions.length > 1 && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setSubscriptionDetailView(false)}
-                    className="flex items-center gap-1.5 text-sm text-dark-400 transition-colors hover:text-dark-200"
+                    className="text-muted-foreground hover:text-foreground gap-1.5"
                   >
                     <svg
                       className="h-4 w-4"
@@ -1712,41 +1803,43 @@ export default function AdminUserDetail() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                     {t('admin.users.detail.subscription.backToList', 'Все подписки')}
-                  </button>
+                  </Button>
                 )}
 
                 {/* Current subscription */}
-                <div className="rounded-xl bg-dark-800/50 p-4">
+                <div className="bg-card/50 rounded-xl p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="font-medium text-dark-200">
+                    <span className="text-foreground font-medium">
                       {t('admin.users.detail.subscription.current')}
                       {userSubscriptions.length > 1 && (
-                        <span className="ml-2 text-xs text-dark-500">#{selectedSub.id}</span>
+                        <span className="text-muted-foreground ml-2 text-xs">
+                          #{selectedSub.id}
+                        </span>
                       )}
                     </span>
                     <StatusBadge status={selectedSub.status} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.subscription.tariff')}
                       </div>
-                      <div className="text-dark-100">
+                      <div className="text-foreground">
                         {selectedSub.tariff_name ||
                           t('admin.users.detail.subscription.notSpecified')}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.subscription.validUntil')}
                       </div>
-                      <div className="text-dark-100">{formatDate(selectedSub.end_date)}</div>
+                      <div className="text-foreground">{formatDate(selectedSub.end_date)}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.subscription.traffic')}
                       </div>
-                      <div className="text-dark-100">
+                      <div className="text-foreground">
                         {panelInfo?.found
                           ? (panelInfo.used_traffic_bytes / (1024 * 1024 * 1024)).toFixed(1)
                           : selectedSub.traffic_used_gb.toFixed(1)}{' '}
@@ -1754,31 +1847,35 @@ export default function AdminUserDetail() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.subscription.devices')}
                       </div>
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
+                          variant="secondary"
+                          size="icon"
                           onClick={() => handleSetDeviceLimit(selectedSub.device_limit - 1)}
                           disabled={actionLoading || selectedSub.device_limit <= 1}
-                          className="flex h-6 w-6 items-center justify-center rounded-md bg-dark-700 text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-30"
+                          className="bg-muted text-muted-foreground hover:bg-muted h-6 w-6 rounded-md disabled:opacity-30"
                         >
                           <MinusIcon />
-                        </button>
-                        <span className="min-w-[2ch] text-center text-dark-100">
+                        </Button>
+                        <span className="text-foreground min-w-[2ch] text-center">
                           {selectedSub.device_limit}
                         </span>
-                        <button
+                        <Button
+                          variant="secondary"
+                          size="icon"
                           onClick={() => handleSetDeviceLimit(selectedSub.device_limit + 1)}
                           disabled={
                             actionLoading ||
                             (currentTariff?.max_device_limit != null &&
                               selectedSub.device_limit >= currentTariff.max_device_limit)
                           }
-                          className="flex h-6 w-6 items-center justify-center rounded-md bg-dark-700 text-dark-300 transition-colors hover:bg-dark-600 disabled:opacity-30"
+                          className="bg-muted text-muted-foreground hover:bg-muted h-6 w-6 rounded-md disabled:opacity-30"
                         >
                           <PlusIcon />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -1786,12 +1883,12 @@ export default function AdminUserDetail() {
 
                 {/* Traffic Packages */}
                 {selectedSub.traffic_purchases && selectedSub.traffic_purchases.length > 0 && (
-                  <div className="rounded-xl bg-dark-800/50 p-4">
+                  <div className="bg-card/50 rounded-xl p-4">
                     <div className="mb-3 flex items-center justify-between">
-                      <span className="text-sm font-medium text-dark-200">
+                      <span className="text-foreground text-sm font-medium">
                         {t('admin.users.detail.subscription.trafficPackages')}
                         {selectedSub.purchased_traffic_gb > 0 && (
-                          <span className="ml-2 text-xs text-dark-400">
+                          <span className="text-muted-foreground ml-2 text-xs">
                             ({selectedSub.purchased_traffic_gb} {t('common.units.gb')})
                           </span>
                         )}
@@ -1802,20 +1899,20 @@ export default function AdminUserDetail() {
                         <div
                           key={tp.id}
                           className={`flex items-center justify-between rounded-lg px-3 py-2 ${
-                            tp.is_expired ? 'bg-dark-700/30 opacity-60' : 'bg-dark-700/50'
+                            tp.is_expired ? 'bg-muted/30 opacity-60' : 'bg-muted/50'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 text-sm text-dark-200">
+                            <div className="text-foreground flex items-center gap-2 text-sm">
                               <span className="font-medium">
                                 {tp.traffic_gb} {t('common.units.gb')}
                               </span>
                               {tp.is_expired ? (
-                                <span className="rounded-full bg-error-500/20 px-1.5 py-0.5 text-[10px] text-error-400">
+                                <span className="bg-error-500/20 text-error-400 rounded-full px-1.5 py-0.5 text-[10px]">
                                   {t('admin.users.detail.subscription.expired')}
                                 </span>
                               ) : (
-                                <span className="text-xs text-dark-400">
+                                <span className="text-muted-foreground text-xs">
                                   {tp.days_remaining}{' '}
                                   {t('admin.users.detail.subscription.daysLeft')}
                                 </span>
@@ -1823,21 +1920,23 @@ export default function AdminUserDetail() {
                             </div>
                           </div>
                           {!tp.is_expired && (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() =>
                                 handleInlineConfirm(`removeTraffic_${tp.id}`, () =>
                                   handleRemoveTraffic(tp.id),
                                 )
                               }
                               disabled={actionLoading}
-                              className={`ml-2 shrink-0 rounded-lg px-2 py-1 text-xs transition-all disabled:opacity-50 ${
+                              className={`ml-2 h-auto shrink-0 rounded-lg px-2 py-1 text-xs disabled:opacity-50 ${
                                 confirmingAction === `removeTraffic_${tp.id}`
-                                  ? 'bg-error-500 text-white'
-                                  : 'text-dark-500 hover:bg-error-500/15 hover:text-error-400'
+                                  ? 'bg-error-500 hover:bg-error-500 text-white hover:text-white'
+                                  : 'text-muted-foreground hover:bg-error-500/15 hover:text-error-400'
                               }`}
                             >
                               {confirmingAction === `removeTraffic_${tp.id}` ? '?' : '\u00D7'}
-                            </button>
+                            </Button>
                           )}
                         </div>
                       ))}
@@ -1849,38 +1948,44 @@ export default function AdminUserDetail() {
                 {currentTariff &&
                   currentTariff.traffic_topup_enabled &&
                   Object.keys(currentTariff.traffic_topup_packages).length > 0 && (
-                    <div className="rounded-xl bg-dark-800/50 p-4">
-                      <div className="mb-3 text-sm font-medium text-dark-200">
+                    <div className="bg-card/50 rounded-xl p-4">
+                      <div className="text-foreground mb-3 text-sm font-medium">
                         {t('admin.users.detail.subscription.addTraffic')}
                       </div>
                       <div className="flex gap-2">
-                        <select
-                          value={selectedTrafficGb}
-                          onChange={(e) => setSelectedTrafficGb(e.target.value)}
-                          className="input flex-1"
+                        <Select
+                          value={selectedTrafficGb || '__none__'}
+                          onValueChange={(v) => setSelectedTrafficGb(v === '__none__' ? '' : v)}
                         >
-                          <option value="">
-                            {t('admin.users.detail.subscription.selectPackage')}
-                          </option>
-                          {Object.entries(currentTariff.traffic_topup_packages)
-                            .sort(([a], [b]) => Number(a) - Number(b))
-                            .map(([gb]) => (
-                              <option key={gb} value={gb}>
-                                {gb} {t('common.units.gb')}
-                              </option>
-                            ))}
-                        </select>
-                        <button
+                          <SelectTrigger className="flex-1">
+                            <SelectValue
+                              placeholder={t('admin.users.detail.subscription.selectPackage')}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">
+                              {t('admin.users.detail.subscription.selectPackage')}
+                            </SelectItem>
+                            {Object.entries(currentTariff.traffic_topup_packages)
+                              .sort(([a], [b]) => Number(a) - Number(b))
+                              .map(([gb]) => (
+                                <SelectItem key={gb} value={gb}>
+                                  {gb} {t('common.units.gb')}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
                           onClick={() =>
                             selectedTrafficGb && handleAddTraffic(Number(selectedTrafficGb))
                           }
                           disabled={actionLoading || !selectedTrafficGb}
-                          className="shrink-0 rounded-lg bg-accent-500 px-4 py-2 text-sm text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+                          className="shrink-0"
                         >
                           {t('admin.users.detail.subscription.addButton')}
-                        </button>
+                        </Button>
                       </div>
-                      <div className="mt-2 text-xs text-dark-500">
+                      <div className="text-muted-foreground mt-2 text-xs">
                         {t('admin.users.detail.subscription.addTrafficNote')}
                       </div>
                     </div>
@@ -1888,77 +1993,83 @@ export default function AdminUserDetail() {
 
                 {/* Actions */}
                 {hasPermission('users:subscription') && (
-                  <div className="rounded-xl bg-dark-800/50 p-4">
-                    <div className="mb-3 font-medium text-dark-200">
+                  <div className="bg-card/50 rounded-xl p-4">
+                    <div className="text-foreground mb-3 font-medium">
                       {t('admin.users.detail.subscription.actions')}
                     </div>
                     <div className="space-y-3">
-                      <select
-                        value={subAction}
-                        onChange={(e) => setSubAction(e.target.value)}
-                        className="input"
-                      >
-                        <option value="extend">
-                          {t('admin.users.detail.subscription.extend')}
-                        </option>
-                        <option value="shorten">
-                          {t('admin.users.detail.subscription.shorten')}
-                        </option>
-                        {userSubscriptions.length <= 1 && (
-                          <option value="change_tariff">
-                            {t('admin.users.detail.subscription.changeTariff')}
-                          </option>
-                        )}
-                        <option value="cancel">
-                          {t('admin.users.detail.subscription.cancel')}
-                        </option>
-                        <option value="activate">
-                          {t('admin.users.detail.subscription.activate')}
-                        </option>
-                      </select>
+                      <Select value={subAction} onValueChange={(v) => setSubAction(v)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="extend">
+                            {t('admin.users.detail.subscription.extend')}
+                          </SelectItem>
+                          <SelectItem value="shorten">
+                            {t('admin.users.detail.subscription.shorten')}
+                          </SelectItem>
+                          {userSubscriptions.length <= 1 && (
+                            <SelectItem value="change_tariff">
+                              {t('admin.users.detail.subscription.changeTariff')}
+                            </SelectItem>
+                          )}
+                          <SelectItem value="cancel">
+                            {t('admin.users.detail.subscription.cancel')}
+                          </SelectItem>
+                          <SelectItem value="activate">
+                            {t('admin.users.detail.subscription.activate')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
 
                       {(subAction === 'extend' || subAction === 'shorten') && (
-                        <input
+                        <Input
                           type="number"
                           value={subDays}
                           onChange={createNumberInputHandler(setSubDays, 1)}
                           placeholder={t('admin.users.detail.subscription.days')}
-                          className="input"
                           min={1}
                           max={3650}
                         />
                       )}
 
                       {subAction === 'change_tariff' && (
-                        <select
-                          value={selectedTariffId || ''}
-                          onChange={(e) =>
-                            setSelectedTariffId(e.target.value ? parseInt(e.target.value) : null)
+                        <Select
+                          value={selectedTariffId != null ? String(selectedTariffId) : '__none__'}
+                          onValueChange={(v) =>
+                            setSelectedTariffId(v === '__none__' ? null : parseInt(v))
                           }
-                          className="input"
                         >
-                          <option value="">
-                            {t('admin.users.detail.subscription.selectTariff')}
-                          </option>
-                          {tariffs.map((tariffItem) => (
-                            <option key={tariffItem.id} value={tariffItem.id}>
-                              {tariffItem.name}{' '}
-                              {!tariffItem.is_available &&
-                                t('admin.users.detail.subscription.unavailable')}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t('admin.users.detail.subscription.selectTariff')}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none__">
+                              {t('admin.users.detail.subscription.selectTariff')}
+                            </SelectItem>
+                            {tariffs.map((tariffItem) => (
+                              <SelectItem key={tariffItem.id} value={String(tariffItem.id)}>
+                                {tariffItem.name}{' '}
+                                {!tariffItem.is_available &&
+                                  t('admin.users.detail.subscription.unavailable')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       )}
 
-                      <button
+                      <Button
                         onClick={() => handleUpdateSubscription()}
                         disabled={actionLoading}
-                        className="btn-primary w-full"
+                        className="w-full"
                       >
                         {actionLoading
                           ? t('admin.users.actions.applying')
                           : t('admin.users.actions.apply')}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -1967,61 +2078,68 @@ export default function AdminUserDetail() {
 
             {/* Create new subscription — only for single-sub users or no subs */}
             {hasPermission('users:subscription') && userSubscriptions.length <= 1 && (
-              <div className="rounded-xl bg-dark-800/50 p-4">
+              <div className="bg-card/50 rounded-xl p-4">
                 {userSubscriptions.length === 0 && (
-                  <div className="mb-4 text-center text-dark-400">
+                  <div className="text-muted-foreground mb-4 text-center">
                     {t('admin.users.detail.subscription.noActive')}
                   </div>
                 )}
-                <div className="mb-3 text-sm font-medium text-dark-200">
+                <div className="text-foreground mb-3 text-sm font-medium">
                   {t('admin.users.detail.subscription.createNew', 'Создать подписку')}
                 </div>
                 <div className="space-y-3">
-                  <select
-                    value={selectedTariffId || ''}
-                    onChange={(e) =>
-                      setSelectedTariffId(e.target.value ? parseInt(e.target.value) : null)
+                  <Select
+                    value={selectedTariffId != null ? String(selectedTariffId) : '__none__'}
+                    onValueChange={(v) =>
+                      setSelectedTariffId(v === '__none__' ? null : parseInt(v))
                     }
-                    className="input"
                   >
-                    <option value="">{t('admin.users.detail.subscription.selectTariff')}</option>
-                    {tariffs
-                      .filter((tariffItem) => {
-                        // In multi-tariff: hide tariffs user already has
-                        if (userSubscriptions.length > 0) {
-                          const purchasedIds = new Set(
-                            userSubscriptions
-                              .filter((s) => s.is_active || s.status === 'trial')
-                              .map((s) => s.tariff_id),
-                          );
-                          return !purchasedIds.has(tariffItem.id);
-                        }
-                        return true;
-                      })
-                      .map((tariffItem) => (
-                        <option key={tariffItem.id} value={tariffItem.id}>
-                          {tariffItem.name}
-                        </option>
-                      ))}
-                  </select>
-                  <input
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t('admin.users.detail.subscription.selectTariff')}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">
+                        {t('admin.users.detail.subscription.selectTariff')}
+                      </SelectItem>
+                      {tariffs
+                        .filter((tariffItem) => {
+                          // In multi-tariff: hide tariffs user already has
+                          if (userSubscriptions.length > 0) {
+                            const purchasedIds = new Set(
+                              userSubscriptions
+                                .filter((s) => s.is_active || s.status === 'trial')
+                                .map((s) => s.tariff_id),
+                            );
+                            return !purchasedIds.has(tariffItem.id);
+                          }
+                          return true;
+                        })
+                        .map((tariffItem) => (
+                          <SelectItem key={tariffItem.id} value={String(tariffItem.id)}>
+                            {tariffItem.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
                     type="number"
                     value={subDays}
                     onChange={createNumberInputHandler(setSubDays, 1)}
                     placeholder={t('admin.users.detail.subscription.days')}
-                    className="input"
                     min={1}
                     max={3650}
                   />
-                  <button
+                  <Button
                     onClick={() => handleUpdateSubscription('create')}
                     disabled={actionLoading}
-                    className="btn-primary w-full"
+                    className="w-full"
                   >
                     {actionLoading
                       ? t('admin.users.detail.subscription.creating')
                       : t('admin.users.detail.subscription.create')}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -2030,48 +2148,50 @@ export default function AdminUserDetail() {
             {(subscriptionDetailView || userSubscriptions.length <= 1) && (
               <>
                 {panelInfoLoading ? (
-                  <div className="flex justify-center rounded-xl bg-dark-800/50 py-8">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  <div className="bg-card/50 flex justify-center rounded-xl py-8">
+                    <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
                   </div>
                 ) : panelInfo && !panelInfo.found ? (
-                  <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4 text-center text-sm text-dark-400">
+                  <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-4 text-center text-sm">
                     {t('admin.users.detail.panelNotFound')}
                   </div>
                 ) : panelInfo && panelInfo.found ? (
                   <>
                     {/* Links */}
                     {(panelInfo.subscription_url || panelInfo.happ_link) && (
-                      <div className="rounded-xl bg-dark-800/50 p-4">
-                        <div className="mb-3 text-sm font-medium text-dark-200">
+                      <div className="bg-card/50 rounded-xl p-4">
+                        <div className="text-foreground mb-3 text-sm font-medium">
                           {t('admin.users.detail.subscriptionUrl')} /{' '}
                           {t('admin.users.detail.happLink')}
                         </div>
                         <div className="space-y-2">
                           {panelInfo.subscription_url && (
-                            <button
+                            <Button
+                              variant="ghost"
                               onClick={() => copyToClipboard(panelInfo.subscription_url!)}
-                              className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                              className="bg-muted/50 hover:bg-muted h-auto w-full justify-start rounded-lg p-2 text-left"
                             >
-                              <div className="mb-0.5 text-xs text-dark-500">
+                              <div className="text-muted-foreground mb-0.5 text-xs">
                                 {t('admin.users.detail.subscriptionUrl')}
                               </div>
-                              <div className="truncate font-mono text-xs text-dark-200">
+                              <div className="text-foreground truncate font-mono text-xs">
                                 {panelInfo.subscription_url}
                               </div>
-                            </button>
+                            </Button>
                           )}
                           {panelInfo.happ_link && (
-                            <button
+                            <Button
+                              variant="ghost"
                               onClick={() => copyToClipboard(panelInfo.happ_link!)}
-                              className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                              className="bg-muted/50 hover:bg-muted h-auto w-full justify-start rounded-lg p-2 text-left"
                             >
-                              <div className="mb-0.5 text-xs text-dark-500">
+                              <div className="text-muted-foreground mb-0.5 text-xs">
                                 {t('admin.users.detail.happLink')}
                               </div>
-                              <div className="truncate font-mono text-xs text-dark-200">
+                              <div className="text-foreground truncate font-mono text-xs">
                                 {panelInfo.happ_link}
                               </div>
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -2081,79 +2201,82 @@ export default function AdminUserDetail() {
                     {(panelInfo.trojan_password ||
                       panelInfo.vless_uuid ||
                       panelInfo.ss_password) && (
-                      <div className="rounded-xl bg-dark-800/50 p-4">
-                        <div className="mb-3 text-sm font-medium text-dark-200">
+                      <div className="bg-card/50 rounded-xl p-4">
+                        <div className="text-foreground mb-3 text-sm font-medium">
                           {t('admin.users.detail.panelConfig')}
                         </div>
                         <div className="space-y-2">
                           {panelInfo.trojan_password && (
-                            <button
+                            <Button
+                              variant="ghost"
                               onClick={() => copyToClipboard(panelInfo.trojan_password!)}
-                              className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                              className="bg-muted/50 hover:bg-muted h-auto w-full justify-start rounded-lg p-2 text-left"
                             >
-                              <div className="mb-0.5 text-xs text-dark-500">
+                              <div className="text-muted-foreground mb-0.5 text-xs">
                                 {t('admin.users.detail.trojanPassword')}
                               </div>
-                              <div className="truncate font-mono text-xs text-dark-200">
+                              <div className="text-foreground truncate font-mono text-xs">
                                 {panelInfo.trojan_password}
                               </div>
-                            </button>
+                            </Button>
                           )}
                           {panelInfo.vless_uuid && (
-                            <button
+                            <Button
+                              variant="ghost"
                               onClick={() => copyToClipboard(panelInfo.vless_uuid!)}
-                              className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                              className="bg-muted/50 hover:bg-muted h-auto w-full justify-start rounded-lg p-2 text-left"
                             >
-                              <div className="mb-0.5 text-xs text-dark-500">
+                              <div className="text-muted-foreground mb-0.5 text-xs">
                                 {t('admin.users.detail.vlessUuid')}
                               </div>
-                              <div className="truncate font-mono text-xs text-dark-200">
+                              <div className="text-foreground truncate font-mono text-xs">
                                 {panelInfo.vless_uuid}
                               </div>
-                            </button>
+                            </Button>
                           )}
                           {panelInfo.ss_password && (
-                            <button
+                            <Button
+                              variant="ghost"
                               onClick={() => copyToClipboard(panelInfo.ss_password!)}
-                              className="w-full rounded-lg bg-dark-700/50 p-2 text-left transition-colors hover:bg-dark-700"
+                              className="bg-muted/50 hover:bg-muted h-auto w-full justify-start rounded-lg p-2 text-left"
                             >
-                              <div className="mb-0.5 text-xs text-dark-500">
+                              <div className="text-muted-foreground mb-0.5 text-xs">
                                 {t('admin.users.detail.ssPassword')}
                               </div>
-                              <div className="truncate font-mono text-xs text-dark-200">
+                              <div className="text-foreground truncate font-mono text-xs">
                                 {panelInfo.ss_password}
                               </div>
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </div>
                     )}
 
                     {/* Connection info */}
-                    <div className="rounded-xl bg-dark-800/50 p-4">
+                    <div className="bg-card/50 rounded-xl p-4">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <div className="text-xs text-dark-500">
+                          <div className="text-muted-foreground text-xs">
                             {t('admin.users.detail.firstConnected')}
                           </div>
-                          <div className="text-sm text-dark-100">
+                          <div className="text-foreground text-sm">
                             {formatDate(panelInfo.first_connected_at)}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-dark-500">
+                          <div className="text-muted-foreground text-xs">
                             {t('admin.users.detail.lastOnline')}
                           </div>
-                          <div className="text-sm text-dark-100">
+                          <div className="text-foreground text-sm">
                             {formatDate(panelInfo.online_at)}
                           </div>
                         </div>
                         {panelInfo.last_connected_node_name && (
                           <div className="col-span-2">
-                            <div className="text-xs text-dark-500">
+                            <div className="text-muted-foreground text-xs">
                               {t('admin.users.detail.lastNode')}
                             </div>
-                            <div className="text-sm text-dark-100">
+                            <div className="text-foreground text-sm">
                               {panelInfo.last_connected_node_name}
                             </div>
                           </div>
@@ -2162,24 +2285,24 @@ export default function AdminUserDetail() {
                     </div>
 
                     {/* Live traffic */}
-                    <div className="rounded-xl bg-dark-800/50 p-4">
-                      <div className="mb-3 text-sm font-medium text-dark-200">
+                    <div className="bg-card/50 rounded-xl p-4">
+                      <div className="text-foreground mb-3 text-sm font-medium">
                         {t('admin.users.detail.liveTraffic')}
                       </div>
                       <div className="mb-2">
                         <div className="mb-1 flex justify-between text-xs">
-                          <span className="text-dark-400">
+                          <span className="text-muted-foreground">
                             {formatBytes(panelInfo.used_traffic_bytes)}
                           </span>
-                          <span className="text-dark-500">
+                          <span className="text-muted-foreground">
                             {panelInfo.traffic_limit_bytes > 0
                               ? formatBytes(panelInfo.traffic_limit_bytes)
                               : '∞'}
                           </span>
                         </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-dark-700">
+                        <div className="bg-muted h-2 overflow-hidden rounded-full">
                           <div
-                            className="h-full rounded-full bg-accent-500 transition-all"
+                            className="bg-primary h-full rounded-full transition-all"
                             style={{
                               width:
                                 panelInfo.traffic_limit_bytes > 0
@@ -2189,41 +2312,45 @@ export default function AdminUserDetail() {
                           />
                         </div>
                       </div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('admin.users.detail.lifetime')}:{' '}
                         {formatBytes(panelInfo.lifetime_used_traffic_bytes)}
                       </div>
                     </div>
 
                     {/* Node usage */}
-                    <div className="rounded-xl bg-dark-800/50 p-4">
+                    <div className="bg-card/50 rounded-xl p-4">
                       <div className="mb-3 flex items-center justify-between">
-                        <span className="text-sm font-medium text-dark-200">
+                        <span className="text-foreground text-sm font-medium">
                           {t('admin.users.detail.nodeUsage')}
                         </span>
                         <div className="flex items-center gap-2">
                           <div className="flex gap-1">
                             {[1, 3, 7, 14, 30].map((d) => (
-                              <button
+                              <Button
                                 key={d}
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => setNodeUsageDays(d)}
-                                className={`rounded-lg px-2 py-1 text-xs transition-colors ${
+                                className={`h-auto rounded-lg px-2 py-1 text-xs ${
                                   nodeUsageDays === d
-                                    ? 'bg-accent-500/20 text-accent-400'
-                                    : 'text-dark-500 hover:text-dark-300'
+                                    ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                                    : 'text-muted-foreground hover:text-muted-foreground'
                                 }`}
                               >
                                 {d}d
-                              </button>
+                              </Button>
                             ))}
                           </div>
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => loadSubscriptionData()}
-                            className="rounded-lg p-1 text-dark-500 transition-colors hover:text-dark-300"
+                            className="text-muted-foreground hover:text-muted-foreground h-auto w-auto rounded-lg p-1"
                             title={t('common.refresh')}
                           >
                             <RefreshIcon className="h-3.5 w-3.5" />
-                          </button>
+                          </Button>
                         </div>
                       </div>
                       {nodeUsageForPeriod.length > 0 ? (
@@ -2234,7 +2361,7 @@ export default function AdminUserDetail() {
                             return (
                               <div key={item.node_uuid}>
                                 <div className="mb-1 flex justify-between text-xs">
-                                  <span className="text-dark-300">
+                                  <span className="text-muted-foreground">
                                     {item.country_code && (
                                       <span className="mr-1">
                                         {getCountryFlag(item.country_code)}
@@ -2242,13 +2369,13 @@ export default function AdminUserDetail() {
                                     )}
                                     {item.node_name}
                                   </span>
-                                  <span className="text-dark-400">
+                                  <span className="text-muted-foreground">
                                     {formatBytes(item.total_bytes)}
                                   </span>
                                 </div>
-                                <div className="h-1.5 overflow-hidden rounded-full bg-dark-700">
+                                <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                                   <div
-                                    className="h-full rounded-full bg-accent-500/60"
+                                    className="bg-primary/60 h-full rounded-full"
                                     style={{ width: `${pct}%` }}
                                   />
                                 </div>
@@ -2257,59 +2384,63 @@ export default function AdminUserDetail() {
                           })}
                         </div>
                       ) : (
-                        <div className="py-2 text-center text-xs text-dark-500">-</div>
+                        <div className="text-muted-foreground py-2 text-center text-xs">-</div>
                       )}
                     </div>
                   </>
                 ) : null}
 
                 {/* Devices */}
-                <div className="rounded-xl bg-dark-800/50 p-4">
+                <div className="bg-card/50 rounded-xl p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-sm font-medium text-dark-200">
+                    <span className="text-foreground text-sm font-medium">
                       {t('admin.users.detail.devices.title')} ({devicesTotal}/{deviceLimit})
                     </span>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => loadDevices()}
-                        className="rounded-lg p-1 text-dark-500 transition-colors hover:text-dark-300"
+                        className="text-muted-foreground hover:text-muted-foreground h-auto w-auto rounded-lg p-1"
                         title={t('common.refresh')}
                       >
                         <RefreshIcon className="h-3.5 w-3.5" />
-                      </button>
+                      </Button>
                       {devices.length > 0 && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleInlineConfirm('resetDevices', handleResetDevices)}
                           disabled={actionLoading}
-                          className={`rounded-lg px-2 py-1 text-xs font-medium transition-all disabled:opacity-50 ${
+                          className={`h-auto rounded-lg px-2 py-1 text-xs font-medium disabled:opacity-50 ${
                             confirmingAction === 'resetDevices'
-                              ? 'bg-error-500 text-white'
+                              ? 'bg-error-500 hover:bg-error-500 text-white hover:text-white'
                               : 'bg-error-500/15 text-error-400 hover:bg-error-500/25'
                           }`}
                         >
                           {confirmingAction === 'resetDevices'
                             ? t('admin.users.detail.actions.areYouSure')
                             : t('admin.users.detail.devices.resetAll')}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
                   {devicesLoading ? (
                     <div className="flex justify-center py-4">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                      <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
                     </div>
                   ) : devices.length > 0 ? (
                     <div className="space-y-2">
                       {devices.map((device) => (
                         <div
                           key={device.hwid}
-                          className="flex items-center justify-between rounded-lg bg-dark-700/50 px-3 py-2"
+                          className="bg-muted/50 flex items-center justify-between rounded-lg px-3 py-2"
                         >
                           <div className="min-w-0 flex-1">
-                            <div className="truncate text-xs font-medium text-dark-200">
+                            <div className="text-foreground truncate text-xs font-medium">
                               {device.platform || device.device_model || device.hwid.slice(0, 12)}
                             </div>
-                            <div className="flex items-center gap-2 text-[10px] text-dark-500">
+                            <div className="text-muted-foreground flex items-center gap-2 text-[10px]">
                               {device.device_model && device.platform && (
                                 <span>{device.device_model}</span>
                               )}
@@ -2321,26 +2452,28 @@ export default function AdminUserDetail() {
                               )}
                             </div>
                           </div>
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() =>
                               handleInlineConfirm(`deleteDevice_${device.hwid}`, () =>
                                 handleDeleteDevice(device.hwid),
                               )
                             }
                             disabled={actionLoading}
-                            className={`ml-2 shrink-0 rounded-lg px-2 py-1 text-xs transition-all disabled:opacity-50 ${
+                            className={`ml-2 h-auto shrink-0 rounded-lg px-2 py-1 text-xs disabled:opacity-50 ${
                               confirmingAction === `deleteDevice_${device.hwid}`
-                                ? 'bg-error-500 text-white'
-                                : 'text-dark-500 hover:bg-error-500/15 hover:text-error-400'
+                                ? 'bg-error-500 hover:bg-error-500 text-white hover:text-white'
+                                : 'text-muted-foreground hover:bg-error-500/15 hover:text-error-400'
                             }`}
                           >
                             {confirmingAction === `deleteDevice_${device.hwid}` ? '?' : '\u00D7'}
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="py-2 text-center text-xs text-dark-500">
+                    <div className="text-muted-foreground py-2 text-center text-xs">
                       {t('admin.users.detail.devices.none')}
                     </div>
                   )}
@@ -2354,93 +2487,99 @@ export default function AdminUserDetail() {
         {activeTab === 'balance' && (
           <div className="space-y-4">
             {/* Current balance */}
-            <div className="rounded-xl border border-accent-500/30 bg-gradient-to-r from-accent-500/20 to-accent-700/20 p-4">
-              <div className="mb-1 text-sm text-dark-400">
+            <div className="border-primary/30 from-primary/20 to-primary/20 rounded-xl border bg-gradient-to-r p-4">
+              <div className="text-muted-foreground mb-1 text-sm">
                 {t('admin.users.detail.balance.current')}
               </div>
-              <div className="text-3xl font-bold text-dark-100">
+              <div className="text-foreground text-3xl font-bold">
                 {formatWithCurrency(user.balance_rubles)}
               </div>
             </div>
 
             {/* Add/subtract form */}
             {hasPermission('users:balance') && (
-              <div className="space-y-3 rounded-xl bg-dark-800/50 p-4">
-                <input
+              <div className="bg-card/50 space-y-3 rounded-xl p-4">
+                <Input
                   type="number"
                   value={balanceAmount}
                   onChange={createNumberInputHandler(setBalanceAmount)}
                   placeholder={t('admin.users.detail.balance.amountPlaceholder')}
-                  className="input"
                 />
-                <input
+                <Input
                   type="text"
                   value={balanceDescription}
                   onChange={(e) => setBalanceDescription(e.target.value)}
                   placeholder={t('admin.users.detail.balance.descriptionPlaceholder')}
-                  className="input"
                   maxLength={500}
                 />
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     onClick={() => handleUpdateBalance(true)}
                     disabled={actionLoading || balanceAmount === ''}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-success-500 py-2 text-white transition-colors hover:bg-success-600 disabled:opacity-50"
+                    className="bg-success-500 hover:bg-success-600 flex-1 text-white"
                   >
                     <PlusIcon /> {t('admin.users.detail.balance.add')}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => handleUpdateBalance(false)}
                     disabled={actionLoading || balanceAmount === ''}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-error-500 py-2 text-white transition-colors hover:bg-error-600 disabled:opacity-50"
+                    className="bg-error-500 hover:bg-error-600 flex-1 text-white"
                   >
                     <MinusIcon /> {t('admin.users.detail.balance.subtract')}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
 
             {/* Active promo offer */}
             {user.promo_offer_discount_percent > 0 && (
-              <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-4">
+              <div className="border-primary/20 bg-primary/5 rounded-xl border p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-accent-400">
+                  <span className="text-primary text-sm font-medium">
                     {t('admin.users.detail.activePromoOffer')}
                   </span>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleInlineConfirm('deactivateOffer', handleDeactivateOffer)}
                     disabled={actionLoading}
-                    className={`rounded-lg px-3 py-1 text-xs font-medium transition-all disabled:opacity-50 ${
+                    className={`h-auto rounded-lg px-3 py-1 text-xs font-medium disabled:opacity-50 ${
                       confirmingAction === 'deactivateOffer'
-                        ? 'bg-error-500 text-white'
+                        ? 'bg-error-500 hover:bg-error-500 text-white hover:text-white'
                         : 'bg-error-500/15 text-error-400 hover:bg-error-500/25'
                     }`}
                   >
                     {confirmingAction === 'deactivateOffer'
                       ? t('admin.users.detail.actions.areYouSure')
                       : t('admin.users.detail.deactivateOffer')}
-                  </button>
+                  </Button>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
-                    <div className="text-lg font-bold text-dark-100">
+                    <div className="text-foreground text-lg font-bold">
                       {user.promo_offer_discount_percent}%
                     </div>
-                    <div className="text-xs text-dark-500">{t('admin.users.detail.discount')}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {t('admin.users.detail.discount')}
+                    </div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-dark-100">
+                    <div className="text-foreground text-sm font-medium">
                       {user.promo_offer_discount_source || '-'}
                     </div>
-                    <div className="text-xs text-dark-500">{t('admin.users.detail.source')}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {t('admin.users.detail.source')}
+                    </div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-dark-100">
+                    <div className="text-foreground text-sm font-medium">
                       {user.promo_offer_discount_expires_at
                         ? formatDate(user.promo_offer_discount_expires_at)
                         : '-'}
                     </div>
-                    <div className="text-xs text-dark-500">{t('admin.users.detail.expiresAt')}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {t('admin.users.detail.expiresAt')}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2448,55 +2587,55 @@ export default function AdminUserDetail() {
 
             {/* Send promo offer */}
             {hasPermission('users:send_offer') && (
-              <div className="rounded-xl bg-dark-800/50 p-4">
-                <div className="mb-3 text-sm font-medium text-dark-200">
+              <div className="bg-card/50 rounded-xl p-4">
+                <div className="text-foreground mb-3 text-sm font-medium">
                   {t('admin.users.detail.sendOffer')}
                 </div>
                 <div className="space-y-3">
-                  <input
+                  <Input
                     type="number"
                     value={offerDiscountPercent}
                     onChange={createNumberInputHandler(setOfferDiscountPercent, 1)}
                     placeholder={t('admin.users.detail.discountPercent')}
-                    className="input"
                     min={1}
                     max={100}
                   />
-                  <input
+                  <Input
                     type="number"
                     value={offerValidHours}
                     onChange={createNumberInputHandler(setOfferValidHours, 1)}
                     placeholder={t('admin.users.detail.validHours')}
-                    className="input"
                     min={1}
                     max={8760}
                   />
-                  <button
+                  <Button
                     onClick={handleSendOffer}
                     disabled={offerSending || offerDiscountPercent === '' || offerValidHours === ''}
-                    className="btn-primary w-full disabled:opacity-50"
+                    className="w-full"
                   >
                     {offerSending ? t('common.loading') : t('admin.users.detail.sendOffer')}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
 
             {/* Recent transactions */}
             {user.recent_transactions.length > 0 && (
-              <div className="rounded-xl bg-dark-800/50 p-4">
-                <div className="mb-3 font-medium text-dark-200">
+              <div className="bg-card/50 rounded-xl p-4">
+                <div className="text-foreground mb-3 font-medium">
                   {t('admin.users.detail.balance.recentTransactions')}
                 </div>
                 <div className="max-h-48 space-y-2 overflow-y-auto">
                   {user.recent_transactions.map((tx) => (
                     <div
                       key={tx.id}
-                      className="flex items-center justify-between border-b border-dark-700 py-2 last:border-0"
+                      className="border-border flex items-center justify-between border-b py-2 last:border-0"
                     >
                       <div>
-                        <div className="text-sm text-dark-200">{tx.description || tx.type}</div>
-                        <div className="text-xs text-dark-500">{formatDate(tx.created_at)}</div>
+                        <div className="text-foreground text-sm">{tx.description || tx.type}</div>
+                        <div className="text-muted-foreground text-xs">
+                          {formatDate(tx.created_at)}
+                        </div>
                       </div>
                       <div
                         className={tx.amount_kopeks >= 0 ? 'text-success-400' : 'text-error-400'}
@@ -2517,21 +2656,31 @@ export default function AdminUserDetail() {
           <div className="space-y-4">
             {/* Subscription selector for multi-tariff */}
             {userSubscriptions.length > 1 && (
-              <div className="rounded-xl bg-dark-800/50 p-4">
-                <div className="mb-2 text-sm text-dark-400">
+              <div className="bg-card/50 rounded-xl p-4">
+                <div className="text-muted-foreground mb-2 text-sm">
                   {t('admin.users.detail.sync.selectSubscription')}
                 </div>
-                <select
-                  value={activeSubscriptionId || ''}
-                  onChange={(e) => setActiveSubscriptionId(Number(e.target.value) || null)}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-dark-100"
+                <Select
+                  value={
+                    activeSubscriptionId != null
+                      ? String(activeSubscriptionId)
+                      : userSubscriptions[0]
+                        ? String(userSubscriptions[0].id)
+                        : '__none__'
+                  }
+                  onValueChange={(v) => setActiveSubscriptionId(Number(v) || null)}
                 >
-                  {userSubscriptions.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.tariff_name || `#${sub.id}`} — {sub.status}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="border-border bg-muted text-foreground w-full rounded-lg border px-3 py-2 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {userSubscriptions.map((sub) => (
+                      <SelectItem key={sub.id} value={String(sub.id)}>
+                        {sub.tariff_name || `#${sub.id}`} — {sub.status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
@@ -2542,11 +2691,11 @@ export default function AdminUserDetail() {
               >
                 <div className="mb-3 flex items-center gap-2">
                   {syncStatus.has_differences ? (
-                    <span className="font-medium text-warning-400">
+                    <span className="text-warning-400 font-medium">
                       {t('admin.users.detail.sync.hasDifferences')}
                     </span>
                   ) : (
-                    <span className="font-medium text-success-400">
+                    <span className="text-success-400 font-medium">
                       {t('admin.users.detail.sync.synced')}
                     </span>
                   )}
@@ -2555,7 +2704,7 @@ export default function AdminUserDetail() {
                 {syncStatus.differences.length > 0 && (
                   <div className="mb-3 space-y-1">
                     {syncStatus.differences.map((diff, i) => (
-                      <div key={i} className="text-xs text-dark-300">
+                      <div key={i} className="text-muted-foreground text-xs">
                         • {diff}
                       </div>
                     ))}
@@ -2564,21 +2713,23 @@ export default function AdminUserDetail() {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="mb-2 text-xs text-dark-500">
+                    <div className="text-muted-foreground mb-2 text-xs">
                       {t('admin.users.detail.sync.bot')}
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.statusLabel')}:
                         </span>
-                        <span className="text-dark-200">
+                        <span className="text-foreground">
                           {syncStatus.bot_subscription_status || '-'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">{t('admin.users.detail.sync.until')}:</span>
-                        <span className="text-dark-200">
+                        <span className="text-muted-foreground">
+                          {t('admin.users.detail.sync.until')}:
+                        </span>
+                        <span className="text-foreground">
                           {syncStatus.bot_subscription_end_date
                             ? new Date(syncStatus.bot_subscription_end_date).toLocaleDateString(
                                 locale,
@@ -2587,65 +2738,69 @@ export default function AdminUserDetail() {
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.traffic')}:
                         </span>
-                        <span className="text-dark-200">
+                        <span className="text-foreground">
                           {syncStatus.bot_traffic_used_gb.toFixed(2)} {t('common.units.gb')}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.devices')}:
                         </span>
-                        <span className="text-dark-200">{syncStatus.bot_device_limit}</span>
+                        <span className="text-foreground">{syncStatus.bot_device_limit}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.squads')}:
                         </span>
-                        <span className="text-dark-200">{syncStatus.bot_squads?.length || 0}</span>
+                        <span className="text-foreground">
+                          {syncStatus.bot_squads?.length || 0}
+                        </span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <div className="mb-2 text-xs text-dark-500">
+                    <div className="text-muted-foreground mb-2 text-xs">
                       {t('admin.users.detail.sync.panel')}
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.statusLabel')}:
                         </span>
-                        <span className="text-dark-200">{syncStatus.panel_status || '-'}</span>
+                        <span className="text-foreground">{syncStatus.panel_status || '-'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">{t('admin.users.detail.sync.until')}:</span>
-                        <span className="text-dark-200">
+                        <span className="text-muted-foreground">
+                          {t('admin.users.detail.sync.until')}:
+                        </span>
+                        <span className="text-foreground">
                           {syncStatus.panel_expire_at
                             ? new Date(syncStatus.panel_expire_at).toLocaleDateString(locale)
                             : '-'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.traffic')}:
                         </span>
-                        <span className="text-dark-200">
+                        <span className="text-foreground">
                           {syncStatus.panel_traffic_used_gb.toFixed(2)} {t('common.units.gb')}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.devices')}:
                         </span>
-                        <span className="text-dark-200">{syncStatus.panel_device_limit}</span>
+                        <span className="text-foreground">{syncStatus.panel_device_limit}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-dark-400">
+                        <span className="text-muted-foreground">
                           {t('admin.users.detail.sync.squads')}:
                         </span>
-                        <span className="text-dark-200">
+                        <span className="text-foreground">
                           {syncStatus.panel_squads?.length || 0}
                         </span>
                       </div>
@@ -2656,14 +2811,14 @@ export default function AdminUserDetail() {
             )}
 
             {/* UUID info */}
-            <div className="rounded-xl bg-dark-800/50 p-4">
+            <div className="bg-card/50 rounded-xl p-4">
               {syncStatus?.subscription_tariff_name && (
-                <div className="mb-2 text-xs text-dark-500">
+                <div className="text-muted-foreground mb-2 text-xs">
                   {syncStatus.subscription_tariff_name}
                 </div>
               )}
-              <div className="mb-1 text-sm text-dark-400">Remnawave UUID</div>
-              <div className="break-all font-mono text-sm text-dark-100">
+              <div className="text-muted-foreground mb-1 text-sm">Remnawave UUID</div>
+              <div className="text-foreground font-mono text-sm break-all">
                 {syncStatus?.remnawave_uuid ||
                   user.remnawave_uuid ||
                   t('admin.users.detail.sync.notLinked')}
@@ -2672,26 +2827,28 @@ export default function AdminUserDetail() {
 
             {/* Sync buttons */}
             <div className="grid grid-cols-2 gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleSyncFromPanel}
                 disabled={actionLoading}
-                className="flex flex-col items-center justify-center gap-2 rounded-xl border border-accent-500/30 bg-accent-500/10 p-4 text-accent-400 transition-all hover:bg-accent-500/20 disabled:opacity-50"
+                className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 flex h-auto flex-col items-center justify-center gap-2 rounded-xl border p-4 disabled:opacity-50"
               >
                 <ArrowDownIcon className={`h-6 w-6 ${actionLoading ? 'animate-bounce' : ''}`} />
                 <span className="text-center text-xs font-medium">
                   {t('admin.users.detail.sync.fromPanel')}
                 </span>
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={handleSyncToPanel}
                 disabled={actionLoading}
-                className="flex flex-col items-center justify-center gap-2 rounded-xl border border-accent-500/30 bg-accent-500/10 p-4 text-accent-400 transition-all hover:bg-accent-500/20 disabled:opacity-50"
+                className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 flex h-auto flex-col items-center justify-center gap-2 rounded-xl border p-4 disabled:opacity-50"
               >
                 <ArrowUpIcon className={`h-6 w-6 ${actionLoading ? 'animate-bounce' : ''}`} />
                 <span className="text-center text-xs font-medium">
                   {t('admin.users.detail.sync.toPanel')}
                 </span>
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -2703,21 +2860,23 @@ export default function AdminUserDetail() {
               /* Ticket Chat View */
               ticketDetailLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                 </div>
               ) : selectedTicket ? (
                 <div className="space-y-4">
                   {/* Chat header */}
                   <div className="flex items-center gap-3">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => {
                         setSelectedTicketId(null);
                         setSelectedTicket(null);
                       }}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-dark-800 transition-colors hover:bg-dark-700"
+                      className="bg-card hover:bg-muted shrink-0 rounded-lg"
                     >
                       <svg
-                        className="h-4 w-4 text-dark-400"
+                        className="text-muted-foreground h-4 w-4"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -2729,20 +2888,21 @@ export default function AdminUserDetail() {
                           d="M15.75 19.5L8.25 12l7.5-7.5"
                         />
                       </svg>
-                    </button>
+                    </Button>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-dark-100">
+                      <div className="text-foreground truncate font-medium">
                         #{selectedTicket.id} {selectedTicket.title}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-dark-500">
+                      <div className="text-muted-foreground flex items-center gap-2 text-xs">
                         <span
                           className={`rounded-full border px-1.5 py-0.5 ${
                             {
                               open: 'border-blue-500/30 bg-blue-500/20 text-blue-400',
                               pending: 'border-warning-500/30 bg-warning-500/20 text-warning-400',
                               answered: 'border-success-500/30 bg-success-500/20 text-success-400',
-                              closed: 'border-dark-500 bg-dark-600 text-dark-400',
-                            }[selectedTicket.status] || 'border-dark-500 bg-dark-600 text-dark-400'
+                              closed: 'border-border bg-muted text-muted-foreground',
+                            }[selectedTicket.status] ||
+                            'border-border bg-muted text-muted-foreground'
                           }`}
                         >
                           {selectedTicket.status}
@@ -2755,45 +2915,47 @@ export default function AdminUserDetail() {
                   {/* Status buttons */}
                   <div className="flex flex-wrap gap-1.5">
                     {(['open', 'pending', 'answered', 'closed'] as const).map((s) => (
-                      <button
+                      <Button
                         key={s}
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleTicketStatusChange(s)}
                         disabled={selectedTicket.status === s || actionLoading}
-                        className={`rounded-lg border px-2.5 py-1 text-xs transition-all ${
+                        className={`h-auto rounded-lg px-2.5 py-1 text-xs ${
                           selectedTicket.status === s
-                            ? 'border-accent-500/50 bg-accent-500/20 text-accent-400'
-                            : 'border-dark-700/50 text-dark-400 hover:border-dark-600 hover:text-dark-200'
-                        } disabled:opacity-50`}
+                            ? 'border-primary/50 bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                            : 'border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
+                        }`}
                       >
                         {t(`admin.tickets.status${s.charAt(0).toUpperCase() + s.slice(1)}`)}
-                      </button>
+                      </Button>
                     ))}
                   </div>
 
                   {/* Messages */}
-                  <div className="scrollbar-hide max-h-[60vh] space-y-3 overflow-y-auto rounded-xl bg-dark-800/30 p-3">
+                  <div className="scrollbar-hide bg-card/30 max-h-[60vh] space-y-3 overflow-y-auto rounded-xl p-3">
                     {selectedTicket.messages.map((msg) => (
                       <div
                         key={msg.id}
                         className={`rounded-xl p-3 ${
                           msg.is_from_admin
-                            ? 'ml-6 border border-accent-500/20 bg-accent-500/10'
-                            : 'mr-6 border border-dark-700/30 bg-dark-800/50'
+                            ? 'border-primary/20 bg-primary/10 ml-6 border'
+                            : 'border-border/30 bg-card/50 mr-6 border'
                         }`}
                       >
                         <div className="mb-1 flex items-center justify-between">
                           <span
-                            className={`text-xs font-medium ${msg.is_from_admin ? 'text-accent-400' : 'text-dark-400'}`}
+                            className={`text-xs font-medium ${msg.is_from_admin ? 'text-primary' : 'text-muted-foreground'}`}
                           >
                             {msg.is_from_admin
                               ? t('admin.tickets.adminLabel')
                               : t('admin.tickets.userLabel')}
                           </span>
-                          <span className="text-xs text-dark-500">
+                          <span className="text-muted-foreground text-xs">
                             {formatDate(msg.created_at)}
                           </span>
                         </div>
-                        <p className="whitespace-pre-wrap text-sm text-dark-200">
+                        <p className="text-foreground text-sm whitespace-pre-wrap">
                           {msg.message_text}
                         </p>
                         {msg.has_media && msg.media_file_id && (
@@ -2809,13 +2971,15 @@ export default function AdminUserDetail() {
                                 href={ticketsApi.getMediaUrl(msg.media_file_id)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 rounded-lg bg-dark-700 px-2 py-1 text-xs text-dark-200 hover:bg-dark-600"
+                                className="bg-muted text-foreground hover:bg-muted inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs"
                               >
                                 {msg.media_caption || msg.media_type}
                               </a>
                             )}
                             {msg.media_caption && msg.media_type === 'photo' && (
-                              <p className="mt-1 text-xs text-dark-400">{msg.media_caption}</p>
+                              <p className="text-muted-foreground mt-1 text-xs">
+                                {msg.media_caption}
+                              </p>
                             )}
                           </div>
                         )}
@@ -2827,12 +2991,12 @@ export default function AdminUserDetail() {
                   {/* Reply form */}
                   {selectedTicket.status !== 'closed' && (
                     <div className="flex gap-2">
-                      <textarea
+                      <Textarea
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder={t('admin.tickets.replyPlaceholder')}
                         rows={2}
-                        className="input flex-1 resize-none"
+                        className="flex-1 resize-none"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -2840,10 +3004,11 @@ export default function AdminUserDetail() {
                           }
                         }}
                       />
-                      <button
+                      <Button
+                        size="icon"
                         onClick={handleTicketReply}
                         disabled={!replyText.trim() || replySending}
-                        className="shrink-0 self-end rounded-lg bg-accent-500 px-4 py-2 text-sm text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+                        className="shrink-0 self-end rounded-lg"
                       >
                         {replySending ? (
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -2862,19 +3027,19 @@ export default function AdminUserDetail() {
                             />
                           </svg>
                         )}
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
               ) : null
             ) : ticketsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
               </div>
             ) : tickets.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-dark-800/50 py-12">
+              <div className="bg-card/50 flex flex-col items-center justify-center rounded-xl py-12">
                 <svg
-                  className="mb-3 h-12 w-12 text-dark-600"
+                  className="text-muted-foreground mb-3 h-12 w-12"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -2886,11 +3051,11 @@ export default function AdminUserDetail() {
                     d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
                   />
                 </svg>
-                <p className="text-dark-400">{t('admin.users.detail.noTickets')}</p>
+                <p className="text-muted-foreground">{t('admin.users.detail.noTickets')}</p>
               </div>
             ) : (
               <>
-                <div className="text-sm text-dark-400">
+                <div className="text-muted-foreground text-sm">
                   {ticketsTotal} {t('admin.users.detail.ticketsCount')}
                 </div>
                 <div className="space-y-2">
@@ -2899,16 +3064,17 @@ export default function AdminUserDetail() {
                       open: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
                       pending: 'bg-warning-500/20 text-warning-400 border-warning-500/30',
                       answered: 'bg-success-500/20 text-success-400 border-success-500/30',
-                      closed: 'bg-dark-600 text-dark-400 border-dark-500',
+                      closed: 'bg-muted text-muted-foreground border-border',
                     };
                     return (
-                      <button
+                      <Button
                         key={ticket.id}
+                        variant="ghost"
                         onClick={() => setSelectedTicketId(ticket.id)}
-                        className="w-full rounded-xl bg-dark-800/50 p-4 text-left transition-colors hover:bg-dark-700/50"
+                        className="bg-card/50 hover:bg-muted/50 h-auto w-full justify-start rounded-xl p-4 text-left"
                       >
                         <div className="mb-2 flex items-center justify-between">
-                          <span className="font-medium text-dark-100">
+                          <span className="text-foreground font-medium">
                             #{ticket.id} {ticket.title}
                           </span>
                           <span
@@ -2917,19 +3083,19 @@ export default function AdminUserDetail() {
                             {ticket.status}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-dark-500">
+                        <div className="text-muted-foreground flex items-center justify-between text-xs">
                           <span>{formatDate(ticket.created_at)}</span>
                           <span>
                             {ticket.messages_count} {t('admin.users.detail.messagesCount')}
                           </span>
                         </div>
                         {ticket.last_message && (
-                          <div className="mt-2 truncate text-sm text-dark-400">
+                          <div className="text-muted-foreground mt-2 truncate text-sm">
                             {ticket.last_message.is_from_admin ? '> ' : ''}
                             {ticket.last_message.message_text}
                           </div>
                         )}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -2943,12 +3109,12 @@ export default function AdminUserDetail() {
           <div className="space-y-6">
             {giftsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
               </div>
             ) : !giftsData || (giftsData.sent.length === 0 && giftsData.received.length === 0) ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-dark-800/50 py-16">
+              <div className="bg-card/50 flex flex-col items-center justify-center rounded-xl py-16">
                 <svg
-                  className="mb-3 h-12 w-12 text-dark-600"
+                  className="text-muted-foreground mb-3 h-12 w-12"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -2960,23 +3126,25 @@ export default function AdminUserDetail() {
                     d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
                   />
                 </svg>
-                <p className="text-sm text-dark-500">{t('admin.users.detail.gifts.noGifts')}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t('admin.users.detail.gifts.noGifts')}
+                </p>
               </div>
             ) : (
               <>
                 {/* Summary counters */}
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-dark-800/50 p-4">
-                    <div className="mb-1 text-xs text-dark-500">
+                  <div className="bg-card/50 rounded-xl p-4">
+                    <div className="text-muted-foreground mb-1 text-xs">
                       {t('admin.users.detail.gifts.totalSent')}
                     </div>
-                    <div className="text-2xl font-bold text-accent-400">{giftsData.sent_total}</div>
+                    <div className="text-primary text-2xl font-bold">{giftsData.sent_total}</div>
                   </div>
-                  <div className="rounded-xl bg-dark-800/50 p-4">
-                    <div className="mb-1 text-xs text-dark-500">
+                  <div className="bg-card/50 rounded-xl p-4">
+                    <div className="text-muted-foreground mb-1 text-xs">
                       {t('admin.users.detail.gifts.totalReceived')}
                     </div>
-                    <div className="text-2xl font-bold text-success-400">
+                    <div className="text-success-400 text-2xl font-bold">
                       {giftsData.received_total}
                     </div>
                   </div>
@@ -2984,9 +3152,9 @@ export default function AdminUserDetail() {
 
                 {/* Sent Gifts */}
                 <div>
-                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-dark-200">
+                  <h3 className="text-foreground mb-3 flex items-center gap-2 text-sm font-semibold">
                     <svg
-                      className="h-4 w-4 text-accent-400"
+                      className="text-primary h-4 w-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -2999,10 +3167,10 @@ export default function AdminUserDetail() {
                       />
                     </svg>
                     {t('admin.users.detail.gifts.sentTitle')}
-                    <span className="text-dark-500">({giftsData.sent_total})</span>
+                    <span className="text-muted-foreground">({giftsData.sent_total})</span>
                   </h3>
                   {giftsData.sent.length === 0 ? (
-                    <div className="rounded-xl bg-dark-800/30 py-6 text-center text-sm text-dark-500">
+                    <div className="bg-card/30 text-muted-foreground rounded-xl py-6 text-center text-sm">
                       {t('admin.users.detail.gifts.noSent')}
                     </div>
                   ) : (
@@ -3022,9 +3190,9 @@ export default function AdminUserDetail() {
 
                 {/* Received Gifts */}
                 <div>
-                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-dark-200">
+                  <h3 className="text-foreground mb-3 flex items-center gap-2 text-sm font-semibold">
                     <svg
-                      className="h-4 w-4 text-success-400"
+                      className="text-success-400 h-4 w-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -3037,10 +3205,10 @@ export default function AdminUserDetail() {
                       />
                     </svg>
                     {t('admin.users.detail.gifts.receivedTitle')}
-                    <span className="text-dark-500">({giftsData.received_total})</span>
+                    <span className="text-muted-foreground">({giftsData.received_total})</span>
                   </h3>
                   {giftsData.received.length === 0 ? (
-                    <div className="rounded-xl bg-dark-800/30 py-6 text-center text-sm text-dark-500">
+                    <div className="bg-card/30 text-muted-foreground rounded-xl py-6 text-center text-sm">
                       {t('admin.users.detail.gifts.noReceived')}
                     </div>
                   ) : (
@@ -3066,87 +3234,92 @@ export default function AdminUserDetail() {
         {activeTab === 'referrals' && user && (
           <div className="space-y-6">
             {/* Section 1: Who referred this user */}
-            <div className="rounded-2xl border border-dark-700/30 bg-dark-800/40 p-5">
-              <h3 className="mb-4 text-base font-semibold text-dark-100">
+            <div className="border-border/30 bg-card/40 rounded-2xl border p-5">
+              <h3 className="text-foreground mb-4 text-base font-semibold">
                 {t('admin.users.detail.referrals.referredBy')}
               </h3>
 
               {user.referral.referred_by_id ? (
                 <div className="flex items-center justify-between gap-3">
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => navigate(`/admin/users/${user.referral.referred_by_id}`)}
-                    className="flex items-center gap-3 rounded-xl bg-dark-700/30 px-4 py-3 transition-colors hover:bg-dark-700/50"
+                    className="bg-muted/30 hover:bg-muted/50 flex h-auto items-center gap-3 rounded-xl px-4 py-3"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-500/20 text-sm font-bold text-accent-400">
+                    <div className="bg-primary/20 text-primary flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold">
                       {(user.referral.referred_by_username || '?')[0].toUpperCase()}
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-dark-100">
+                      <div className="text-foreground text-sm font-medium">
                         {user.referral.referred_by_username ||
                           `ID: ${user.referral.referred_by_id}`}
                       </div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         ID: {user.referral.referred_by_id}
                       </div>
                     </div>
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleRemoveReferrer}
                     disabled={actionLoading}
-                    className="rounded-lg border border-error-500/30 bg-error-500/10 px-3 py-2 text-sm text-error-400 transition-colors hover:bg-error-500/20 disabled:opacity-50"
+                    className="border-error-500/30 bg-error-500/10 text-error-400 hover:bg-error-500/20 h-auto rounded-lg border px-3 py-2 text-sm"
                   >
                     {t('admin.users.detail.referrals.removeReferrer')}
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div>
                   {showReferrerSearch ? (
                     <div ref={referrerSearchRef} className="relative">
                       <div className="flex gap-2">
-                        <input
+                        <Input
                           type="text"
                           value={referrerSearchQuery}
                           onChange={(e) => setReferrerSearchQuery(e.target.value)}
                           placeholder={t('admin.users.detail.referrals.searchPlaceholder')}
-                          className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2.5 text-sm text-dark-100 placeholder-dark-500 focus:border-accent-500 focus:outline-none"
+                          className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary flex-1 rounded-lg border px-3 py-2.5 text-sm focus:outline-none"
                           autoFocus
                         />
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             setShowReferrerSearch(false);
                             setReferrerSearchQuery('');
                             setReferrerSearchResults([]);
                           }}
-                          className="rounded-lg bg-dark-700 px-3 py-2.5 text-sm text-dark-400 hover:bg-dark-600"
+                          className="bg-muted text-muted-foreground hover:bg-muted h-auto rounded-lg px-3 py-2.5 text-sm"
                         >
                           {t('common.cancel')}
-                        </button>
+                        </Button>
                       </div>
                       {referrerSearchQuery.length >= 2 && referrerSearchResults.length > 0 && (
-                        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border border-dark-700 bg-dark-800 py-1 shadow-xl">
+                        <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border py-1 shadow-xl">
                           {referrerSearchResults
                             .filter((u) => u.id !== userId)
                             .map((u) => (
                               <button
                                 key={u.id}
                                 onClick={() => handleAssignReferrer(u.id)}
-                                className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-dark-700/50"
+                                className="hover:bg-muted/50 flex w-full items-center gap-3 px-3 py-2.5 text-left"
                               >
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-600/50 text-xs font-bold text-dark-300">
+                                <div className="bg-muted/50 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
                                   {(u.full_name || u.username || '?')[0].toUpperCase()}
                                 </div>
                                 <div>
-                                  <div className="text-sm text-dark-100">
+                                  <div className="text-foreground text-sm">
                                     {u.full_name || u.username || `ID: ${u.id}`}
                                   </div>
-                                  <div className="text-xs text-dark-500">
+                                  <div className="text-muted-foreground text-xs">
                                     {u.telegram_id ? `TG: ${u.telegram_id}` : `ID: ${u.id}`}
                                   </div>
                                 </div>
                               </button>
                             ))}
                           {referrerSearchResults.filter((u) => u.id !== userId).length === 0 && (
-                            <div className="px-3 py-4 text-center text-sm text-dark-500">
+                            <div className="text-muted-foreground px-3 py-4 text-center text-sm">
                               {t('admin.users.detail.referrals.noUsersFound')}
                             </div>
                           )}
@@ -3155,19 +3328,19 @@ export default function AdminUserDetail() {
                       {referrerSearchQuery.length >= 2 &&
                         !referrerSearchLoading &&
                         referrerSearchResults.length === 0 && (
-                          <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-xl border border-dark-700 bg-dark-800 py-4 text-center text-sm text-dark-500 shadow-xl">
+                          <div className="border-border bg-card text-muted-foreground absolute top-full right-0 left-0 z-50 mt-1 rounded-xl border py-4 text-center text-sm shadow-xl">
                             {t('admin.users.detail.referrals.noUsersFound')}
                           </div>
                         )}
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-dark-500">
+                      <span className="text-muted-foreground text-sm">
                         {t('admin.users.detail.referrals.noReferrer')}
                       </span>
                       <button
                         onClick={() => setShowReferrerSearch(true)}
-                        className="rounded-lg bg-accent-500/15 px-3 py-2 text-sm text-accent-400 transition-colors hover:bg-accent-500/25"
+                        className="bg-primary/15 text-primary hover:bg-primary/25 rounded-lg px-3 py-2 text-sm transition-colors"
                       >
                         {t('admin.users.detail.referrals.assignReferrer')}
                       </button>
@@ -3179,52 +3352,52 @@ export default function AdminUserDetail() {
 
             {/* Section 2: Referral stats */}
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <div className="rounded-xl bg-dark-800/40 p-4">
-                <div className="text-xs text-dark-500">
+              <div className="bg-card/40 rounded-xl p-4">
+                <div className="text-muted-foreground text-xs">
                   {t('admin.users.detail.referrals.totalReferrals')}
                 </div>
-                <div className="mt-1 text-xl font-bold text-dark-100">
+                <div className="text-foreground mt-1 text-xl font-bold">
                   {user.referral.referrals_count}
                 </div>
               </div>
-              <div className="rounded-xl bg-dark-800/40 p-4">
-                <div className="text-xs text-dark-500">
+              <div className="bg-card/40 rounded-xl p-4">
+                <div className="text-muted-foreground text-xs">
                   {t('admin.users.detail.referrals.totalEarnings')}
                 </div>
-                <div className="mt-1 text-xl font-bold text-dark-100">
+                <div className="text-foreground mt-1 text-xl font-bold">
                   {formatWithCurrency(user.referral.total_earnings_kopeks / 100)}
                 </div>
               </div>
-              <div className="rounded-xl bg-dark-800/40 p-4">
-                <div className="text-xs text-dark-500">
+              <div className="bg-card/40 rounded-xl p-4">
+                <div className="text-muted-foreground text-xs">
                   {t('admin.users.detail.referrals.commission')}
                 </div>
-                <div className="mt-1 text-xl font-bold text-dark-100">
+                <div className="text-foreground mt-1 text-xl font-bold">
                   {user.referral.commission_percent != null
                     ? `${user.referral.commission_percent}%`
                     : t('admin.users.detail.referrals.default')}
                 </div>
               </div>
-              <div className="rounded-xl bg-dark-800/40 p-4">
-                <div className="text-xs text-dark-500">
+              <div className="bg-card/40 rounded-xl p-4">
+                <div className="text-muted-foreground text-xs">
                   {t('admin.users.detail.referrals.referralCode')}
                 </div>
-                <div className="mt-1 truncate font-mono text-sm text-dark-100">
+                <div className="text-foreground mt-1 truncate font-mono text-sm">
                   {user.referral.referral_code}
                 </div>
               </div>
             </div>
 
             {/* Section 3: Referrals list */}
-            <div className="rounded-2xl border border-dark-700/30 bg-dark-800/40 p-5">
+            <div className="border-border/30 bg-card/40 rounded-2xl border p-5">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-semibold text-dark-100">
+                <h3 className="text-foreground text-base font-semibold">
                   {t('admin.users.detail.referrals.referralsList')} ({referralsTotal})
                 </h3>
                 {!showAddReferral && (
                   <button
                     onClick={() => setShowAddReferral(true)}
-                    className="rounded-lg bg-accent-500/15 px-3 py-2 text-sm text-accent-400 transition-colors hover:bg-accent-500/25"
+                    className="bg-primary/15 text-primary hover:bg-primary/25 rounded-lg px-3 py-2 text-sm transition-colors"
                   >
                     {t('admin.users.detail.referrals.addReferral')}
                   </button>
@@ -3235,12 +3408,12 @@ export default function AdminUserDetail() {
               {showAddReferral && (
                 <div ref={addReferralSearchRef} className="relative mb-4">
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       value={addReferralSearchQuery}
                       onChange={(e) => setAddReferralSearchQuery(e.target.value)}
                       placeholder={t('admin.users.detail.referrals.searchPlaceholder')}
-                      className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2.5 text-sm text-dark-100 placeholder-dark-500 focus:border-accent-500 focus:outline-none"
+                      className="border-border bg-muted text-foreground placeholder-muted-foreground focus:border-primary flex-1 rounded-lg border px-3 py-2.5 text-sm focus:outline-none"
                       autoFocus
                     />
                     <button
@@ -3249,13 +3422,13 @@ export default function AdminUserDetail() {
                         setAddReferralSearchQuery('');
                         setAddReferralSearchResults([]);
                       }}
-                      className="rounded-lg bg-dark-700 px-3 py-2.5 text-sm text-dark-400 hover:bg-dark-600"
+                      className="bg-muted text-muted-foreground hover:bg-muted rounded-lg px-3 py-2.5 text-sm"
                     >
                       {t('common.cancel')}
                     </button>
                   </div>
                   {addReferralSearchQuery.length >= 2 && addReferralSearchResults.length > 0 && (
-                    <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border border-dark-700 bg-dark-800 py-1 shadow-xl">
+                    <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-xl border py-1 shadow-xl">
                       {addReferralSearchResults
                         .filter((u) => u.id !== userId && !referralsList.some((r) => r.id === u.id))
                         .map((u) => (
@@ -3263,16 +3436,16 @@ export default function AdminUserDetail() {
                             key={u.id}
                             onClick={() => handleAddReferral(u.id)}
                             disabled={actionLoading}
-                            className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-dark-700/50 disabled:opacity-50"
+                            className="hover:bg-muted/50 flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors disabled:opacity-50"
                           >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-600/50 text-xs font-bold text-dark-300">
+                            <div className="bg-muted/50 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
                               {(u.full_name || u.username || '?')[0].toUpperCase()}
                             </div>
                             <div>
-                              <div className="text-sm text-dark-100">
+                              <div className="text-foreground text-sm">
                                 {u.full_name || u.username || `ID: ${u.id}`}
                               </div>
-                              <div className="text-xs text-dark-500">
+                              <div className="text-muted-foreground text-xs">
                                 {u.telegram_id ? `TG: ${u.telegram_id}` : `ID: ${u.id}`}
                               </div>
                             </div>
@@ -3281,7 +3454,7 @@ export default function AdminUserDetail() {
                       {addReferralSearchResults.filter(
                         (u) => u.id !== userId && !referralsList.some((r) => r.id === u.id),
                       ).length === 0 && (
-                        <div className="px-3 py-4 text-center text-sm text-dark-500">
+                        <div className="text-muted-foreground px-3 py-4 text-center text-sm">
                           {t('admin.users.detail.referrals.noUsersFound')}
                         </div>
                       )}
@@ -3290,7 +3463,7 @@ export default function AdminUserDetail() {
                   {addReferralSearchQuery.length >= 2 &&
                     !addReferralSearchLoading &&
                     addReferralSearchResults.length === 0 && (
-                      <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-xl border border-dark-700 bg-dark-800 py-4 text-center text-sm text-dark-500 shadow-xl">
+                      <div className="border-border bg-card text-muted-foreground absolute top-full right-0 left-0 z-50 mt-1 rounded-xl border py-4 text-center text-sm shadow-xl">
                         {t('admin.users.detail.referrals.noUsersFound')}
                       </div>
                     )}
@@ -3299,10 +3472,10 @@ export default function AdminUserDetail() {
 
               {referralsListLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                 </div>
               ) : referralsList.length === 0 ? (
-                <div className="py-8 text-center text-dark-500">
+                <div className="text-muted-foreground py-8 text-center">
                   {t('admin.users.detail.referrals.noReferrals')}
                 </div>
               ) : (
@@ -3310,20 +3483,20 @@ export default function AdminUserDetail() {
                   {referralsList.map((ref) => (
                     <div
                       key={ref.id}
-                      className="flex items-center justify-between rounded-xl bg-dark-700/20 px-4 py-3"
+                      className="bg-muted/20 flex items-center justify-between rounded-xl px-4 py-3"
                     >
                       <button
                         onClick={() => navigate(`/admin/users/${ref.id}`)}
                         className="flex items-center gap-3 text-left"
                       >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-dark-600/50 text-sm font-bold text-dark-300">
+                        <div className="bg-muted/50 text-muted-foreground flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold">
                           {(ref.full_name || ref.username || '?')[0].toUpperCase()}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-dark-100">
+                          <div className="text-foreground text-sm font-medium">
                             {ref.full_name || ref.username || `ID: ${ref.id}`}
                           </div>
-                          <div className="text-xs text-dark-500">
+                          <div className="text-muted-foreground text-xs">
                             {ref.telegram_id ? `TG: ${ref.telegram_id}` : `ID: ${ref.id}`}
                           </div>
                         </div>
@@ -3331,7 +3504,7 @@ export default function AdminUserDetail() {
                       <button
                         onClick={() => handleRemoveReferral(ref.id)}
                         disabled={actionLoading}
-                        className="rounded-lg p-2 text-dark-500 transition-colors hover:bg-error-500/10 hover:text-error-400 disabled:opacity-50"
+                        className="text-muted-foreground hover:bg-error-500/10 hover:text-error-400 rounded-lg p-2 transition-colors disabled:opacity-50"
                         title={t('admin.users.detail.referrals.removeReferral')}
                       >
                         <svg
@@ -3348,6 +3521,56 @@ export default function AdminUserDetail() {
                           />
                         </svg>
                       </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Timeline Tab */}
+        {activeTab === 'timeline' && (
+          <div className="space-y-4">
+            <div className="border-border/30 bg-card/40 rounded-2xl border p-5">
+              <h3 className="text-foreground mb-4 text-base font-semibold">
+                {t('admin.users.detail.timeline.title')}
+              </h3>
+              {timelineLoading ? (
+                <div className="text-muted-foreground py-8 text-center">{t('common.loading')}</div>
+              ) : timelineData.length === 0 ? (
+                <div className="text-muted-foreground py-8 text-center">
+                  {t('admin.users.detail.timeline.empty')}
+                </div>
+              ) : (
+                <div>
+                  {timelineData.map((event, idx) => (
+                    <div key={event.id} className="relative flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="bg-primary mt-2 h-2 w-2 shrink-0 rounded-full" />
+                        {idx < timelineData.length - 1 && <div className="bg-border w-px flex-1" />}
+                      </div>
+                      <div className="min-w-0 pb-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-foreground text-sm font-medium">
+                            {event.action}
+                          </span>
+                          <span className="text-muted-foreground shrink-0 text-xs">
+                            {relativeTime(event.created_at)}
+                          </span>
+                        </div>
+                        {event.resource_type && (
+                          <p className="text-muted-foreground mt-0.5 text-xs">
+                            {event.resource_type}
+                            {event.resource_id ? `: ${event.resource_id}` : ''}
+                          </p>
+                        )}
+                        {event.details && (
+                          <p className="text-muted-foreground mt-0.5 text-xs break-all">
+                            {JSON.stringify(event.details)}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

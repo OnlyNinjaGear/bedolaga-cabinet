@@ -4,12 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { adminBroadcastsApi } from '../api/adminBroadcasts';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Button } from '@/components/ui/button';
 
 // Icons
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -83,8 +84,8 @@ const statusConfig: Record<string, { bg: string; text: string; labelKey: string 
     labelKey: 'admin.broadcasts.status.queued',
   },
   in_progress: {
-    bg: 'bg-accent-500/20',
-    text: 'text-accent-400',
+    bg: 'bg-primary/20',
+    text: 'text-primary',
     labelKey: 'admin.broadcasts.status.inProgress',
   },
   completed: {
@@ -103,8 +104,8 @@ const statusConfig: Record<string, { bg: string; text: string; labelKey: string 
     labelKey: 'admin.broadcasts.status.failed',
   },
   cancelled: {
-    bg: 'bg-dark-500/20',
-    text: 'text-dark-400',
+    bg: 'bg-muted/20',
+    text: 'text-muted-foreground',
     labelKey: 'admin.broadcasts.status.cancelled',
   },
   cancelling: {
@@ -157,69 +158,61 @@ export default function AdminBroadcasts() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-bold text-dark-100">{t('admin.broadcasts.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.broadcasts.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-bold">{t('admin.broadcasts.title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('admin.broadcasts.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => refetch()}
-            className="rounded-lg bg-dark-800 p-2 text-dark-400 transition-colors hover:text-dark-100"
-          >
+          <Button variant="ghost" size="icon" onClick={() => refetch()}>
             <RefreshIcon />
-          </button>
-          <button
-            onClick={() => navigate('/admin/broadcasts/create')}
-            className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
-          >
+          </Button>
+          <Button onClick={() => navigate('/admin/broadcasts/create')}>
             <PlusIcon />
             <span className="hidden sm:inline">{t('admin.broadcasts.create')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Broadcasts list */}
       {isLoading ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <RefreshIcon />
           <p className="mt-2">{t('common.loading')}</p>
         </div>
       ) : broadcasts.length === 0 ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+        <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
           <BroadcastIcon />
           <p className="mt-2">{t('admin.broadcasts.empty')}</p>
         </div>
       ) : (
         <div className="space-y-3">
           {broadcasts.map((broadcast) => (
-            <button
+            <Button
               key={broadcast.id}
+              variant="outline"
               onClick={() => navigate(`/admin/broadcasts/${broadcast.id}`)}
-              className="w-full rounded-xl border border-dark-700 bg-dark-800/50 p-4 text-left transition-all hover:border-dark-600 hover:bg-dark-800"
+              className="bg-card/50 hover:bg-card w-full p-4 text-left"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex items-center gap-2">
                     <StatusBadge status={broadcast.status} />
-                    <span className="text-xs text-dark-400">#{broadcast.id}</span>
+                    <span className="text-muted-foreground text-xs">#{broadcast.id}</span>
                     {broadcast.has_media && (
-                      <span className="text-dark-400">
+                      <span className="text-muted-foreground">
                         {broadcast.media_type === 'photo' && <PhotoIcon />}
                         {broadcast.media_type === 'video' && <VideoIcon />}
                         {broadcast.media_type === 'document' && <DocumentIcon />}
                       </span>
                     )}
                   </div>
-                  <p className="truncate text-sm text-dark-100">{broadcast.message_text}</p>
-                  <div className="mt-2 flex items-center gap-4 text-xs text-dark-400">
+                  <p className="text-foreground truncate text-sm">{broadcast.message_text}</p>
+                  <div className="text-muted-foreground mt-2 flex items-center gap-4 text-xs">
                     <span>{broadcast.target_type}</span>
                     <span>
                       {broadcast.sent_count}/{broadcast.total_count}
@@ -235,43 +228,45 @@ export default function AdminBroadcasts() {
                 </div>
                 {['queued', 'in_progress'].includes(broadcast.status) && (
                   <div className="w-16">
-                    <div className="h-1.5 overflow-hidden rounded-full bg-dark-600">
+                    <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                       <div
-                        className="h-full bg-accent-500"
+                        className="bg-primary h-full"
                         style={{ width: `${broadcast.progress_percent}%` }}
                       />
                     </div>
-                    <p className="mt-1 text-center text-xs text-dark-400">
+                    <p className="text-muted-foreground mt-1 text-center text-xs">
                       {broadcast.progress_percent.toFixed(0)}%
                     </p>
                   </div>
                 )}
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-dark-700 bg-dark-800/50 p-4">
-          <button
+        <div className="border-border bg-card/50 flex items-center justify-center gap-2 rounded-xl border p-4">
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="rounded-lg bg-dark-700 px-3 py-1 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('admin.broadcasts.prev')}
-          </button>
-          <span className="text-dark-400">
+          </Button>
+          <span className="text-muted-foreground">
             {page + 1} / {totalPages}
           </span>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-lg bg-dark-700 px-3 py-1 text-dark-300 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('admin.broadcasts.next')}
-          </button>
+          </Button>
         </div>
       )}
     </div>

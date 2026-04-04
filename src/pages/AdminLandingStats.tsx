@@ -26,6 +26,14 @@ import { useCurrency } from '../hooks/useCurrency';
 import { useChartColors } from '../hooks/useChartColors';
 import { CHART_COMMON } from '../constants/charts';
 import { AdminBackButton } from '../components/admin';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 // Icons
 const ChartIcon = () => (
@@ -43,11 +51,11 @@ const GIFT_COLOR = '#a855f7';
 
 const PURCHASE_STATUS_STYLES: Record<string, string> = {
   pending: 'bg-warning-500/20 text-warning-400',
-  paid: 'bg-accent-500/20 text-accent-400',
+  paid: 'bg-primary/20 text-primary',
   delivered: 'bg-success-500/20 text-success-400',
-  pending_activation: 'bg-accent-500/20 text-accent-400',
+  pending_activation: 'bg-primary/20 text-primary',
   failed: 'bg-error-500/20 text-error-400',
-  expired: 'bg-dark-500/20 text-dark-400',
+  expired: 'bg-muted/20 text-muted-foreground',
 };
 
 const PURCHASE_STATUS_OPTIONS: Array<PurchaseItemStatus | 'all'> = [
@@ -88,7 +96,7 @@ const TelegramSmallIcon = () => (
 
 const ArrowRightIcon = () => (
   <svg
-    className="h-3 w-3 shrink-0 text-dark-500"
+    className="text-muted-foreground h-3 w-3 shrink-0"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -129,7 +137,7 @@ const ChevronRightSmall = () => (
 // Contact display helper
 function ContactDisplay({ type, value }: { type: 'email' | 'telegram'; value: string }) {
   return (
-    <span className="flex items-center gap-1 text-dark-300">
+    <span className="text-muted-foreground flex items-center gap-1">
       {type === 'email' ? <EmailIcon /> : <TelegramSmallIcon />}
       <span className="min-w-0 truncate text-xs">{value}</span>
     </span>
@@ -145,7 +153,7 @@ interface PurchaseCardProps {
 }
 
 function PurchaseCard({ item, formatPrice, lang, t }: PurchaseCardProps) {
-  const statusStyle = PURCHASE_STATUS_STYLES[item.status] || 'bg-dark-600 text-dark-300';
+  const statusStyle = PURCHASE_STATUS_STYLES[item.status] || 'bg-muted text-muted-foreground';
   const dateStr = new Date(item.created_at).toLocaleDateString(lang, {
     day: 'numeric',
     month: 'short',
@@ -153,7 +161,7 @@ function PurchaseCard({ item, formatPrice, lang, t }: PurchaseCardProps) {
   });
 
   return (
-    <div className="rounded-xl border border-dark-700/50 bg-dark-800/40 p-3 transition-colors hover:border-dark-600 sm:p-4">
+    <div className="border-border/50 bg-card/40 hover:border-border rounded-xl border p-3 transition-colors sm:p-4">
       {/* Mobile: stacked | Desktop: horizontal */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
         {/* Status badge */}
@@ -179,21 +187,21 @@ function PurchaseCard({ item, formatPrice, lang, t }: PurchaseCardProps) {
         </div>
 
         {/* Tariff + period */}
-        <div className="shrink-0 text-sm text-dark-200">
+        <div className="text-foreground shrink-0 text-sm">
           <span className="font-medium">{item.tariff_name}</span>
-          <span className="text-dark-500">
+          <span className="text-muted-foreground">
             {' '}
             &middot; {item.period_days} {t('admin.landings.purchases.days')}
           </span>
         </div>
 
         {/* Price */}
-        <div className="shrink-0 text-sm font-medium text-dark-100">
+        <div className="text-foreground shrink-0 text-sm font-medium">
           {formatPrice(item.amount_kopeks)}
         </div>
 
         {/* Payment method */}
-        <div className="shrink-0 text-xs text-dark-500">{item.payment_method}</div>
+        <div className="text-muted-foreground shrink-0 text-xs">{item.payment_method}</div>
 
         {/* Gift badge */}
         {item.is_gift && (
@@ -206,7 +214,7 @@ function PurchaseCard({ item, formatPrice, lang, t }: PurchaseCardProps) {
         )}
 
         {/* Date */}
-        <div className="shrink-0 text-xs text-dark-500">{dateStr}</div>
+        <div className="text-muted-foreground shrink-0 text-xs">{dateStr}</div>
       </div>
     </div>
   );
@@ -319,7 +327,7 @@ export default function AdminLandingStats() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -330,16 +338,20 @@ export default function AdminLandingStats() {
       <div className="animate-fade-in">
         <div className="mb-6 flex items-center gap-3">
           <AdminBackButton to="/admin/landings" />
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.landings.stats.title')}</h1>
+          <h1 className="text-foreground text-xl font-semibold">
+            {t('admin.landings.stats.title')}
+          </h1>
         </div>
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-6 text-center">
+        <div className="border-error-500/30 bg-error-500/10 rounded-xl border p-6 text-center">
           <p className="text-error-400">{t('admin.landings.stats.loadError')}</p>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => navigate('/admin/landings')}
-            className="mt-4 text-sm text-dark-400 hover:text-dark-200"
+            className="mt-4"
           >
             {t('common.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -353,18 +365,18 @@ export default function AdminLandingStats() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <AdminBackButton to="/admin/landings" />
-          <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400">
+          <div className="bg-primary/20 text-primary rounded-lg p-2">
             <ChartIcon />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-semibold text-dark-100">{landingTitle}</h1>
+            <h1 className="text-foreground truncate text-xl font-semibold">{landingTitle}</h1>
             <div className="mt-1 flex items-center gap-2">
               {landing?.is_active ? (
-                <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+                <span className="bg-success-500/20 text-success-400 rounded px-2 py-0.5 text-xs">
                   {t('admin.landings.active')}
                 </span>
               ) : (
-                <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
                   {t('admin.landings.inactive')}
                 </span>
               )}
@@ -376,39 +388,45 @@ export default function AdminLandingStats() {
       <div className="space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-xl font-bold text-accent-400 sm:text-2xl">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-primary text-xl font-bold sm:text-2xl">
               {stats.total_purchases}
             </div>
-            <div className="text-xs text-dark-500">{t('admin.landings.stats.totalPurchases')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.landings.stats.totalPurchases')}
+            </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="truncate text-xl font-bold text-success-400 sm:text-2xl">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-success-400 truncate text-xl font-bold sm:text-2xl">
               {formatWithCurrency(stats.total_revenue_kopeks / CHART_COMMON.KOPEKS_DIVISOR)}
             </div>
-            <div className="text-xs text-dark-500">{t('admin.landings.stats.revenue')}</div>
+            <div className="text-muted-foreground text-xs">{t('admin.landings.stats.revenue')}</div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
             <div className="text-xl font-bold text-purple-400 sm:text-2xl">{stats.total_gifts}</div>
-            <div className="text-xs text-dark-500">{t('admin.landings.stats.giftPurchases')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.landings.stats.giftPurchases')}
+            </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4 text-center">
-            <div className="text-xl font-bold text-warning-400 sm:text-2xl">
+          <div className="border-border bg-card rounded-xl border p-4 text-center">
+            <div className="text-warning-400 text-xl font-bold sm:text-2xl">
               {stats.conversion_rate}%
             </div>
-            <div className="text-xs text-dark-500">{t('admin.landings.stats.conversionRate')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.landings.stats.conversionRate')}
+            </div>
           </div>
         </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* Daily Purchases & Revenue */}
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <h3 className="mb-4 font-medium text-dark-200">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <h3 className="text-foreground mb-4 font-medium">
               {t('admin.landings.stats.dailyChart')}
             </h3>
             {dailyData.length === 0 ? (
-              <div className="flex h-[220px] items-center justify-center text-sm text-dark-500">
+              <div className="text-muted-foreground flex h-55 items-center justify-center text-sm">
                 {t('admin.landings.stats.noPurchases')}
               </div>
             ) : (
@@ -506,12 +524,12 @@ export default function AdminLandingStats() {
           </div>
 
           {/* Tariff Distribution */}
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <h3 className="mb-4 font-medium text-dark-200">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <h3 className="text-foreground mb-4 font-medium">
               {t('admin.landings.stats.tariffChart')}
             </h3>
             {tariffData.length === 0 ? (
-              <div className="flex h-[220px] items-center justify-center text-sm text-dark-500">
+              <div className="text-muted-foreground flex h-55 items-center justify-center text-sm">
                 {t('admin.landings.stats.noPurchases')}
               </div>
             ) : (
@@ -566,36 +584,42 @@ export default function AdminLandingStats() {
 
         {/* Additional Stats Row */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="mb-1 text-sm text-dark-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
               {t('admin.landings.stats.avgPurchase')}
             </div>
-            <div className="text-lg font-medium text-dark-200">
+            <div className="text-foreground text-lg font-medium">
               {formatWithCurrency(stats.avg_purchase_kopeks / CHART_COMMON.KOPEKS_DIVISOR)}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="mb-1 text-sm text-dark-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
               {t('admin.landings.stats.regularPurchases')}
             </div>
-            <div className="text-lg font-medium text-dark-200">{stats.total_regular}</div>
+            <div className="text-foreground text-lg font-medium">{stats.total_regular}</div>
           </div>
-          <div className="col-span-2 rounded-xl border border-dark-700 bg-dark-800 p-4 sm:col-span-1">
-            <div className="mb-1 text-sm text-dark-400">{t('admin.landings.stats.funnel')}</div>
-            <div className="text-lg font-medium text-dark-200">
+          <div className="border-border bg-card col-span-2 rounded-xl border p-4 sm:col-span-1">
+            <div className="text-muted-foreground mb-1 text-sm">
+              {t('admin.landings.stats.funnel')}
+            </div>
+            <div className="text-foreground text-lg font-medium">
               {stats.total_created}{' '}
-              <span className="text-sm text-dark-500">{t('admin.landings.stats.created')}</span>
+              <span className="text-muted-foreground text-sm">
+                {t('admin.landings.stats.created')}
+              </span>
               {' / '}
               {stats.total_successful}{' '}
-              <span className="text-sm text-dark-500">{t('admin.landings.stats.successful')}</span>
+              <span className="text-muted-foreground text-sm">
+                {t('admin.landings.stats.successful')}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Gift vs Regular Donut */}
         {stats.total_purchases > 0 && (
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <h3 className="mb-4 font-medium text-dark-200">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <h3 className="text-foreground mb-4 font-medium">
               {t('admin.landings.stats.giftBreakdown')}
             </h3>
             <div className="flex items-center justify-center gap-8">
@@ -629,7 +653,7 @@ export default function AdminLandingStats() {
                 </ResponsiveContainer>
                 {/* Center text */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-dark-100">{stats.total_purchases}</span>
+                  <span className="text-foreground text-lg font-bold">{stats.total_purchases}</span>
                 </div>
               </div>
               <div className="space-y-3">
@@ -638,13 +662,13 @@ export default function AdminLandingStats() {
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: colors.referrals }}
                   />
-                  <span className="text-sm text-dark-300">
+                  <span className="text-muted-foreground text-sm">
                     {t('admin.landings.stats.regular')}: {stats.total_regular}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full" style={{ backgroundColor: GIFT_COLOR }} />
-                  <span className="text-sm text-dark-300">
+                  <span className="text-muted-foreground text-sm">
                     {t('admin.landings.stats.gifts')}: {stats.total_gifts}
                   </span>
                 </div>
@@ -654,36 +678,39 @@ export default function AdminLandingStats() {
         )}
 
         {/* Purchases List */}
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+        <div className="border-border bg-card rounded-xl border p-4">
           {/* Header row: title + status filter */}
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="font-medium text-dark-200">{t('admin.landings.purchases.title')}</h3>
-            <select
+            <h3 className="text-foreground font-medium">{t('admin.landings.purchases.title')}</h3>
+            <Select
               value={purchaseStatusFilter}
-              onChange={(e) => {
-                setPurchaseStatusFilter(e.target.value as PurchaseItemStatus | 'all');
+              onValueChange={(v) => {
+                setPurchaseStatusFilter(v as PurchaseItemStatus | 'all');
                 setPurchaseOffset(0);
               }}
-              className="rounded-lg border border-dark-600 bg-dark-900 px-3 py-1.5 text-sm text-dark-200 outline-none transition-colors focus:border-accent-500"
-              aria-label={t('admin.landings.purchases.allStatuses')}
             >
-              {PURCHASE_STATUS_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt === 'all'
-                    ? t('admin.landings.purchases.allStatuses')
-                    : t(`admin.landings.purchases.status_${opt}`)}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="border-border bg-background text-foreground rounded-lg border px-3 py-1.5 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PURCHASE_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt === 'all'
+                      ? t('admin.landings.purchases.allStatuses')
+                      : t(`admin.landings.purchases.status_${opt}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Content */}
           {purchasesLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+              <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
             </div>
           ) : purchaseItems.length === 0 ? (
-            <div className="py-8 text-center text-sm text-dark-500">
+            <div className="text-muted-foreground py-8 text-center text-sm">
               {t('admin.landings.purchases.noPurchases')}
             </div>
           ) : (
@@ -705,7 +732,7 @@ export default function AdminLandingStats() {
               {/* Pagination */}
               {purchaseTotalPages > 1 && (
                 <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
-                  <span className="text-xs text-dark-500">
+                  <span className="text-muted-foreground text-xs">
                     {t('admin.landings.purchases.showing', {
                       from: purchaseOffset + 1,
                       to: Math.min(purchaseOffset + PURCHASES_PAGE_SIZE, purchaseTotal),
@@ -713,34 +740,36 @@ export default function AdminLandingStats() {
                     })}
                   </span>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() =>
                         setPurchaseOffset((prev) => Math.max(0, prev - PURCHASES_PAGE_SIZE))
                       }
                       disabled={purchaseOffset === 0}
-                      className="flex items-center gap-1 rounded-lg border border-dark-700 bg-dark-800 px-3 py-1.5 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={t('admin.landings.purchases.prev')}
                     >
                       <ChevronLeftSmall />
                       <span className="hidden sm:inline">{t('admin.landings.purchases.prev')}</span>
-                    </button>
+                    </Button>
 
-                    <span className="px-2 text-xs text-dark-400">
+                    <span className="text-muted-foreground px-2 text-xs">
                       {t('admin.landings.purchases.page', {
                         current: purchaseCurrentPage,
                         total: purchaseTotalPages,
                       })}
                     </span>
 
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setPurchaseOffset((prev) => prev + PURCHASES_PAGE_SIZE)}
                       disabled={purchaseOffset + PURCHASES_PAGE_SIZE >= purchaseTotal}
-                      className="flex items-center gap-1 rounded-lg border border-dark-700 bg-dark-800 px-3 py-1.5 text-sm text-dark-300 transition-colors hover:border-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={t('admin.landings.purchases.next')}
                     >
                       <span className="hidden sm:inline">{t('admin.landings.purchases.next')}</span>
                       <ChevronRightSmall />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

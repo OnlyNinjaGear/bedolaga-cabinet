@@ -33,9 +33,9 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
         className={cn(
           'peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full',
           'border-2 border-transparent transition-colors duration-200',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-950',
+          'focus-visible:ring-ring/50 focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          'data-[state=checked]:bg-accent-500 data-[state=unchecked]:bg-dark-700',
+          'data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted',
           className,
         )}
         onCheckedChange={handleCheckedChange}
@@ -61,8 +61,10 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
     return (
       <label className="flex cursor-pointer items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-dark-100">{label}</span>
-          {description && <span className="mt-0.5 block text-sm text-dark-400">{description}</span>}
+          <span className="text-foreground block text-sm font-medium">{label}</span>
+          {description && (
+            <span className="text-muted-foreground mt-0.5 block text-sm">{description}</span>
+          )}
         </div>
         {switchElement}
       </label>

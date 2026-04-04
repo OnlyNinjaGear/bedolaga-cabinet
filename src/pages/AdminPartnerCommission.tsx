@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { partnerApi } from '../api/partners';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
 
 export default function AdminPartnerCommission() {
   const { t } = useTranslation();
@@ -46,21 +47,21 @@ export default function AdminPartnerCommission() {
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={`/admin/partners/${userId}`} />
-        <h1 className="text-xl font-semibold text-dark-100">
+        <h1 className="text-foreground text-xl font-semibold">
           {t('admin.partnerDetail.commissionDialog.title')}
         </h1>
       </div>
 
-      <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
-        <p className="mb-4 text-sm text-dark-400">
+      <div className="border-border bg-card rounded-xl border p-6">
+        <p className="text-muted-foreground mb-4 text-sm">
           {t('admin.partnerDetail.commissionDialog.description')}
         </p>
 
-        <div className="mb-2 text-sm text-dark-500">
+        <div className="text-muted-foreground mb-2 text-sm">
           {t('admin.partnerDetail.commission.title')}: {currentCommission}%
         </div>
 
-        <label className="mb-1 block text-sm font-medium text-dark-300">
+        <label className="text-muted-foreground mb-1 block text-sm font-medium">
           {t('admin.partnerDetail.commissionDialog.label')}
         </label>
         <input
@@ -69,17 +70,18 @@ export default function AdminPartnerCommission() {
           max="100"
           value={commissionValue}
           onChange={(e) => setCommissionValue(e.target.value)}
-          className="mb-6 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-dark-100 outline-none focus:border-accent-500"
+          className="border-border bg-muted text-foreground focus:border-primary mb-6 w-full rounded-lg border px-3 py-2 outline-none"
         />
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="secondary"
             onClick={() => navigate(`/admin/partners/${userId}`)}
-            className="flex-1 rounded-lg bg-dark-700 px-4 py-3 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100"
+            className="flex-1"
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => {
               const val = Number(commissionValue);
               if (val >= 1 && val <= 100) updateMutation.mutate(val);
@@ -90,14 +92,14 @@ export default function AdminPartnerCommission() {
               Number(commissionValue) < 1 ||
               Number(commissionValue) > 100
             }
-            className="flex-1 rounded-lg bg-accent-500 px-4 py-3 font-medium text-white transition-colors hover:bg-accent-600 disabled:opacity-50"
+            className="flex-1"
           >
             {updateMutation.isPending ? t('common.saving') : t('common.save')}
-          </button>
+          </Button>
         </div>
 
         {updateMutation.isError && (
-          <div className="mt-4 rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="bg-error-500/10 text-error-400 mt-4 rounded-lg p-3 text-sm">
             {t('common.error')}
           </div>
         )}

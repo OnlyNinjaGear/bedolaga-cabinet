@@ -5,12 +5,23 @@ import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { promocodesApi, PromoCode, PromoCodeType } from '../api/promocodes';
 import { usePlatform } from '../platform/hooks/usePlatform';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // Icons
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -87,12 +98,12 @@ const getTypeLabel = (type: PromoCodeType): string => {
 const getTypeColor = (type: PromoCodeType): string => {
   const colors: Record<PromoCodeType, string> = {
     balance: 'bg-success-500/20 text-success-400',
-    subscription_days: 'bg-accent-500/20 text-accent-400',
-    trial_subscription: 'bg-accent-500/20 text-accent-400',
+    subscription_days: 'bg-primary/20 text-primary',
+    trial_subscription: 'bg-primary/20 text-primary',
     promo_group: 'bg-warning-500/20 text-warning-400',
     discount: 'bg-pink-500/20 text-pink-400',
   };
-  return colors[type] || 'bg-dark-600 text-dark-300';
+  return colors[type] || 'bg-muted text-muted-foreground';
 };
 
 const formatDate = (date: string | null): string => {
@@ -145,53 +156,56 @@ export default function AdminPromocodes() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
-              onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin')}>
               <BackIcon />
-            </button>
+            </Button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.promocodes.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.promocodes.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-semibold">{t('admin.promocodes.title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('admin.promocodes.subtitle')}</p>
           </div>
         </div>
-        <button
+        <Button
           onClick={() => navigate('/admin/promocodes/create')}
-          className="flex items-center justify-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white transition-colors hover:bg-accent-600"
+          className="flex items-center justify-center gap-2"
         >
           <PlusIcon />
           {t('admin.promocodes.addPromocode')}
-        </button>
+        </Button>
       </div>
 
       {/* Stats Overview */}
       {promocodes.length > 0 && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-dark-100">{promocodes.length}</div>
-            <div className="text-xs text-dark-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-foreground text-2xl font-bold">{promocodes.length}</div>
+            <div className="text-muted-foreground text-xs">
               {t('admin.promocodes.stats.totalPromocodes')}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-success-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-success-400 text-2xl font-bold">
               {promocodes.filter((p) => p.is_active && p.is_valid).length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.promocodes.stats.activeCount')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.promocodes.stats.activeCount')}
+            </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-accent-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-primary text-2xl font-bold">
               {promocodes.reduce((sum, p) => sum + p.current_uses, 0)}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.promocodes.stats.usagesCount')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.promocodes.stats.usagesCount')}
+            </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
-            <div className="text-2xl font-bold text-warning-400">
+          <div className="border-border bg-card rounded-xl border p-4">
+            <div className="text-warning-400 text-2xl font-bold">
               {promocodes.filter((p) => p.uses_left === 0 && p.max_uses > 0).length}
             </div>
-            <div className="text-xs text-dark-400">{t('admin.promocodes.stats.exhausted')}</div>
+            <div className="text-muted-foreground text-xs">
+              {t('admin.promocodes.stats.exhausted')}
+            </div>
           </div>
         </div>
       )}
@@ -199,19 +213,19 @@ export default function AdminPromocodes() {
       {/* Promocodes List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : promocodes.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-dark-400">{t('admin.promocodes.noPromocodes')}</p>
+          <p className="text-muted-foreground">{t('admin.promocodes.noPromocodes')}</p>
         </div>
       ) : (
         <div className="space-y-3">
           {promocodes.map((promo: PromoCode) => (
             <div
               key={promo.id}
-              className={`rounded-xl border bg-dark-800 p-4 transition-colors ${
-                promo.is_active ? 'border-dark-700' : 'border-dark-700/50 opacity-60'
+              className={`bg-card rounded-xl border p-4 transition-colors ${
+                promo.is_active ? 'border-border' : 'border-border/50 opacity-60'
               }`}
             >
               {/* Mobile: stacked layout, Desktop: row layout */}
@@ -219,13 +233,14 @@ export default function AdminPromocodes() {
                 <div className="min-w-0 flex-1">
                   {/* Code with copy button */}
                   <div className="mb-2 flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => handleCopyCode(promo.code)}
-                      className="flex items-center gap-1.5 font-mono font-medium text-dark-100 transition-colors hover:text-accent-400"
+                      className="text-foreground hover:text-primary flex h-auto items-center gap-1.5 p-0 font-mono font-medium hover:bg-transparent"
                     >
                       {promo.code}
                       {copiedCode === promo.code ? <CheckIcon /> : <CopyIcon />}
-                    </button>
+                    </Button>
                   </div>
                   {/* Badges - wrap on mobile */}
                   <div className="mb-2 flex flex-wrap gap-1.5">
@@ -233,18 +248,18 @@ export default function AdminPromocodes() {
                       {getTypeLabel(promo.type)}
                     </span>
                     {!promo.is_active && (
-                      <span className="rounded bg-dark-600 px-2 py-0.5 text-xs text-dark-400">
+                      <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
                         {t('admin.promocodes.stats.inactive')}
                       </span>
                     )}
                     {promo.first_purchase_only && (
-                      <span className="rounded bg-warning-500/20 px-2 py-0.5 text-xs text-warning-400">
+                      <span className="bg-warning-500/20 text-warning-400 rounded px-2 py-0.5 text-xs">
                         {t('admin.promocodes.firstPurchase')}
                       </span>
                     )}
                   </div>
                   {/* Info line */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-dark-400">
+                  <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     {promo.type === 'balance' && (
                       <span className="text-success-400">
                         +{promo.balance_bonus_rubles} {t('admin.promocodes.form.rub')}
@@ -252,7 +267,7 @@ export default function AdminPromocodes() {
                     )}
                     {(promo.type === 'subscription_days' ||
                       promo.type === 'trial_subscription') && (
-                      <span className="text-accent-400">
+                      <span className="text-primary">
                         +{promo.subscription_days} {t('admin.promocodes.form.days')}
                       </span>
                     )}
@@ -277,28 +292,34 @@ export default function AdminPromocodes() {
                 </div>
 
                 {/* Action buttons - full width on mobile */}
-                <div className="flex items-center gap-2 border-t border-dark-700 pt-3 sm:border-0 sm:pt-0">
-                  <button
+                <div className="border-border flex items-center gap-2 border-t pt-3 sm:border-0 sm:pt-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => navigate(`/admin/promocodes/${promo.id}/stats`)}
-                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-accent-500/20 hover:text-accent-400 sm:flex-none"
+                    className="hover:bg-primary/20 hover:text-primary flex-1 sm:flex-none"
                     title={t('admin.promocodes.actions.stats')}
                   >
                     <ChartIcon />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => navigate(`/admin/promocodes/${promo.id}/edit`)}
-                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100 sm:flex-none"
+                    className="flex-1 sm:flex-none"
                     title={t('admin.promocodes.actions.edit')}
                   >
                     <EditIcon />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setDeleteConfirm(promo.id)}
-                    className="flex-1 rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-error-500/20 hover:text-error-400 sm:flex-none"
+                    className="hover:bg-error-500/20 hover:text-error-400 flex-1 sm:flex-none"
                     title={t('admin.promocodes.actions.delete')}
                   >
                     <TrashIcon />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -307,32 +328,30 @@ export default function AdminPromocodes() {
       )}
 
       {/* Delete Confirmation */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm rounded-xl bg-dark-800 p-6">
-            <h3 className="mb-2 text-lg font-semibold text-dark-100">
-              {t('admin.promocodes.confirm.deletePromocode')}
-            </h3>
-            <p className="mb-6 text-dark-400">
+      <AlertDialog
+        open={deleteConfirm !== null}
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.promocodes.confirm.deletePromocode')}</AlertDialogTitle>
+            <AlertDialogDescription>
               {t('admin.promocodes.confirm.deletePromocodeText')}
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
-                {t('admin.promocodes.form.cancel')}
-              </button>
-              <button
-                onClick={() => deleteMutation.mutate(deleteConfirm)}
-                className="rounded-lg bg-error-500 px-4 py-2 text-white transition-colors hover:bg-error-600"
-              >
-                {t('admin.promocodes.confirm.deleteButton')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirm(null)}>
+              {t('admin.promocodes.form.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteConfirm !== null && deleteMutation.mutate(deleteConfirm)}
+              className="bg-error-500 hover:bg-error-600"
+            >
+              {t('admin.promocodes.confirm.deleteButton')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

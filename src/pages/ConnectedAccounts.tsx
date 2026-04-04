@@ -8,6 +8,7 @@ import { brandingApi, type TelegramWidgetConfig, type EmailAuthEnabled } from '.
 import { useToast } from '../components/Toast';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
+import { Input } from '@/components/ui/input';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 import ProviderIcon from '../components/ProviderIcon';
 import { LINK_OAUTH_STATE_KEY, LINK_OAUTH_PROVIDER_KEY, getErrorDetail } from '../utils/oauth';
@@ -246,12 +247,14 @@ function TelegramLinkWidget() {
   if (scriptFailed) {
     return (
       <div className="flex flex-col items-center gap-1.5">
-        <p className="text-xs text-dark-400">{t('profile.accounts.telegramLinkUnavailable')}</p>
+        <p className="text-muted-foreground text-xs">
+          {t('profile.accounts.telegramLinkUnavailable')}
+        </p>
         <a
           href={`https://t.me/${botUsername}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-accent-400 transition-colors hover:text-accent-300"
+          className="text-primary hover:text-primary/70 text-sm transition-colors"
         >
           @{botUsername}
         </a>
@@ -290,13 +293,13 @@ function LoadingSkeleton() {
         <Card key={i}>
           <div className="flex animate-pulse items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-6 w-6 rounded-full bg-dark-700" />
+              <div className="bg-muted h-6 w-6 rounded-full" />
               <div className="space-y-2">
-                <div className="h-4 w-24 rounded bg-dark-700" />
-                <div className="h-3 w-32 rounded bg-dark-700" />
+                <div className="bg-muted h-4 w-24 rounded" />
+                <div className="bg-muted h-3 w-32 rounded" />
               </div>
             </div>
-            <div className="h-8 w-20 rounded bg-dark-700" />
+            <div className="bg-muted h-8 w-20 rounded" />
           </div>
         </Card>
       ))}
@@ -601,10 +604,10 @@ export default function ConnectedAccounts() {
     >
       {/* Page title */}
       <motion.div variants={staggerItem}>
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
           {t('profile.accounts.title')}
         </h1>
-        <p className="mt-1 text-dark-400">{t('profile.accounts.subtitle')}</p>
+        <p className="text-muted-foreground mt-1">{t('profile.accounts.subtitle')}</p>
       </motion.div>
 
       {/* Loading state */}
@@ -618,7 +621,7 @@ export default function ConnectedAccounts() {
       {isError && (
         <motion.div variants={staggerItem}>
           <Card>
-            <p className="text-center text-dark-400">{t('common.error')}</p>
+            <p className="text-muted-foreground text-center">{t('common.error')}</p>
           </Card>
         </motion.div>
       )}
@@ -631,18 +634,18 @@ export default function ConnectedAccounts() {
               <div className="flex items-center gap-3">
                 <ProviderIcon provider={provider.provider} />
                 <div>
-                  <p className="font-medium text-dark-100">
+                  <p className="text-foreground font-medium">
                     {t(`profile.accounts.providers.${provider.provider}`)}
                   </p>
                   {provider.identifier && (
-                    <p className="text-sm text-dark-400">{provider.identifier}</p>
+                    <p className="text-muted-foreground text-sm">{provider.identifier}</p>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {provider.linked ? (
                   <>
-                    <span className="text-sm text-success-500">{t('profile.accounts.linked')}</span>
+                    <span className="text-success-500 text-sm">{t('profile.accounts.linked')}</span>
                     {canUnlink(provider) && (
                       <Button
                         variant={confirmingUnlink === provider.provider ? 'destructive' : 'outline'}
@@ -682,8 +685,8 @@ export default function ConnectedAccounts() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-4 border-t border-dark-700/30 pt-4">
-                      <p className="mb-4 text-sm text-dark-400">
+                    <div className="border-border/30 mt-4 border-t pt-4">
+                      <p className="text-muted-foreground mb-4 text-sm">
                         {t('profile.linkEmailDescription')}
                       </p>
                       <form onSubmit={handleEmailSubmit} className="space-y-3">
@@ -691,13 +694,12 @@ export default function ConnectedAccounts() {
                           <label htmlFor="email-link-input" className="label">
                             Email
                           </label>
-                          <input
+                          <Input
                             id="email-link-input"
                             type="email"
                             value={emailValue}
                             onChange={(e) => setEmailValue(e.target.value)}
                             placeholder="email@example.com"
-                            className="input"
                             autoComplete="email"
                           />
                         </div>
@@ -705,39 +707,39 @@ export default function ConnectedAccounts() {
                           <label htmlFor="email-link-password" className="label">
                             {t('auth.password')}
                           </label>
-                          <input
+                          <Input
                             id="email-link-password"
                             type="password"
                             value={emailPassword}
                             onChange={(e) => setEmailPassword(e.target.value)}
                             placeholder={t('profile.passwordPlaceholder')}
-                            className="input"
                             autoComplete="new-password"
                           />
-                          <p className="mt-1 text-xs text-dark-500">{t('profile.passwordHint')}</p>
+                          <p className="text-muted-foreground mt-1 text-xs">
+                            {t('profile.passwordHint')}
+                          </p>
                         </div>
                         <div>
                           <label htmlFor="email-link-confirm" className="label">
                             {t('auth.confirmPassword')}
                           </label>
-                          <input
+                          <Input
                             id="email-link-confirm"
                             type="password"
                             value={emailConfirmPassword}
                             onChange={(e) => setEmailConfirmPassword(e.target.value)}
                             placeholder={t('profile.confirmPasswordPlaceholder')}
-                            className="input"
                             autoComplete="new-password"
                           />
                         </div>
 
                         {emailError && (
-                          <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-3 text-sm text-error-400">
+                          <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-xl border p-3 text-sm">
                             {emailError}
                           </div>
                         )}
                         {emailSuccess && (
-                          <div className="rounded-xl border border-success-500/30 bg-success-500/10 p-3 text-sm text-success-400">
+                          <div className="border-success-500/30 bg-success-500/10 text-success-400 rounded-xl border p-3 text-sm">
                             {emailSuccess}
                           </div>
                         )}

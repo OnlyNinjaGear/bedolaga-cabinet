@@ -47,8 +47,10 @@ export default function AdminWithdrawals() {
         <div className="flex items-center gap-3">
           <AdminBackButton to="/admin" />
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">{t('admin.withdrawals.title')}</h1>
-            <p className="text-sm text-dark-400">{t('admin.withdrawals.subtitle')}</p>
+            <h1 className="text-foreground text-xl font-semibold">
+              {t('admin.withdrawals.title')}
+            </h1>
+            <p className="text-muted-foreground text-sm">{t('admin.withdrawals.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -56,17 +58,17 @@ export default function AdminWithdrawals() {
       {/* Overview Stats */}
       {data && (
         <div className="mb-6 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+          <div className="border-border bg-card rounded-xl border p-4">
             <div className="text-2xl font-bold text-yellow-400">{pendingCount}</div>
-            <div className="text-sm text-dark-400">
+            <div className="text-muted-foreground text-sm">
               {t('admin.withdrawals.overview.pendingCount')}
             </div>
           </div>
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+          <div className="border-border bg-card rounded-xl border p-4">
             <div className="text-2xl font-bold text-yellow-400">
               {formatWithCurrency(pendingTotal / 100, 0)}
             </div>
-            <div className="text-sm text-dark-400">
+            <div className="text-muted-foreground text-sm">
               {t('admin.withdrawals.overview.pendingAmount')}
             </div>
           </div>
@@ -79,10 +81,10 @@ export default function AdminWithdrawals() {
           <button
             key={filter}
             onClick={() => setStatusFilter(filter)}
-            className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
               statusFilter === filter
-                ? 'bg-accent-500 text-white'
-                : 'bg-dark-800/40 text-dark-400 hover:bg-dark-700/50 hover:text-dark-200'
+                ? 'bg-primary text-white'
+                : 'bg-card/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
             }`}
           >
             {t(`admin.withdrawals.filter.${filter}`)}
@@ -93,11 +95,11 @@ export default function AdminWithdrawals() {
       {/* Withdrawal Cards List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : items.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-dark-400">{t('admin.withdrawals.noData')}</p>
+          <p className="text-muted-foreground">{t('admin.withdrawals.noData')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -109,18 +111,18 @@ export default function AdminWithdrawals() {
               <button
                 key={item.id}
                 onClick={() => navigate(`/admin/withdrawals/${item.id}`)}
-                className="w-full rounded-xl border border-dark-700/50 bg-dark-800/40 p-4 text-left transition-colors hover:border-dark-600 hover:bg-dark-800/60"
+                className="border-border/50 bg-card/40 hover:border-border hover:bg-card/60 w-full rounded-xl border p-4 text-left transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     {/* User and amount */}
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="truncate font-medium text-dark-100">
+                      <span className="text-foreground truncate font-medium">
                         {item.username
                           ? `@${item.username}`
                           : item.first_name || `#${item.user_id}`}
                       </span>
-                      <span className="font-semibold text-dark-100">
+                      <span className="text-foreground font-semibold">
                         {formatWithCurrency(item.amount_kopeks / 100, 0)}
                       </span>
                     </div>
@@ -141,17 +143,19 @@ export default function AdminWithdrawals() {
                       </span>
 
                       {/* Risk level */}
-                      <span className="text-xs text-dark-500">
+                      <span className="text-muted-foreground text-xs">
                         {t(`admin.withdrawals.detail.riskLevel.${item.risk_level}`)}
                       </span>
 
-                      <span className="text-xs text-dark-500">{formatDate(item.created_at)}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {formatDate(item.created_at)}
+                      </span>
                     </div>
                   </div>
 
                   {/* Chevron right */}
                   <svg
-                    className="mt-1 h-5 w-5 shrink-0 text-dark-500"
+                    className="text-muted-foreground mt-1 h-5 w-5 shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

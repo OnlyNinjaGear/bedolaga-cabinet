@@ -1,10 +1,12 @@
-import { Slot } from '@radix-ui/react-slot';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { usePlatform } from '@/platform';
 import { buttonTap, buttonHover, springTransition } from '../../motion/transitions';
 import { buttonVariants, type ButtonVariants } from './Button.variants';
+import { Button as ShadcnButton } from '@/components/ui/button';
+
+type ShadcnVariant = 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive' | 'link';
 
 export interface ButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'>, ButtonVariants {
@@ -15,6 +17,16 @@ export interface ButtonProps
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   haptic?: boolean;
+}
+
+/**
+ * Maps our custom variant names to shadcn variant names.
+ * 'primary' → 'default' (shadcn's primary-coloured button)
+ * All others match 1-to-1.
+ */
+function mapVariant(variant: ButtonVariants['variant']): ShadcnVariant {
+  if (variant === 'primary' || variant === undefined || variant === null) return 'default';
+  return variant as ShadcnVariant;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -46,13 +58,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick?.(e);
     };
 
+    // Combine our custom variant classes with shadcn base for consistent styling
     const classes = cn(buttonVariants({ variant, size, fullWidth }), className);
 
     if (asChild) {
+      // For asChild, just render a plain div wrapper — no motion needed
       return (
-        <Slot ref={ref} className={classes} {...props}>
+        <ShadcnButton
+          ref={ref}
+          asChild
+          variant={mapVariant(variant)}
+          className={classes}
+          {...(props as React.ComponentProps<typeof ShadcnButton>)}
+        >
           {children}
-        </Slot>
+        </ShadcnButton>
       );
     }
 

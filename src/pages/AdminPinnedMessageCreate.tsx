@@ -8,6 +8,9 @@ import {
   PinnedMessageUpdateRequest,
 } from '../api/adminPinnedMessages';
 import { AdminBackButton, Toggle } from '../components/admin';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 // Icons
 const PinIcon = () => (
@@ -218,7 +221,7 @@ export default function AdminPinnedMessageCreate() {
 
   if (isEditing && isLoadingMessage) {
     return (
-      <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-8 text-center text-dark-400">
+      <div className="border-border bg-card/50 text-muted-foreground rounded-xl border p-8 text-center">
         <p>{t('common.loading')}</p>
       </div>
     );
@@ -230,67 +233,69 @@ export default function AdminPinnedMessageCreate() {
       <div className="flex items-center gap-3">
         <AdminBackButton to="/admin/pinned-messages" />
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-error-500/20 p-2 text-error-400">
+          <div className="bg-error-500/20 text-error-400 rounded-lg p-2">
             <PinIcon />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-dark-100">
+            <h1 className="text-foreground text-xl font-bold">
               {isEditing ? t('admin.pinnedMessages.editMessage') : t('admin.pinnedMessages.create')}
             </h1>
-            <p className="text-sm text-dark-400">{t('admin.pinnedMessages.subtitle')}</p>
+            <p className="text-muted-foreground text-sm">{t('admin.pinnedMessages.subtitle')}</p>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="card space-y-6">
+      <Card className="space-y-6">
         {/* Message text */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.pinnedMessages.content')}
           </label>
-          <textarea
+          <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t('admin.pinnedMessages.contentPlaceholder')}
             rows={6}
             maxLength={4000}
-            className="input min-h-[150px] resize-y"
+            className="min-h-37.5 resize-y"
           />
-          <div className="mt-1 text-right text-xs text-dark-400">{content.length}/4000</div>
+          <div className="text-muted-foreground mt-1 text-right text-xs">{content.length}/4000</div>
         </div>
 
         {/* Media upload */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.pinnedMessages.media')}
           </label>
           {mediaFile || existingMediaType ? (
-            <div className="rounded-lg border border-dark-700 bg-dark-800 p-4">
+            <div className="border-border bg-card rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {(mediaType === 'photo' || existingMediaType === 'photo') && <PhotoIcon />}
                   {(mediaType === 'video' || existingMediaType === 'video') && <VideoIcon />}
                   <div>
-                    <p className="text-sm text-dark-100">
+                    <p className="text-foreground text-sm">
                       {mediaFile
                         ? mediaFile.name
                         : `${existingMediaType} (${t('admin.pinnedMessages.media')})`}
                     </p>
                     {mediaFile && (
-                      <p className="text-xs text-dark-400">
+                      <p className="text-muted-foreground text-xs">
                         {(mediaFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     )}
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={handleRemoveMedia}
-                  className="rounded-lg p-2 text-dark-400 hover:bg-dark-700 hover:text-error-400"
+                  className="text-muted-foreground hover:text-error-400"
                   disabled={isUploading}
                 >
                   <XIcon />
-                </button>
+                </Button>
               </div>
               {mediaPreview && (
                 <img
@@ -300,7 +305,7 @@ export default function AdminPinnedMessageCreate() {
                 />
               )}
               {isUploading && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-accent-400">
+                <div className="text-primary mt-2 flex items-center gap-2 text-sm">
                   <RefreshIcon />
                   {t('admin.pinnedMessages.uploading')}
                 </div>
@@ -315,27 +320,28 @@ export default function AdminPinnedMessageCreate() {
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              <button
+              <Button
+                variant="outline"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-dark-600 bg-dark-800/50 p-6 text-dark-400 transition-colors hover:border-dark-500 hover:bg-dark-800 hover:text-dark-300"
+                className="text-muted-foreground hover:text-muted-foreground flex h-auto w-full items-center justify-center gap-2 rounded-lg border-dashed p-6"
               >
                 <PhotoIcon />
                 <span>{t('admin.pinnedMessages.addMedia')}</span>
-              </button>
+              </Button>
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Settings */}
-      <div className="card space-y-4">
-        <h2 className="text-lg font-semibold text-dark-100">
+      <Card className="space-y-4">
+        <h2 className="text-foreground text-lg font-semibold">
           {t('admin.pinnedMessages.settings')}
         </h2>
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-dark-200">
+            <p className="text-foreground text-sm font-medium">
               {t('admin.pinnedMessages.sendBeforeMenu')}
             </p>
           </div>
@@ -344,7 +350,7 @@ export default function AdminPinnedMessageCreate() {
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-dark-200">
+            <p className="text-foreground text-sm font-medium">
               {t('admin.pinnedMessages.sendOnEveryStart')}
             </p>
           </div>
@@ -354,29 +360,29 @@ export default function AdminPinnedMessageCreate() {
         {!isEditing && (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-dark-200">
+              <p className="text-foreground text-sm font-medium">
                 {t('admin.pinnedMessages.broadcastOnCreate')}
               </p>
             </div>
             <Toggle checked={broadcastOnCreate} onChange={() => setBroadcastOnCreate((p) => !p)} />
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Footer */}
-      <div className="card flex items-center justify-between">
-        <button onClick={() => navigate('/admin/pinned-messages')} className="btn-secondary">
+      <Card className="flex items-center justify-between">
+        <Button variant="secondary" onClick={() => navigate('/admin/pinned-messages')}>
           {t('common.cancel')}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleSubmit}
           disabled={!isValid || isPending || isUploading}
-          className="btn-primary flex items-center gap-2"
+          className="flex items-center gap-2"
         >
           {isPending ? <RefreshIcon /> : <SaveIcon />}
           {isEditing ? t('common.save') : t('admin.pinnedMessages.create')}
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 }

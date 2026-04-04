@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { partnerApi, type PartnerApplicationRequest } from '../api/partners';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export default function ReferralPartnerApply() {
   const { t } = useTranslation();
@@ -59,67 +62,67 @@ export default function ReferralPartnerApply() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <h1 className="text-2xl font-bold text-dark-50">{t('referral.partner.applyTitle')}</h1>
-      <p className="text-sm text-dark-400">{t('referral.partner.applyDesc')}</p>
+      <h1 className="text-foreground text-2xl font-bold">{t('referral.partner.applyTitle')}</h1>
+      <p className="text-muted-foreground text-sm">{t('referral.partner.applyDesc')}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="bento-card space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.companyName')}
             </label>
-            <input
+            <Input
               type="text"
-              className="input w-full"
+              className="w-full"
               value={form.company_name ?? ''}
               onChange={(e) => setForm({ ...form, company_name: e.target.value })}
               placeholder={t('referral.partner.fields.companyNamePlaceholder')}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.telegramChannel')}
             </label>
-            <input
+            <Input
               type="text"
-              className="input w-full"
+              className="w-full"
               value={form.telegram_channel ?? ''}
               onChange={(e) => setForm({ ...form, telegram_channel: e.target.value })}
               placeholder={t('referral.partner.fields.telegramChannelPlaceholder')}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.websiteUrl')}
             </label>
-            <input
+            <Input
               type="url"
-              className="input w-full"
+              className="w-full"
               value={form.website_url ?? ''}
               onChange={(e) => setForm({ ...form, website_url: e.target.value })}
               placeholder={t('referral.partner.fields.websiteUrlPlaceholder')}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.description')}
             </label>
-            <textarea
-              className="input min-h-[80px] w-full"
+            <Textarea
+              className="min-h-20 w-full"
               value={form.description ?? ''}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder={t('referral.partner.fields.descriptionPlaceholder')}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.expectedReferrals')}
             </label>
-            <input
+            <Input
               type="number"
               min={0}
               max={2000000000}
-              className="input w-full"
+              className="w-full"
               value={form.expected_monthly_referrals ?? ''}
               onChange={(e) =>
                 setForm({
@@ -131,14 +134,14 @@ export default function ReferralPartnerApply() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-dark-300">
+            <label className="text-muted-foreground mb-1 block text-sm font-medium">
               {t('referral.partner.fields.desiredCommission')}
             </label>
-            <input
+            <Input
               type="number"
               min={1}
               max={100}
-              className="input w-full"
+              className="w-full"
               value={form.desired_commission_percent ?? ''}
               onChange={(e) =>
                 setForm({
@@ -152,28 +155,29 @@ export default function ReferralPartnerApply() {
         </div>
 
         {applyMutation.isError && (
-          <div className="rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+          <div className="bg-error-500/10 text-error-400 rounded-lg p-3 text-sm">
             {t('referral.partner.applyError')}
           </div>
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
             type="button"
             onClick={() => navigate('/referral')}
-            className="btn-secondary flex-1 px-5"
+            variant="outline"
+            className="flex-1 px-5"
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             disabled={applyMutation.isPending}
-            className={`btn-primary flex-1 px-5 ${applyMutation.isPending ? 'opacity-50' : ''}`}
+            className={`flex-1 px-5 ${applyMutation.isPending ? 'opacity-50' : ''}`}
           >
             {applyMutation.isPending
               ? t('referral.partner.applying')
               : t('referral.partner.submitApplication')}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

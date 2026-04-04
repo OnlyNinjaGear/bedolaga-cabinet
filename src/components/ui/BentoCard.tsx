@@ -43,16 +43,17 @@ const baseClasses = `
   bento-card
   rounded-[var(--bento-radius)]
   p-[var(--bento-padding)]
-  bg-dark-900/70
-  border border-dark-700/40
+  bg-card
+  border border-border
+  shadow-sm
   duration-300 ease-smooth
   transition-[border-color,background-color,box-shadow,transform]
 `;
 
 const hoverClasses = `
   cursor-pointer
-  hover:bg-dark-800/60
-  hover:border-dark-600/50
+  hover:bg-muted
+  hover:border-border
   hover:shadow-lg
   hover:scale-[1.01]
   active:scale-[0.99]
@@ -60,7 +61,7 @@ const hoverClasses = `
 
 const glowClasses = `
   hover:shadow-glow
-  hover:border-accent-500/30
+  hover:border-primary/30
 `;
 
 export const BentoCard = forwardRef<HTMLDivElement, BentoCardProps>((props, ref) => {

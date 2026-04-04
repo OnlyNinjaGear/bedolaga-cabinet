@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../api/auth';
 import { useAuthStore } from '../store/auth';
+import { Button } from '@/components/ui/button';
 
 export default function AutoLogin() {
   const { t } = useTranslation();
@@ -46,13 +47,13 @@ export default function AutoLogin() {
   }, [token, navigate, setTokens, setUser, checkAdminStatus]);
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-dark-950 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-dark-800/50 bg-dark-900/50 p-8 text-center">
+    <div className="bg-background flex min-h-dvh items-center justify-center px-4">
+      <div className="border-border/50 bg-background/50 w-full max-w-sm rounded-2xl border p-8 text-center">
         {error ? (
           <div className="space-y-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-error-500/10">
+            <div className="bg-error-500/10 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
               <svg
-                className="h-8 w-8 text-error-400"
+                className="text-error-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -61,19 +62,15 @@ export default function AutoLogin() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <p className="text-sm text-dark-300">{t('landing.autoLoginFailed')}</p>
-            <button
-              type="button"
-              onClick={() => navigate('/login', { replace: true })}
-              className="rounded-xl bg-accent-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-400"
-            >
+            <p className="text-muted-foreground text-sm">{t('landing.autoLoginFailed')}</p>
+            <Button type="button" onClick={() => navigate('/login', { replace: true })}>
               {t('auth.login', 'Login')}
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-dark-600 border-t-accent-500" />
-            <p className="text-sm text-dark-300">{t('landing.autoLoginProcessing')}</p>
+            <div className="border-border border-t-accent-500 mx-auto h-10 w-10 animate-spin rounded-full border-2" />
+            <p className="text-muted-foreground text-sm">{t('landing.autoLoginProcessing')}</p>
           </div>
         )}
       </div>

@@ -7,12 +7,20 @@ import { adminUsersApi, type UserListItem } from '@/api/adminUsers';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { usePermissionStore } from '@/store/permissions';
 import { usePlatform } from '@/platform/hooks/usePlatform';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 // === Icons ===
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -29,18 +37,6 @@ const SearchIcon = () => (
       strokeLinejoin="round"
       d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
     />
-  </svg>
-);
-
-const ChevronDownIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className || 'h-4 w-4'}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
   </svg>
 );
 
@@ -118,24 +114,26 @@ function UserSearchDropdown({
 
   if (selectedUser) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-dark-600 bg-dark-900 px-3 py-2">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-500 to-accent-700 text-xs font-medium text-white">
+      <div className="border-border bg-background flex items-center gap-2 rounded-lg border px-3 py-2">
+        <div className="from-primary to-primary/90 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-medium text-white">
           {selectedUser.first_name?.[0] || selectedUser.username?.[0] || '?'}
         </div>
         <div className="min-w-0 flex-1">
-          <span className="text-sm text-dark-100">{selectedUser.full_name}</span>
+          <span className="text-foreground text-sm">{selectedUser.full_name}</span>
           {selectedUser.username && (
-            <span className="ml-1.5 text-xs text-dark-500">@{selectedUser.username}</span>
+            <span className="text-muted-foreground ml-1.5 text-xs">@{selectedUser.username}</span>
           )}
         </div>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={onClearUser}
-          className="shrink-0 text-dark-400 transition-colors hover:text-dark-200"
+          className="text-muted-foreground hover:text-foreground shrink-0"
           aria-label={t('admin.roleAssign.clearUser')}
         >
           <XCircleIcon />
-        </button>
+        </Button>
       </div>
     );
   }
@@ -154,9 +152,9 @@ function UserSearchDropdown({
             if (searchQuery.length >= 2) setIsOpen(true);
           }}
           placeholder={t('admin.roleAssign.searchPlaceholder')}
-          className="w-full rounded-lg border border-dark-600 bg-dark-900 py-2 pl-10 pr-3 text-dark-100 placeholder-dark-500 outline-none transition-colors focus:border-accent-500"
+          className="border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary w-full rounded-lg border py-2 pr-3 pl-10 transition-colors outline-none"
         />
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500">
+        <div className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
           <SearchIcon />
         </div>
       </div>
@@ -165,36 +163,37 @@ function UserSearchDropdown({
         <>
           {/* Backdrop to close dropdown */}
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} aria-hidden="true" />
-          <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-60 overflow-y-auto rounded-lg border border-dark-600 bg-dark-800 shadow-xl">
+          <div className="border-border bg-card absolute top-full right-0 left-0 z-20 mt-1 max-h-60 overflow-y-auto rounded-lg border shadow-xl">
             {searching ? (
               <div className="flex items-center justify-center py-4">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                <div className="border-primary h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
               </div>
             ) : !searchResults || searchResults.users.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm text-dark-400">
+              <div className="text-muted-foreground px-3 py-4 text-center text-sm">
                 {t('admin.roleAssign.noUsersFound')}
               </div>
             ) : (
               searchResults.users.map((user) => (
-                <button
+                <Button
                   key={user.id}
                   type="button"
+                  variant="ghost"
                   onClick={() => handleSelect(user)}
-                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-dark-700"
+                  className="h-auto w-full justify-start gap-2.5 px-3 py-2.5 text-left"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-500 to-accent-700 text-xs font-medium text-white">
+                  <div className="from-primary to-primary/90 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-medium text-white">
                     {user.first_name?.[0] || user.username?.[0] || '?'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-dark-100">
+                    <div className="text-foreground truncate text-sm font-medium">
                       {user.full_name}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-dark-400">
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
                       {user.username && <span>@{user.username}</span>}
                       <span>ID: {user.telegram_id}</span>
                     </div>
                   </div>
-                </button>
+                </Button>
               ))
             )}
           </div>
@@ -397,23 +396,25 @@ export default function AdminRoleAssign() {
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
         {!capabilities.hasBackButton && (
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => navigate('/admin')}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+            className="rounded-xl"
           >
             <BackIcon />
-          </button>
+          </Button>
         )}
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">{t('admin.roleAssign.title')}</h1>
-          <p className="text-sm text-dark-400">{t('admin.roleAssign.subtitle')}</p>
+          <h1 className="text-foreground text-xl font-semibold">{t('admin.roleAssign.title')}</h1>
+          <p className="text-muted-foreground text-sm">{t('admin.roleAssign.subtitle')}</p>
         </div>
       </div>
 
       {/* Assign Section */}
       <PermissionGate permission="roles:assign">
-        <div className="mb-6 rounded-xl border border-dark-700 bg-dark-800 p-4 sm:p-5">
-          <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-dark-100">
+        <div className="border-border bg-card mb-6 rounded-xl border p-4 sm:p-5">
+          <h2 className="text-foreground mb-4 flex items-center gap-2 text-base font-semibold">
             <UserPlusIcon />
             {t('admin.roleAssign.assignSection')}
           </h2>
@@ -421,7 +422,7 @@ export default function AdminRoleAssign() {
           <form onSubmit={handleAssign} className="space-y-4">
             {/* User search */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-dark-200">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 {t('admin.roleAssign.userLabel')}
               </label>
               <UserSearchDropdown
@@ -439,35 +440,33 @@ export default function AdminRoleAssign() {
               <div className="flex-1">
                 <label
                   htmlFor="assign-role"
-                  className="mb-1 block text-sm font-medium text-dark-200"
+                  className="text-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.roleAssign.roleLabel')}
                 </label>
-                <div className="relative">
-                  <select
-                    id="assign-role"
-                    value={selectedRoleId ?? ''}
-                    onChange={(e) =>
-                      setSelectedRoleId(e.target.value ? Number(e.target.value) : null)
-                    }
-                    className="w-full appearance-none rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 pr-8 text-dark-100 outline-none transition-colors focus:border-accent-500"
-                  >
-                    <option value="">{t('admin.roleAssign.selectRole')}</option>
+                <Select
+                  value={selectedRoleId != null ? String(selectedRoleId) : '__none__'}
+                  onValueChange={(v) => setSelectedRoleId(v === '__none__' ? null : Number(v))}
+                >
+                  <SelectTrigger className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2">
+                    <SelectValue placeholder={t('admin.roleAssign.selectRole')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">{t('admin.roleAssign.selectRole')}</SelectItem>
                     {assignableRoles.map((role) => (
-                      <option key={role.id} value={role.id}>
+                      <SelectItem key={role.id} value={String(role.id)}>
                         {role.name} (L{role.level})
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
-                  <ChevronDownIcon className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-dark-400" />
-                </div>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Expiry date */}
               <div className="flex-1">
                 <label
                   htmlFor="assign-expires"
-                  className="mb-1 block text-sm font-medium text-dark-200"
+                  className="text-foreground mb-1 block text-sm font-medium"
                 >
                   {t('admin.roleAssign.expiresLabel')}
                 </label>
@@ -476,40 +475,42 @@ export default function AdminRoleAssign() {
                   type="datetime-local"
                   value={expiresAt}
                   onChange={(e) => setExpiresAt(e.target.value)}
-                  className="w-full rounded-lg border border-dark-600 bg-dark-900 px-3 py-2 text-dark-100 outline-none transition-colors [color-scheme:dark] focus:border-accent-500"
+                  className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 [color-scheme:dark] transition-colors outline-none"
                 />
-                <p className="mt-1 text-xs text-dark-500">{t('admin.roleAssign.expiresHint')}</p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {t('admin.roleAssign.expiresHint')}
+                </p>
               </div>
             </div>
 
             {/* Error / Success */}
-            {formError && <p className="text-sm text-error-400">{formError}</p>}
-            {formSuccess && <p className="text-sm text-success-400">{formSuccess}</p>}
+            {formError && <p className="text-error-400 text-sm">{formError}</p>}
+            {formSuccess && <p className="text-success-400 text-sm">{formSuccess}</p>}
 
             {/* Submit */}
             <div className="flex justify-end">
-              <button
+              <Button
                 type="submit"
                 disabled={assignMutation.isPending || !selectedUser || !selectedRoleId}
-                className="flex items-center gap-2 rounded-lg bg-accent-500 px-5 py-2 text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center gap-2"
               >
                 {assignMutation.isPending
                   ? t('admin.roleAssign.assigning')
                   : t('admin.roleAssign.assignButton')}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
       </PermissionGate>
 
       {/* Current Assignments Table */}
-      <div className="rounded-xl border border-dark-700 bg-dark-800">
-        <div className="border-b border-dark-700 px-4 py-3 sm:px-5">
-          <h2 className="text-base font-semibold text-dark-100">
+      <div className="border-border bg-card rounded-xl border">
+        <div className="border-border border-b px-4 py-3 sm:px-5">
+          <h2 className="text-foreground text-base font-semibold">
             {t('admin.roleAssign.currentAssignments')}
           </h2>
           {sortedAssignments.length > 0 && (
-            <p className="text-xs text-dark-400">
+            <p className="text-muted-foreground text-xs">
               {t('admin.roleAssign.totalAssignments', { count: sortedAssignments.length })}
             </p>
           )}
@@ -517,38 +518,38 @@ export default function AdminRoleAssign() {
 
         {rolesLoading || assignmentsLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
           </div>
         ) : sortedAssignments.length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-dark-400">{t('admin.roleAssign.noAssignments')}</p>
+            <p className="text-muted-foreground">{t('admin.roleAssign.noAssignments')}</p>
           </div>
         ) : (
           <>
             {/* Desktop table header */}
-            <div className="hidden border-b border-dark-700 px-4 py-2.5 sm:grid sm:grid-cols-12 sm:gap-4 sm:px-5">
-              <div className="col-span-3 text-xs font-medium uppercase tracking-wider text-dark-500">
+            <div className="border-border hidden border-b px-4 py-2.5 sm:grid sm:grid-cols-12 sm:gap-4 sm:px-5">
+              <div className="text-muted-foreground col-span-3 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.user')}
               </div>
-              <div className="col-span-2 text-xs font-medium uppercase tracking-wider text-dark-500">
+              <div className="text-muted-foreground col-span-2 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.role')}
               </div>
-              <div className="col-span-2 text-xs font-medium uppercase tracking-wider text-dark-500">
+              <div className="text-muted-foreground col-span-2 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.assignedBy')}
               </div>
-              <div className="col-span-2 text-xs font-medium uppercase tracking-wider text-dark-500">
+              <div className="text-muted-foreground col-span-2 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.assignedAt')}
               </div>
-              <div className="col-span-2 text-xs font-medium uppercase tracking-wider text-dark-500">
+              <div className="text-muted-foreground col-span-2 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.expires')}
               </div>
-              <div className="col-span-1 text-xs font-medium uppercase tracking-wider text-dark-500">
+              <div className="text-muted-foreground col-span-1 text-xs font-medium tracking-wider uppercase">
                 {t('admin.roleAssign.table.actions')}
               </div>
             </div>
 
             {/* Rows */}
-            <div className="divide-y divide-dark-700/50">
+            <div className="divide-border/50 divide-y">
               {paginatedAssignments.map((assignment) => {
                 const role = rolesMap.get(assignment.role_id);
                 const canRevoke = role ? canManageRole(role.level) : false;
@@ -563,14 +564,14 @@ export default function AdminRoleAssign() {
                   >
                     {/* User */}
                     <div className="col-span-3 mb-2 flex items-center gap-2.5 sm:mb-0">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-500 to-accent-700 text-xs font-medium text-white">
+                      <div className="from-primary to-primary/90 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-medium text-white">
                         {assignment.user_first_name?.[0] || '?'}
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate text-sm font-medium text-dark-100">
+                        <div className="text-foreground truncate text-sm font-medium">
                           {assignment.user_first_name || t('admin.roleAssign.unknownUser')}
                         </div>
-                        <div className="truncate text-xs text-dark-500">
+                        <div className="text-muted-foreground truncate text-xs">
                           {assignment.user_email ||
                             (assignment.user_telegram_id
                               ? `TG: ${assignment.user_telegram_id}`
@@ -581,15 +582,15 @@ export default function AdminRoleAssign() {
 
                     {/* Role */}
                     <div className="col-span-2 mb-2 sm:mb-0">
-                      <span className="mr-1.5 text-xs text-dark-500 sm:hidden">
+                      <span className="text-muted-foreground mr-1.5 text-xs sm:hidden">
                         {t('admin.roleAssign.table.role')}:
                       </span>
                       <RoleBadge name={assignment.role_name} color={assignment.role_color} />
                     </div>
 
                     {/* Assigned by */}
-                    <div className="col-span-2 mb-2 text-sm text-dark-400 sm:mb-0">
-                      <span className="mr-1.5 text-xs text-dark-500 sm:hidden">
+                    <div className="text-muted-foreground col-span-2 mb-2 text-sm sm:mb-0">
+                      <span className="text-muted-foreground mr-1.5 text-xs sm:hidden">
                         {t('admin.roleAssign.table.assignedBy')}:
                       </span>
                       {assignment.assigned_by
@@ -598,8 +599,8 @@ export default function AdminRoleAssign() {
                     </div>
 
                     {/* Assigned at */}
-                    <div className="col-span-2 mb-2 text-sm text-dark-400 sm:mb-0">
-                      <span className="mr-1.5 text-xs text-dark-500 sm:hidden">
+                    <div className="text-muted-foreground col-span-2 mb-2 text-sm sm:mb-0">
+                      <span className="text-muted-foreground mr-1.5 text-xs sm:hidden">
                         {t('admin.roleAssign.table.assignedAt')}:
                       </span>
                       {formatDate(assignment.assigned_at)}
@@ -607,7 +608,7 @@ export default function AdminRoleAssign() {
 
                     {/* Expires */}
                     <div className="col-span-2 mb-2 sm:mb-0">
-                      <span className="mr-1.5 text-xs text-dark-500 sm:hidden">
+                      <span className="text-muted-foreground mr-1.5 text-xs sm:hidden">
                         {t('admin.roleAssign.table.expires')}:
                       </span>
                       {assignment.expires_at ? (
@@ -620,7 +621,7 @@ export default function AdminRoleAssign() {
                           )}
                         </span>
                       ) : (
-                        <span className="text-sm text-dark-500">
+                        <span className="text-muted-foreground text-sm">
                           {t('admin.roleAssign.permanent')}
                         </span>
                       )}
@@ -630,17 +631,19 @@ export default function AdminRoleAssign() {
                     <div className="col-span-1 flex justify-end sm:justify-start">
                       {assignment.role_level >= SUPERADMIN_LEVEL ? (
                         <span
-                          className="rounded px-1.5 py-0.5 text-[10px] font-medium text-dark-500"
+                          className="text-muted-foreground rounded px-1.5 py-0.5 text-[10px] font-medium"
                           title={t('admin.roleAssign.envManaged')}
                         >
                           ENV
                         </span>
                       ) : (
                         <PermissionGate permission="roles:assign">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setRevokeConfirm(assignment.id)}
                             disabled={!canRevoke}
-                            className="rounded-lg p-1.5 text-dark-400 transition-colors hover:bg-error-500/20 hover:text-error-400 disabled:cursor-not-allowed disabled:opacity-40"
+                            className="hover:bg-error-500/20 hover:text-error-400"
                             title={t('admin.roleAssign.revoke')}
                             aria-label={t('admin.roleAssign.revokeAriaLabel', {
                               user: assignment.user_first_name || assignment.user_id,
@@ -648,7 +651,7 @@ export default function AdminRoleAssign() {
                             })}
                           >
                             <XCircleIcon />
-                          </button>
+                          </Button>
                         </PermissionGate>
                       )}
                     </div>
@@ -659,8 +662,8 @@ export default function AdminRoleAssign() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-dark-700 px-4 py-3 sm:px-5">
-                <div className="text-sm text-dark-400">
+              <div className="border-border flex items-center justify-between border-t px-4 py-3 sm:px-5">
+                <div className="text-muted-foreground text-sm">
                   {t('admin.roleAssign.pagination.showing', {
                     from: page * PAGE_SIZE + 1,
                     to: Math.min((page + 1) * PAGE_SIZE, sortedAssignments.length),
@@ -668,25 +671,27 @@ export default function AdminRoleAssign() {
                   })}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
-                    className="rounded-lg border border-dark-700 bg-dark-800 p-2 transition-colors hover:bg-dark-700 disabled:opacity-50"
                     aria-label={t('admin.roleAssign.pagination.prev')}
                   >
                     <ChevronLeftIcon />
-                  </button>
-                  <span className="px-3 py-2 text-sm text-dark-300">
+                  </Button>
+                  <span className="text-muted-foreground px-3 py-2 text-sm">
                     {page + 1} / {totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                     disabled={page >= totalPages - 1}
-                    className="rounded-lg border border-dark-700 bg-dark-800 p-2 transition-colors hover:bg-dark-700 disabled:opacity-50"
                     aria-label={t('admin.roleAssign.pagination.next')}
                   >
                     <ChevronRightIcon />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -696,29 +701,28 @@ export default function AdminRoleAssign() {
 
       {/* Revoke Confirmation */}
       {revokeConfirm !== null && (
-        <div className="mt-4 overflow-hidden rounded-xl border border-error-500/30 bg-dark-800">
-          <div className="border-b border-error-500/20 bg-error-500/5 px-5 py-4">
-            <h3 className="text-sm font-semibold text-error-400">
+        <div className="border-error-500/30 bg-card mt-4 overflow-hidden rounded-xl border">
+          <div className="border-error-500/20 bg-error-500/5 border-b px-5 py-4">
+            <h3 className="text-error-400 text-sm font-semibold">
               {t('admin.roleAssign.confirm.title')}
             </h3>
-            <p className="mt-1 text-sm text-dark-400">{t('admin.roleAssign.confirm.text')}</p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {t('admin.roleAssign.confirm.text')}
+            </p>
           </div>
           <div className="flex items-center justify-end gap-3 px-5 py-3">
-            <button
-              onClick={() => setRevokeConfirm(null)}
-              className="rounded-lg px-4 py-2 text-sm text-dark-300 transition-colors hover:text-dark-100"
-            >
+            <Button variant="ghost" onClick={() => setRevokeConfirm(null)}>
               {t('admin.roleAssign.confirm.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="destructive"
               onClick={() => revokeMutation.mutate(revokeConfirm)}
               disabled={revokeMutation.isPending}
-              className="rounded-lg bg-error-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-error-600 disabled:opacity-50"
             >
               {revokeMutation.isPending
                 ? t('admin.roleAssign.confirm.revoking')
                 : t('admin.roleAssign.confirm.revoke')}
-            </button>
+            </Button>
           </div>
         </div>
       )}

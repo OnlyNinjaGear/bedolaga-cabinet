@@ -11,6 +11,14 @@ import type {
 import { useTheme } from '@/hooks/useTheme';
 import { CardsBlock, TimelineBlock, AccordionBlock, MinimalBlock, BlockButtons } from './blocks';
 import type { BlockRendererProps } from './blocks';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 const platformOrder = ['ios', 'android', 'windows', 'macos', 'linux', 'androidTV', 'appleTV'];
 
@@ -188,20 +196,19 @@ export default function InstallationGuide({
       {/* Header + platform dropdown */}
       <div className="flex items-center gap-3">
         {!isTelegramWebApp && (
-          <button
-            onClick={onGoBack}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
-          >
+          <Button onClick={onGoBack} variant="outline" size="icon" className="h-10 w-10 rounded-xl">
             <BackIcon />
-          </button>
+          </Button>
         )}
-        <h2 className="flex-1 text-lg font-bold text-dark-100">
+        <h2 className="text-foreground flex-1 text-lg font-bold">
           {getBaseTranslation('installationGuideHeader', 'subscription.connection.title')}
         </h2>
         {appConfig.subscriptionUrl && onOpenQR && (
-          <button
+          <Button
             onClick={() => onOpenQR()}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 text-dark-200 transition-colors hover:border-dark-600"
+            variant="outline"
+            size="icon"
+            className="h-10 w-10 rounded-xl"
           >
             <svg
               className="h-5 w-5"
@@ -221,20 +228,19 @@ export default function InstallationGuide({
                 d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75H16.5v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h3v3h-3v-3z"
               />
             </svg>
-          </button>
+          </Button>
         )}
         {availablePlatforms.length > 1 && (
           <div className="relative flex items-center">
             {currentPlatformSvg && (
               <div
-                className="pointer-events-none absolute left-3 z-10 h-5 w-5 text-dark-400 [&>svg]:h-full [&>svg]:w-full"
+                className="text-muted-foreground pointer-events-none absolute left-3 z-10 h-5 w-5 [&>svg]:h-full [&>svg]:w-full"
                 dangerouslySetInnerHTML={{ __html: currentPlatformSvg }}
               />
             )}
-            <select
+            <Select
               value={currentPlatformKey || ''}
-              onChange={(e) => {
-                const newPlatform = e.target.value;
+              onValueChange={(newPlatform) => {
                 setActivePlatformKey(newPlatform);
                 const data = appConfig.platforms[newPlatform] as RemnawavePlatformData | undefined;
                 if (data?.apps?.length) {
@@ -242,29 +248,24 @@ export default function InstallationGuide({
                   if (app) setSelectedApp(app);
                 }
               }}
-              className={`appearance-none rounded-xl border py-2 pr-8 text-sm font-medium outline-none transition-colors ${
-                isLight
-                  ? 'border-dark-700/60 bg-white/80 text-dark-200 shadow-sm hover:border-dark-600'
-                  : 'border-dark-700 bg-dark-800 text-dark-200 hover:border-dark-600'
-              } ${currentPlatformSvg ? 'pl-10' : 'pl-4'}`}
             >
-              {availablePlatforms.map((p) => (
-                <option key={p} value={p}>
-                  {getPlatformDisplayName(p)}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute right-2.5 text-dark-400">
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+              <SelectTrigger
+                className={`rounded-xl border py-2 text-sm font-medium transition-colors ${
+                  isLight
+                    ? 'border-border/60 bg-card/80 text-foreground hover:border-border shadow-sm'
+                    : 'border-border bg-card text-foreground hover:border-border'
+                } ${currentPlatformSvg ? 'pl-10' : 'pl-4'}`}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l4-4 4 4M8 15l4 4 4-4" />
-              </svg>
-            </div>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availablePlatforms.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {getPlatformDisplayName(p)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>
@@ -276,20 +277,21 @@ export default function InstallationGuide({
             const isSelected = selectedApp?.name === app.name;
             const appIconSvg = getSvgHtml(app.svgIconKey);
             return (
-              <button
+              <Button
                 key={app.name + idx}
                 onClick={() => setSelectedApp(app)}
+                variant="ghost"
                 className={`relative flex min-w-[calc(50%-0.25rem)] items-center gap-2 overflow-hidden rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97] ${
                   isSelected
                     ? isLight
-                      ? 'bg-accent-500/15 text-accent-600 ring-1 ring-accent-500/40'
-                      : 'bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/40'
+                      ? 'bg-primary/15 text-primary ring-ring/40 ring-1'
+                      : 'bg-primary/15 text-primary ring-ring/40 ring-1'
                     : isLight
-                      ? 'border border-dark-700/60 bg-white/80 text-dark-200 shadow-sm hover:border-dark-600/50 hover:bg-white'
-                      : 'border border-dark-700/50 bg-dark-800/80 text-dark-200 hover:border-dark-600/50 hover:bg-dark-700/80'
+                      ? 'border-border/60 bg-card/80 text-foreground hover:border-border/50 hover:bg-card border shadow-sm'
+                      : 'border-border/50 bg-card/80 text-foreground hover:border-border/50 hover:bg-muted/80 border'
                 }`}
               >
-                {app.featured && <span className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />}
+                {app.featured && <span className="bg-warning-400 h-2 w-2 shrink-0 rounded-full" />}
                 <span className="relative z-10 truncate">{app.name}</span>
                 {appIconSvg && (
                   <div
@@ -297,7 +299,7 @@ export default function InstallationGuide({
                     dangerouslySetInnerHTML={{ __html: appIconSvg }}
                   />
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>

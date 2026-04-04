@@ -946,7 +946,10 @@
       "salesStats": "آمار فروش",
       "landings": "صفحات فرود",
       "referralNetwork": "شبکه ارجاع",
-      "news": "اخبار"
+      "news": "اخبار",
+      "health": "سلامت سیستم",
+      "notifications": "اعلان‌ها",
+      "seo": "SEO / Open Graph"
     },
     "panel": {
       "title": "پنل مدیریت",
@@ -1651,6 +1654,16 @@
         "sys_backup": "پشتیبان‌گیری",
         "sys_version": "نسخه",
         "sys_logging": "لاگ‌ها"
+      },
+      "presets": {
+        "zinc": "روی",
+        "slate": "سنگ‌لوح",
+        "stone": "سنگ",
+        "neutral": "خنثی",
+        "blue": "آبی",
+        "green": "سبز",
+        "rose": "رز",
+        "violet": "بنفش"
       },
       "categories": {
         "TELEGRAM_WIDGET": "Telegram Login Widget",
@@ -2563,7 +2576,8 @@
           "sync": "همگام‌سازی",
           "tickets": "تیکت‌ها",
           "gifts": "هدایا",
-          "referrals": "معرفی‌ها"
+          "referrals": "معرفی‌ها",
+          "timeline": "جدول زمانی"
         },
         "noTickets": "این کاربر تیکتی ندارد",
         "ticketsCount": "تیکت",
@@ -2741,6 +2755,10 @@
           "searchPlaceholder": "جستجو بر اساس نام، ایمیل یا شناسه تلگرام...",
           "alreadyReferred": "قبلاً معرفی شده",
           "noUsersFound": "کاربری یافت نشد"
+        },
+        "timeline": {
+          "title": "جدول زمانی فعالیت",
+          "empty": "هیچ رویداد فعالیتی یافت نشد"
         }
       }
     },

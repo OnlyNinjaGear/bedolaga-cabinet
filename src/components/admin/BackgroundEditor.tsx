@@ -7,6 +7,7 @@ import type { AnimationConfig } from '@/components/ui/backgrounds/types';
 import { DEFAULT_ANIMATION_CONFIG } from '@/components/ui/backgrounds/types';
 import { BackgroundConfigEditor } from './BackgroundConfigEditor';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export function BackgroundEditor() {
   const { t } = useTranslation();
@@ -61,14 +62,13 @@ export function BackgroundEditor() {
 
       {/* Save button */}
       {showSaveButton && (
-        <button
+        <Button
           onClick={handleSave}
           disabled={saveMutation.isPending || saveStatus === 'saved'}
+          variant={saveStatus === 'saved' ? 'ghost' : 'default'}
           className={cn(
-            'w-full rounded-xl py-3 text-sm font-medium transition-colors',
-            saveStatus === 'saved'
-              ? 'bg-success-500/20 text-success-400'
-              : 'bg-accent-500 text-white hover:bg-accent-600 disabled:opacity-50',
+            'w-full',
+            saveStatus === 'saved' && 'bg-success-500/20 text-success-400 hover:bg-success-500/20',
           )}
         >
           {saveStatus === 'saving'
@@ -76,7 +76,7 @@ export function BackgroundEditor() {
             : saveStatus === 'saved'
               ? t('admin.backgrounds.saved')
               : t('admin.backgrounds.save')}
-        </button>
+        </Button>
       )}
     </div>
   );

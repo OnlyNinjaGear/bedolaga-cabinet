@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { partnerApi } from '../api/partners';
 import { campaignsApi } from '../api/campaigns';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
 
 export default function AdminPartnerCampaignAssign() {
   const { t } = useTranslation();
@@ -50,44 +51,44 @@ export default function AdminPartnerCampaignAssign() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to={`/admin/partners/${userId}`} />
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.partnerDetail.campaigns.assignTitle')}
           </h1>
-          {partnerName && <p className="text-sm text-dark-400">{partnerName}</p>}
+          {partnerName && <p className="text-muted-foreground text-sm">{partnerName}</p>}
         </div>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
         </div>
       ) : available.length === 0 ? (
-        <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
-          <div className="py-4 text-center text-sm text-dark-500">
+        <div className="border-border bg-card rounded-xl border p-6">
+          <div className="text-muted-foreground py-4 text-center text-sm">
             {t('admin.partnerDetail.campaigns.noAvailable')}
           </div>
-          <button
+          <Button
             onClick={() => navigate(`/admin/campaigns/create?partnerId=${userId}`)}
-            className="mt-2 w-full rounded-lg bg-accent-500 px-4 py-3 font-medium text-white transition-colors hover:bg-accent-600"
+            className="mt-2 w-full"
           >
             {t('admin.partnerDetail.campaigns.createNew')}
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
           {available.map((campaign) => (
-            <div key={campaign.id} className="rounded-xl border border-dark-700 bg-dark-800 p-4">
+            <div key={campaign.id} className="border-border bg-card rounded-xl border p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-dark-100">{campaign.name}</span>
+                    <span className="text-foreground font-medium">{campaign.name}</span>
                     {!campaign.is_active && (
-                      <span className="rounded bg-dark-600 px-1.5 py-0.5 text-xs text-dark-400">
+                      <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs">
                         {t('admin.campaigns.table.inactive')}
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-dark-500">
+                  <div className="text-muted-foreground mt-1 flex items-center gap-3 text-xs">
                     <span className="font-mono">?start={campaign.start_parameter}</span>
                     <span>
                       {campaign.registrations_count}{' '}
@@ -95,13 +96,14 @@ export default function AdminPartnerCampaignAssign() {
                     </span>
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => assignMutation.mutate(campaign.id)}
                   disabled={assignMutation.isPending}
-                  className="shrink-0 rounded-lg bg-accent-500/20 px-4 py-2 text-sm font-medium text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
+                  className="shrink-0"
                 >
                   {t('admin.partnerDetail.campaigns.assign')}
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -110,17 +112,17 @@ export default function AdminPartnerCampaignAssign() {
           {takenByOthers.map((campaign) => (
             <div
               key={campaign.id}
-              className="rounded-xl border border-dark-700/50 bg-dark-800 p-4 opacity-50"
+              className="border-border/50 bg-card rounded-xl border p-4 opacity-50"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-dark-300">{campaign.name}</span>
+                    <span className="text-muted-foreground font-medium">{campaign.name}</span>
                     <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
                       {campaign.partner_name}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-dark-500">
+                  <div className="text-muted-foreground mt-1 flex items-center gap-3 text-xs">
                     <span className="font-mono">?start={campaign.start_parameter}</span>
                   </div>
                 </div>
@@ -131,7 +133,7 @@ export default function AdminPartnerCampaignAssign() {
       )}
 
       {assignMutation.isError && (
-        <div className="mt-4 rounded-lg bg-error-500/10 p-3 text-sm text-error-400">
+        <div className="bg-error-500/10 text-error-400 mt-4 rounded-lg p-3 text-sm">
           {t('common.error')}
         </div>
       )}

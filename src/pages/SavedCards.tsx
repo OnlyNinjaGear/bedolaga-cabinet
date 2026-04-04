@@ -10,6 +10,7 @@ import { useDestructiveConfirm } from '../platform/hooks/useNativeDialog';
 
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/primitives/Button';
+import { Button as ShadcnButton } from '@/components/ui/button';
 import { BackIcon } from '@/components/icons';
 import { staggerContainer, staggerItem } from '@/components/motion/transitions';
 
@@ -81,13 +82,10 @@ export default function SavedCards() {
     >
       {/* Header */}
       <motion.div variants={staggerItem} className="flex items-center gap-3">
-        <button
-          onClick={() => navigate('/balance')}
-          className="flex h-10 w-10 items-center justify-center rounded-linear border border-dark-700/30 bg-dark-800/50 text-dark-300 transition-colors hover:bg-dark-700/50 hover:text-dark-100"
-        >
+        <ShadcnButton onClick={() => navigate('/balance')} variant="outline" size="icon">
           <BackIcon className="h-5 w-5" />
-        </button>
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
+        </ShadcnButton>
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
           {t('balance.savedCards.pageTitle')}
         </h1>
       </motion.div>
@@ -100,16 +98,16 @@ export default function SavedCards() {
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between rounded-linear border border-dark-700/30 bg-dark-800/30 p-4"
+                  className="rounded-linear border-border/30 bg-card/30 flex items-center justify-between border p-4"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-6 w-6 animate-pulse rounded bg-dark-700" />
+                    <div className="bg-muted h-6 w-6 animate-pulse rounded" />
                     <div className="space-y-2">
-                      <div className="h-4 w-32 animate-pulse rounded bg-dark-700" />
-                      <div className="h-3 w-24 animate-pulse rounded bg-dark-700" />
+                      <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+                      <div className="bg-muted h-3 w-24 animate-pulse rounded" />
                     </div>
                   </div>
-                  <div className="h-8 w-20 animate-pulse rounded bg-dark-700" />
+                  <div className="bg-muted h-8 w-20 animate-pulse rounded" />
                 </div>
               ))}
             </div>
@@ -136,16 +134,16 @@ export default function SavedCards() {
               {savedCards.map((card) => (
                 <div
                   key={card.id}
-                  className="flex items-center justify-between rounded-linear border border-dark-700/30 bg-dark-800/30 p-4"
+                  className="rounded-linear border-border/30 bg-card/30 flex items-center justify-between border p-4"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">💳</span>
                     <div>
-                      <div className="font-medium text-dark-100">
+                      <div className="text-foreground font-medium">
                         {card.title ||
                           `${card.card_type || t('balance.savedCards.card')} ${card.card_last4 ? `*${card.card_last4}` : ''}`}
                       </div>
-                      <div className="text-xs text-dark-500">
+                      <div className="text-muted-foreground text-xs">
                         {t('balance.savedCards.linkedAt', {
                           date: formatCardDate(card.created_at),
                         })}
@@ -171,10 +169,10 @@ export default function SavedCards() {
         <motion.div variants={staggerItem}>
           <Card>
             <div className="py-12 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-linear-lg bg-dark-800">
+              <div className="rounded-linear-lg bg-card mx-auto mb-4 flex h-16 w-16 items-center justify-center">
                 <span className="text-3xl">💳</span>
               </div>
-              <div className="text-dark-400">{t('balance.savedCards.empty')}</div>
+              <div className="text-muted-foreground">{t('balance.savedCards.empty')}</div>
             </div>
           </Card>
         </motion.div>

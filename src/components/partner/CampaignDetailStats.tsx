@@ -8,6 +8,7 @@ import { DailyChart } from '../stats/DailyChart';
 import { PeriodComparison } from '../stats/PeriodComparison';
 import { StatCard } from '../stats/StatCard';
 import { TopReferrals } from './TopReferrals';
+import { Button } from '@/components/ui/button';
 
 interface CampaignDetailStatsProps {
   campaignId: number;
@@ -29,10 +30,10 @@ export function CampaignDetailStats({ campaignId }: CampaignDetailStatsProps) {
         {/* Skeleton loader */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {Array.from({ length: PARTNER_STATS.SKELETON_COUNT }).map((_, i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-dark-800/30" />
+            <div key={i} className="bg-card/30 h-16 animate-pulse rounded-xl" />
           ))}
         </div>
-        <div className="h-52 animate-pulse rounded-xl bg-dark-800/30" />
+        <div className="bg-card/30 h-52 animate-pulse rounded-xl" />
       </div>
     );
   }
@@ -40,10 +41,10 @@ export function CampaignDetailStats({ campaignId }: CampaignDetailStatsProps) {
   if (isError || !data) {
     return (
       <div className="pt-2 text-center">
-        <div className="text-sm text-error-400">{t('referral.partner.stats.noData')}</div>
-        <button onClick={() => refetch()} className="btn-secondary mt-2 px-4 py-1 text-xs">
+        <div className="text-error-400 text-sm">{t('referral.partner.stats.noData')}</div>
+        <Button variant="secondary" size="sm" onClick={() => refetch()} className="mt-2">
           {t('common.retry')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -70,16 +71,16 @@ export function CampaignDetailStats({ campaignId }: CampaignDetailStatsProps) {
       </div>
 
       {/* Conversion rate */}
-      <div className="rounded-xl bg-dark-800/30 p-3">
+      <div className="bg-card/30 rounded-xl p-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-dark-500">
+          <span className="text-muted-foreground text-sm">
             {t('referral.partner.stats.conversionRate')}
           </span>
-          <span className="text-lg font-semibold text-accent-400">{data.conversion_rate}%</span>
+          <span className="text-primary text-lg font-semibold">{data.conversion_rate}%</span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-dark-700">
+        <div className="bg-muted mt-2 h-2 overflow-hidden rounded-full">
           <div
-            className="h-full rounded-full bg-accent-500 transition-all"
+            className="bg-primary h-full rounded-full transition-all"
             style={{
               width: `${Math.min(data.conversion_rate, PARTNER_STATS.MAX_CONVERSION_RATE)}%`,
             }}

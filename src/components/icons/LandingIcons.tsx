@@ -7,7 +7,7 @@ interface IconProps {
 export function BackIcon({ className }: IconProps) {
   return (
     <svg
-      className={cn('h-5 w-5 text-dark-400', className)}
+      className={cn('text-muted-foreground h-5 w-5', className)}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

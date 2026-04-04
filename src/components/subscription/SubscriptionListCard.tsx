@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../../hooks/useTheme';
-import { getGlassColors } from '../../utils/glassTheme';
 import { useHaptic } from '../../platform';
 import type { SubscriptionListItem } from '../../types';
+import { Button } from '@/components/ui/button';
+import { CalendarClock, MonitorSmartphone } from 'lucide-react';
 
 function formatDate(iso: string | null, locale?: string): string {
   if (!iso) return '—';
@@ -32,7 +32,7 @@ function StatusBadge({
 
   if (isTrial) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+      <span className="border-warning-500/25 bg-warning-500/10 text-warning-500 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold">
         <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
         </svg>
@@ -42,10 +42,10 @@ function StatusBadge({
   }
 
   const color = isActive
-    ? 'bg-emerald-400/15 text-emerald-400 border-emerald-400/20'
+    ? 'bg-success-500/15 text-success-500 border-success-500/20'
     : isLimited
-      ? 'bg-amber-400/15 text-amber-400 border-amber-400/20'
-      : 'bg-red-400/15 text-red-400 border-red-400/20';
+      ? 'bg-warning-500/15 text-warning-500 border-warning-500/20'
+      : 'bg-error-500/15 text-error-500 border-error-500/20';
 
   const label = isActive
     ? t('subscription.statusActive', 'Активна')
@@ -72,8 +72,6 @@ export default function SubscriptionListCard({
   onClick: () => void;
 }) {
   const { t, i18n } = useTranslation();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
   const { impact } = useHaptic();
 
   const handleClick = () => {
@@ -93,34 +91,28 @@ export default function SubscriptionListCard({
       ? Math.min(100, (trafficUsed / trafficLimit) * 100)
       : 0;
   const trafficColor =
-    trafficPercent >= 90 ? 'bg-red-400' : trafficPercent >= 70 ? 'bg-amber-400' : 'bg-emerald-400';
+    trafficPercent >= 90
+      ? 'bg-error-500'
+      : trafficPercent >= 70
+        ? 'bg-warning-500'
+        : 'bg-success-500';
 
-  const borderColor = isTrial
-    ? 'rgba(251,191,36,0.2)'
+  const cardClasses = isTrial
+    ? 'border-amber-500/20 bg-amber-500/4'
     : isExpired
-      ? 'rgba(255,59,92,0.15)'
-      : g.cardBorder;
-
-  const bgColor = isTrial
-    ? isDark
-      ? 'rgba(251,191,36,0.04)'
-      : 'rgba(251,191,36,0.03)'
-    : isExpired
-      ? isDark
-        ? 'rgba(255,59,92,0.04)'
-        : 'rgba(255,59,92,0.03)'
-      : g.cardBg;
+      ? 'border-destructive-500/15 bg-destructive-500/4'
+      : 'border-border bg-card';
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={handleClick}
-      className="w-full rounded-2xl border p-4 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
-      style={{ background: bgColor, borderColor }}
+      className={`flex h-auto w-full flex-col rounded-2xl border p-4 text-left hover:scale-[1.01] active:scale-[0.99] ${cardClasses}`}
     >
       {/* Header: tariff name + status badge + chevron */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex w-full items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="truncate text-base font-semibold" style={{ color: g.text }}>
+          <span className="text-foreground truncate text-base font-semibold">
             {subscription.tariff_name || t('subscription.defaultName', 'Подписка')}
           </span>
           <StatusBadge status={subscription.status} isTrial={isTrial} t={t} />
@@ -138,22 +130,30 @@ export default function SubscriptionListCard({
 
       {/* Traffic mini progress bar */}
       {isActive && (
-        <div className="mt-3">
+        <div className="mt-3 w-full">
           <div className="mb-1 flex items-baseline justify-between">
-            <span className="text-[11px] font-medium" style={{ color: g.textSecondary }}>
+            <span className="text-muted-foreground text-[11px] font-medium">
               {t('subscription.traffic', 'Трафик')}
             </span>
-            <span className="text-[11px] tabular-nums" style={{ color: g.textSecondary }}>
+            <span className="text-muted-foreground text-[11px] tabular-nums">
               {isUnlimited
                 ? '∞'
                 : `${trafficUsed.toFixed(1)} / ${trafficLimit} ${t('common.units.gb', 'ГБ')}`}
             </span>
           </div>
           {!isUnlimited && (
-            <div className="h-1.5 overflow-hidden rounded-full" style={{ background: g.innerBg }}>
+            <div className="bg-muted/30 h-6 overflow-hidden rounded-full">
               <div
                 className={`h-full rounded-full transition-all ${trafficColor}`}
                 style={{ width: `${Math.max(1, trafficPercent)}%` }}
+              />
+            </div>
+          )}
+          {isUnlimited && (
+            <div className="bg-muted/30 h-6 overflow-hidden rounded-full">
+              <div
+                className={`h-full rounded-full transition-all ${trafficColor}`}
+                style={{ width: `100%` }}
               />
             </div>
           )}
@@ -161,34 +161,13 @@ export default function SubscriptionListCard({
       )}
 
       {/* Stats row */}
-      <div
-        className="mt-2.5 flex items-center gap-4 text-[12px]"
-        style={{ color: g.textSecondary }}
-      >
+      <div className="text-muted-foreground mt-2.5 flex w-full items-center gap-4 text-xs">
         <span className="flex items-center gap-1">
-          <svg
-            className="h-3.5 w-3.5 opacity-50"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <rect x="5" y="2" width="14" height="20" rx="2" />
-            <path d="M12 18h.01" />
-          </svg>
+          <MonitorSmartphone className="size-3.5 opacity-50" />
           {subscription.device_limit}
         </span>
         <span className="flex items-center gap-1">
-          <svg
-            className="h-3.5 w-3.5 opacity-50"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4M8 2v4M3 10h18" />
-          </svg>
+          <CalendarClock className="size-3.5 opacity-50" />
           {formatDate(subscription.end_date, i18n.language)}
         </span>
         {!isTrial &&
@@ -200,7 +179,7 @@ export default function SubscriptionListCard({
               : t('subscription.autopay', 'Автопродление');
             return (
               <span
-                className={`flex items-center gap-1 ${enabled ? 'text-emerald-400/70' : 'text-red-400/50'}`}
+                className={`flex items-center gap-1 ${enabled ? 'text-success-500/70' : 'text-error-500/50'}`}
               >
                 <svg
                   className="h-3 w-3"
@@ -220,6 +199,6 @@ export default function SubscriptionListCard({
             );
           })()}
       </div>
-    </button>
+    </Button>
   );
 }

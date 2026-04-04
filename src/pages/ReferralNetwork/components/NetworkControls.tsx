@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getSigmaInstance } from '../sigmaGlobals';
+import { Button } from '@/components/ui/button';
 
 interface NetworkControlsProps {
   className?: string;
@@ -145,18 +146,19 @@ export function NetworkControls({ className }: NetworkControlsProps) {
 
   return (
     <div
-      className={`flex gap-1 rounded-xl border border-dark-700/50 bg-dark-900/80 p-1.5 backdrop-blur-md ${className ?? ''}`}
+      className={`border-border/50 bg-background/80 flex gap-1 rounded-xl border p-1.5 backdrop-blur-md ${className ?? ''}`}
     >
       {buttons.map((btn) => (
-        <button
+        <Button
           key={btn.label}
           onClick={btn.onClick}
           title={btn.label}
           aria-label={btn.label}
-          className="rounded-lg p-1.5 text-dark-400 transition-colors hover:bg-dark-800 hover:text-dark-200"
+          variant="ghost"
+          size="icon"
         >
           {btn.icon}
-        </button>
+        </Button>
       ))}
     </div>
   );

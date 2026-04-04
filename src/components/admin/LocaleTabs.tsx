@@ -6,6 +6,7 @@ import {
   type LocaleDict,
 } from '../../api/landings';
 import { cn } from '../../lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface LocaleTabsProps {
   activeLocale: SupportedLocale;
@@ -45,16 +46,18 @@ export function LocaleTabs({
           const isRtl = meta.rtl;
 
           return (
-            <button
+            <Button
               key={locale}
               type="button"
               onClick={() => onChange(locale)}
               dir={isRtl ? 'rtl' : 'ltr'}
+              variant="ghost"
+              size="sm"
               className={cn(
                 'relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all',
                 isActive
-                  ? 'bg-accent-500/15 text-accent-400 ring-1 ring-accent-500/30'
-                  : 'bg-dark-800/50 text-dark-400 hover:bg-dark-700/50 hover:text-dark-300',
+                  ? 'bg-primary/15 text-primary ring-ring/30 ring-1'
+                  : 'bg-card/50 text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground',
               )}
               aria-label={`${t('admin.landings.localeTab')}: ${meta.name}`}
               aria-pressed={isActive}
@@ -62,13 +65,13 @@ export function LocaleTabs({
               <span>{meta.flag}</span>
               <span>{meta.name}</span>
               {filled && !isActive && (
-                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-success-500" />
+                <span className="bg-success-500 absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
               )}
-            </button>
+            </Button>
           );
         })}
       </div>
-      <p className="text-xs text-dark-500">{t('admin.landings.localeHint')}</p>
+      <p className="text-muted-foreground text-xs">{t('admin.landings.localeHint')}</p>
     </div>
   );
 }

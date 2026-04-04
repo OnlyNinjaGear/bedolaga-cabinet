@@ -5,13 +5,12 @@ import { UseMutationResult } from '@tanstack/react-query';
 import TrafficProgressBar from './TrafficProgressBar';
 import Sparkline from './Sparkline';
 import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
-import { useTheme } from '../../hooks/useTheme';
 import { useTrafficZone } from '../../hooks/useTrafficZone';
 import { formatTraffic } from '../../utils/formatTraffic';
-import { getGlassColors } from '../../utils/glassTheme';
 import { HoverBorderGradient } from '../ui/hover-border-gradient';
 import { useHaptic } from '../../platform';
 import type { Subscription } from '../../types';
+import { Button } from '@/components/ui/button';
 
 interface SubscriptionCardActiveProps {
   subscription: Subscription;
@@ -51,8 +50,6 @@ export default function SubscriptionCardActive({
 }: SubscriptionCardActiveProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
 
   const usedPercent = trafficData?.traffic_used_percent ?? subscription.traffic_used_percent;
   const usedGb = trafficData?.traffic_used_gb ?? subscription.traffic_used_gb;
@@ -72,24 +69,18 @@ export default function SubscriptionCardActive({
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl backdrop-blur-xl"
+      className="bg-card relative overflow-hidden rounded-3xl shadow-sm backdrop-blur-xl"
       style={{
-        background: g.cardBg,
         border: subscription.is_trial
-          ? '1px solid rgba(var(--color-accent-400), 0.15)'
-          : isDark
-            ? `1px solid ${g.cardBorder}`
-            : `1px solid rgba(${zone.mainVarRaw}, 0.14)`,
+          ? '1px solid color-mix(in srgb, var(--primary) 15%, transparent)'
+          : `1px solid rgba(${zone.mainVarRaw}, 0.14)`,
         padding: '28px 28px 24px',
-        boxShadow: isDark
-          ? g.shadow
-          : `0 2px 16px rgba(${zone.mainVarRaw}, 0.07), 0 0 0 1px rgba(${zone.mainVarRaw}, 0.03)`,
       }}
     >
       {/* Trial shimmer border */}
       {subscription.is_trial && (
         <div
-          className="pointer-events-none absolute inset-[-1px] animate-trial-glow rounded-3xl"
+          className="animate-trial-glow pointer-events-none absolute -inset-px rounded-3xl"
           aria-hidden="true"
         />
       )}
@@ -103,7 +94,7 @@ export default function SubscriptionCardActive({
           width: 200,
           height: 200,
           borderRadius: '50%',
-          background: `radial-gradient(circle, rgba(${zone.mainVarRaw}, ${isDark ? 0.08 : 0.03}) 0%, transparent 70%)`,
+          background: `radial-gradient(circle, rgba(${zone.mainVarRaw}, 0.06) 0%, transparent 70%)`,
           transition: 'background 0.8s ease',
         }}
         aria-hidden="true"
@@ -124,19 +115,19 @@ export default function SubscriptionCardActive({
               aria-hidden="true"
             />
             <span
-              className="font-mono text-[11px] font-semibold uppercase tracking-widest"
+              className="font-mono text-[11px] font-semibold tracking-widest uppercase"
               style={{ color: zone.mainVar, transition: 'color 0.6s ease' }}
             >
               {isUnlimited ? t('dashboard.unlimited') : t(zone.labelKey)}
             </span>
             {subscription.is_trial && (
               <span
-                className="inline-flex animate-trial-glow items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest"
+                className="animate-trial-glow inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[9px] font-bold tracking-widest uppercase"
                 style={{
                   background:
-                    'linear-gradient(135deg, rgba(var(--color-accent-400), 0.15), rgba(var(--color-accent-400), 0.06))',
-                  border: '1px solid rgba(var(--color-accent-400), 0.2)',
-                  color: 'rgb(var(--color-accent-400))',
+                    'linear-gradient(135deg, color-mix(in srgb, var(--primary) 15%, transparent), color-mix(in srgb, var(--primary) 6%, transparent))',
+                  border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)',
+                  color: 'var(--primary)',
                 }}
               >
                 <svg
@@ -160,7 +151,7 @@ export default function SubscriptionCardActive({
           </div>
 
           {/* Title */}
-          <h2 className="text-lg font-bold tracking-tight text-dark-50">
+          <h2 className="text-foreground text-lg font-bold tracking-tight">
             {t('dashboard.trafficUsageTitle')}
           </h2>
         </div>
@@ -170,22 +161,22 @@ export default function SubscriptionCardActive({
           {isUnlimited ? (
             <>
               <div
-                className="font-display text-[28px] font-extrabold leading-none tracking-tight"
+                className="font-display text-[28px] leading-none font-extrabold tracking-tight"
                 style={{ color: zone.mainVar }}
               >
                 &#8734;
               </div>
-              <div className="mt-1 font-mono text-[11px] text-dark-50/30">
+              <div className="text-foreground/30 mt-1 font-mono text-[11px]">
                 {formatTraffic(usedGb)} {t('dashboard.usedSuffix')}
               </div>
             </>
           ) : (
             <>
-              <div className="font-display text-[38px] font-extrabold leading-none tracking-tight text-dark-50">
+              <div className="font-display text-foreground text-[38px] leading-none font-extrabold tracking-tight">
                 {animatedPercent.toFixed(0)}
-                <span className="ml-px text-lg font-medium text-dark-50/35">%</span>
+                <span className="text-foreground/35 ml-px text-lg font-medium">%</span>
               </div>
-              <div className="mt-0.5 font-mono text-[11px] text-dark-50/30">
+              <div className="text-foreground/30 mt-0.5 font-mono text-[11px]">
                 {formatTraffic(usedGb)} / {formatTraffic(subscription.traffic_limit_gb)}
               </div>
             </>
@@ -222,7 +213,7 @@ export default function SubscriptionCardActive({
         >
           {/* Monitor icon */}
           <div
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] transition-colors duration-500"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition-colors duration-500"
             style={{ background: `rgba(${zone.mainVarRaw}, 0.07)` }}
           >
             <svg
@@ -244,10 +235,10 @@ export default function SubscriptionCardActive({
 
           {/* Text */}
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold tracking-tight text-dark-50">
+            <div className="text-foreground text-sm font-semibold tracking-tight">
               {t('dashboard.connectDevice')}
             </div>
-            <div className="mt-0.5 text-[11px] text-dark-50/30">
+            <div className="text-foreground/30 mt-0.5 text-[11px]">
               {subscription.device_limit === 0
                 ? t('dashboard.devicesConnectedUnlimited', { used: connectedDevices })
                 : t('dashboard.devicesOfMax', {
@@ -258,7 +249,7 @@ export default function SubscriptionCardActive({
             {isAtDeviceLimit && (
               <div
                 className="mt-1 text-[10px] font-medium"
-                style={{ color: 'rgb(var(--color-warning-400))' }}
+                style={{ color: 'var(--color-warning-400)' }}
               >
                 {t('dashboard.deviceLimitReached')}
               </div>
@@ -268,19 +259,20 @@ export default function SubscriptionCardActive({
           {/* Device indicator */}
           {subscription.device_limit === 0 ? (
             <div
-              className="flex flex-shrink-0 items-center text-lg text-dark-50/40"
+              className="text-foreground/40 flex shrink-0 items-center text-lg"
               aria-hidden="true"
             >
               ∞
             </div>
           ) : subscription.device_limit <= 10 ? (
-            <div className="flex flex-shrink-0 gap-1.5" aria-hidden="true">
+            <div className="flex shrink-0 gap-1.5" aria-hidden="true">
               {Array.from({ length: subscription.device_limit }, (_, i) => (
                 <div
                   key={i}
-                  className="h-[7px] w-[7px] rounded-full transition-all duration-300"
+                  className="h-1.75 w-1.75 rounded-full transition-all duration-300"
                   style={{
-                    background: i < connectedDevices ? zone.mainVar : g.textGhost,
+                    background: i < connectedDevices ? zone.mainVar : 'var(--muted-foreground)',
+                    opacity: i < connectedDevices ? 1 : 0.2,
                     boxShadow:
                       i < connectedDevices ? `0 0 6px rgba(${zone.mainVarRaw}, 0.31)` : 'none',
                   }}
@@ -288,11 +280,8 @@ export default function SubscriptionCardActive({
               ))}
             </div>
           ) : (
-            <div className="flex w-16 flex-shrink-0 items-center" aria-hidden="true">
-              <div
-                className="h-[6px] w-full overflow-hidden rounded-full"
-                style={{ background: g.textGhost }}
-              >
+            <div className="flex w-16 shrink-0 items-center" aria-hidden="true">
+              <div className="bg-muted-foreground/20 h-1.5 w-full overflow-hidden rounded-full">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
@@ -320,43 +309,33 @@ export default function SubscriptionCardActive({
           }}
         >
           <div
-            className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider opacity-70 transition-colors duration-500"
+            className="mb-1.5 text-[10px] font-semibold tracking-wider uppercase opacity-70 transition-colors duration-500"
             style={{ color: zone.mainVar }}
           >
             {t('dashboard.tariff')}
           </div>
-          <div className="text-base font-bold leading-tight tracking-tight text-dark-50">
+          <div className="text-foreground text-base leading-tight font-bold tracking-tight">
             {subscription.tariff_name || t('subscription.currentPlan')}
           </div>
-          <div className="mt-0.5 font-mono text-[10px] text-dark-50/30">
+          <div className="text-foreground/30 mt-0.5 font-mono text-[10px]">
             {t('dashboard.validUntil', { date: formattedDate })}
           </div>
         </Link>
 
         {/* Days remaining */}
         <div
-          className="flex-1 rounded-[14px] p-3.5 transition-colors duration-300"
-          style={{
-            background: g.innerBg,
-            border:
-              daysLeft <= 3
-                ? '1px solid rgba(var(--color-warning-400), 0.2)'
-                : `1px solid ${g.innerBorder}`,
-          }}
+          className={`bg-muted/30 flex-1 rounded-[14px] p-3.5 transition-colors duration-300 ${daysLeft <= 3 ? 'border-warning-400/20 border' : 'border-border/50 border'}`}
         >
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-dark-50/35">
+          <div className="text-foreground/35 mb-1 flex items-center gap-1.5 text-[10px] font-medium tracking-wider uppercase">
             <div
-              className="flex h-6 w-6 items-center justify-center rounded-[7px] transition-colors duration-300"
-              style={{
-                background: daysLeft <= 3 ? 'rgba(var(--color-warning-400), 0.1)' : g.hoverBg,
-              }}
+              className={`flex h-6 w-6 items-center justify-center rounded-[7px] transition-colors duration-300 ${daysLeft <= 3 ? 'bg-warning-400/10' : 'hover:bg-accent/50'}`}
             >
               <svg
                 width="13"
                 height="13"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke={daysLeft <= 3 ? 'rgb(var(--color-warning-400))' : g.textSecondary}
+                stroke={daysLeft <= 3 ? 'var(--color-warning-400)' : 'var(--muted-foreground)'}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -370,12 +349,11 @@ export default function SubscriptionCardActive({
           </div>
           <div className="flex items-baseline gap-1">
             <span
-              className="text-[22px] font-bold tracking-tight transition-colors duration-300"
-              style={{ color: daysLeft <= 3 ? 'rgb(var(--color-warning-400))' : g.text }}
+              className={`text-[22px] font-bold tracking-tight transition-colors duration-300 ${daysLeft <= 3 ? 'text-warning-400' : 'text-foreground'}`}
             >
               {daysLeft}
             </span>
-            <span className="text-xs font-medium text-dark-50/25">
+            <span className="text-foreground/25 text-xs font-medium">
               {t('subscription.daysShort')}
             </span>
           </div>
@@ -384,20 +362,21 @@ export default function SubscriptionCardActive({
 
       {/* ─── Traffic Refresh ─── */}
       <div className="mb-5 flex items-center justify-between px-0.5">
-        <button
+        <Button
+          variant="ghost"
           onClick={() => refreshTrafficMutation.mutate()}
           disabled={refreshTrafficMutation.isPending || trafficRefreshCooldown > 0}
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-dark-50/35 transition-colors hover:bg-dark-50/[0.05] hover:text-dark-50/50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="text-foreground/35 hover:text-foreground/50 flex h-auto items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium"
           aria-label={t('common.refresh')}
         >
           <RefreshIcon
             className={`h-3 w-3 ${refreshTrafficMutation.isPending ? 'animate-spin' : ''}`}
           />
           {trafficRefreshCooldown > 0 ? `${trafficRefreshCooldown}s` : t('common.refresh')}
-        </button>
+        </Button>
         <Link
           to={`/subscriptions/${subscription.id}`}
-          className="text-[11px] font-medium text-dark-50/25 transition-colors hover:text-dark-50/40"
+          className="text-foreground/25 hover:text-foreground/40 text-[11px] font-medium transition-colors"
         >
           {t('dashboard.viewSubscription')} &rarr;
         </Link>
@@ -405,15 +384,12 @@ export default function SubscriptionCardActive({
 
       {/* ─── Sparkline ─── */}
       {dailyUsage.length >= 2 && (
-        <div
-          className="rounded-[14px] p-3.5 pb-3"
-          style={{ background: g.innerBg, border: `1px solid ${g.innerBorder}` }}
-        >
+        <div className="border-border/50 bg-muted/30 rounded-[14px] border p-3.5 pb-3">
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-dark-50/40">
+            <span className="text-foreground/40 text-[11px] font-medium tracking-wider uppercase">
               {t('dashboard.usageLast14Days')}
             </span>
-            <span className="font-mono text-[11px] text-dark-50/25">
+            <span className="text-foreground/25 font-mono text-[11px]">
               {t('dashboard.maxUsage', { amount: formatTraffic(Math.max(...dailyUsage)) })}
             </span>
           </div>

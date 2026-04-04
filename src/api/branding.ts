@@ -42,7 +42,32 @@ export interface AnalyticsCounters {
   yandex_metrika_id: string;
   google_ads_id: string;
   google_ads_label: string;
+  google_tag_manager_id: string;
 }
+
+export interface SeoConfig {
+  site_title: string;
+  site_description: string;
+  og_title: string;
+  og_description: string;
+  og_image_url: string;
+  og_site_name: string;
+  twitter_card: 'summary' | 'summary_large_image';
+  robots: string;
+  canonical_url: string;
+}
+
+export const DEFAULT_SEO_CONFIG: SeoConfig = {
+  site_title: '',
+  site_description: '',
+  og_title: '',
+  og_description: '',
+  og_image_url: '',
+  og_site_name: '',
+  twitter_card: 'summary_large_image',
+  robots: 'noindex, nofollow',
+  canonical_url: '',
+};
 
 const BRANDING_CACHE_KEY = 'cabinet_branding';
 const LOGO_PRELOADED_KEY = 'cabinet_logo_preloaded';
@@ -274,7 +299,12 @@ export const brandingApi = {
       const response = await apiClient.get<AnalyticsCounters>('/cabinet/branding/analytics');
       return response.data;
     } catch {
-      return { yandex_metrika_id: '', google_ads_id: '', google_ads_label: '' };
+      return {
+        yandex_metrika_id: '',
+        google_ads_id: '',
+        google_ads_label: '',
+        google_tag_manager_id: '',
+      };
     }
   },
 
@@ -301,6 +331,21 @@ export const brandingApi = {
   // Update analytics counters (admin only)
   updateAnalyticsCounters: async (data: Partial<AnalyticsCounters>): Promise<AnalyticsCounters> => {
     const response = await apiClient.patch<AnalyticsCounters>('/cabinet/branding/analytics', data);
+    return response.data;
+  },
+
+  // SEO / Open Graph
+  getSeoConfig: async (): Promise<SeoConfig> => {
+    try {
+      const response = await apiClient.get<SeoConfig>('/cabinet/branding/seo');
+      return response.data;
+    } catch {
+      return DEFAULT_SEO_CONFIG;
+    }
+  },
+
+  updateSeoConfig: async (data: Partial<SeoConfig>): Promise<SeoConfig> => {
+    const response = await apiClient.patch<SeoConfig>('/cabinet/branding/seo', data);
     return response.data;
   },
 };

@@ -4,6 +4,7 @@ import { StarIcon, LockIcon, RefreshIcon } from './icons';
 import { SettingInput } from './SettingInput';
 import { Toggle } from './Toggle';
 import { formatSettingKey, stripHtml } from './utils';
+import { Button } from '@/components/ui/button';
 
 interface SettingRowProps {
   setting: SettingDefinition;
@@ -48,36 +49,38 @@ export function SettingRow({
   })();
 
   return (
-    <div className="group rounded-2xl border border-dark-700/40 bg-dark-800/40 p-4 transition-all hover:border-dark-600/60 hover:bg-dark-800/60 sm:p-5">
+    <div className="group border-border/40 bg-card/40 hover:border-border/60 hover:bg-card/60 rounded-2xl border p-4 transition-all sm:p-5">
       {/* Header row - name, badges, favorite */}
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-dark-100">{displayName}</h3>
+            <h3 className="text-foreground text-base font-semibold">{displayName}</h3>
             {setting.has_override && (
-              <span className="rounded-full bg-warning-500/20 px-2 py-0.5 text-xs font-medium text-warning-400">
+              <span className="bg-warning-500/20 text-warning-400 rounded-full px-2 py-0.5 text-xs font-medium">
                 {t('admin.settings.modified')}
               </span>
             )}
             {setting.read_only && (
-              <span className="flex items-center gap-1 rounded-full bg-dark-600/50 px-2 py-0.5 text-xs font-medium text-dark-400">
+              <span className="bg-muted/50 text-muted-foreground flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
                 <LockIcon />
                 {t('admin.settings.readOnly')}
               </span>
             )}
           </div>
           {description && (
-            <p className="mt-1.5 text-sm leading-relaxed text-dark-400">{description}</p>
+            <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">{description}</p>
           )}
         </div>
 
         {/* Favorite button */}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onToggleFavorite}
-          className={`flex-shrink-0 rounded-xl p-2 transition-all ${
+          className={`shrink-0 ${
             isFavorite
               ? 'bg-warning-500/15 text-warning-400 hover:bg-warning-500/25'
-              : 'text-dark-500 opacity-0 hover:bg-dark-700/50 hover:text-warning-400 group-hover:opacity-100'
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-warning-400 opacity-0 group-hover:opacity-100'
           }`}
           title={
             isFavorite
@@ -86,29 +89,29 @@ export function SettingRow({
           }
         >
           <StarIcon filled={isFavorite} />
-        </button>
+        </Button>
       </div>
 
       {/* Setting key (muted) */}
       <div className="mb-3">
-        <code className="rounded bg-dark-900/50 px-2 py-1 font-mono text-xs text-dark-500">
+        <code className="bg-background/50 text-muted-foreground rounded px-2 py-1 font-mono text-xs">
           {setting.key}
         </code>
       </div>
 
       {/* Control section */}
       <div
-        className={`${isLongValue ? '' : 'flex items-center justify-between gap-3'} border-t border-dark-700/30 pt-3`}
+        className={`${isLongValue ? '' : 'flex items-center justify-between gap-3'} border-border/30 border-t pt-3`}
       >
         {setting.read_only ? (
           // Read-only display
-          <div className="flex items-center gap-2 rounded-lg bg-dark-700/30 px-4 py-2.5 text-dark-300">
-            <span className="break-all font-mono text-sm">{String(setting.current ?? '-')}</span>
+          <div className="bg-muted/30 text-muted-foreground flex items-center gap-2 rounded-lg px-4 py-2.5">
+            <span className="font-mono text-sm break-all">{String(setting.current ?? '-')}</span>
           </div>
         ) : setting.type === 'bool' ? (
           // Boolean toggle
           <div className="flex items-center justify-between gap-3">
-            <span className="text-sm text-dark-400">
+            <span className="text-muted-foreground text-sm">
               {setting.current === true || setting.current === 'true'
                 ? t('admin.settings.enabled')
                 : t('admin.settings.disabled')}
@@ -125,14 +128,15 @@ export function SettingRow({
               />
               {/* Reset button for boolean */}
               {setting.has_override && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={onReset}
                   disabled={isResetting}
-                  className="rounded-lg p-2 text-dark-400 transition-colors hover:bg-dark-700 hover:text-dark-200 disabled:opacity-50"
                   title={t('admin.settings.reset')}
                 >
                   <RefreshIcon />
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -144,14 +148,16 @@ export function SettingRow({
             <SettingInput setting={setting} onUpdate={onUpdate} disabled={isUpdating} />
             {/* Reset button for non-long values */}
             {!isLongValue && setting.has_override && (
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={onReset}
                 disabled={isResetting}
-                className="flex-shrink-0 rounded-lg p-2 text-dark-400 transition-colors hover:bg-dark-700 hover:text-dark-200 disabled:opacity-50"
+                className="shrink-0"
                 title={t('admin.settings.reset')}
               >
                 <RefreshIcon />
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -160,15 +166,17 @@ export function SettingRow({
       {/* Reset button for long values - shown below */}
       {isLongValue && setting.has_override && !setting.read_only && setting.type !== 'bool' && (
         <div className="mt-3 flex justify-end">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onReset}
             disabled={isResetting}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-dark-400 transition-colors hover:bg-dark-700 hover:text-dark-200 disabled:opacity-50"
+            className="text-muted-foreground hover:text-foreground gap-1.5"
             title={t('admin.settings.reset')}
           >
             <RefreshIcon />
             <span>{t('admin.settings.reset')}</span>
-          </button>
+          </Button>
         </div>
       )}
     </div>

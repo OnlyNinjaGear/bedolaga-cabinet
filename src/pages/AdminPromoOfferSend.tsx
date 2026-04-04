@@ -12,6 +12,15 @@ import {
 } from '../api/promoOffers';
 import { adminUsersApi, UserListItem } from '../api/adminUsers';
 import { AdminBackButton } from '../components/admin';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 // Icons
 const SendIcon = () => (
@@ -217,7 +226,7 @@ export default function AdminPromoOfferSend() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -234,7 +243,7 @@ export default function AdminPromoOfferSend() {
           >
             {result.isSuccess ? (
               <svg
-                className="h-8 w-8 text-success-400"
+                className="text-success-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -244,7 +253,7 @@ export default function AdminPromoOfferSend() {
               </svg>
             ) : (
               <svg
-                className="h-8 w-8 text-error-400"
+                className="text-error-400 h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -254,22 +263,16 @@ export default function AdminPromoOfferSend() {
               </svg>
             )}
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-dark-100">{result.title}</h3>
-          <p className="mb-6 whitespace-pre-wrap text-dark-400">{result.message}</p>
+          <h3 className="text-foreground mb-2 text-lg font-semibold">{result.title}</h3>
+          <p className="text-muted-foreground mb-6 whitespace-pre-wrap">{result.message}</p>
           <div className="flex justify-center gap-3">
-            <button
-              onClick={() => navigate('/admin/promo-offers')}
-              className="rounded-lg bg-accent-500 px-6 py-2 text-white transition-colors hover:bg-accent-600"
-            >
+            <Button onClick={() => navigate('/admin/promo-offers')}>
               {t('admin.promoOffers.backToList')}
-            </button>
+            </Button>
             {result.isSuccess && (
-              <button
-                onClick={() => setResult(null)}
-                className="rounded-lg border border-dark-600 px-6 py-2 text-dark-300 transition-colors hover:text-dark-100"
-              >
+              <Button variant="outline" onClick={() => setResult(null)}>
                 {t('admin.promoOffers.sendAnother')}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -283,10 +286,10 @@ export default function AdminPromoOfferSend() {
       <div className="mb-6 flex items-center gap-3">
         <AdminBackButton to="/admin/promo-offers" />
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-accent-500/20 p-2">
+          <div className="bg-primary/20 rounded-lg p-2">
             <SendIcon />
           </div>
-          <h1 className="text-xl font-semibold text-dark-100">
+          <h1 className="text-foreground text-xl font-semibold">
             {t('admin.promoOffers.send.title')}
           </h1>
         </div>
@@ -294,32 +297,33 @@ export default function AdminPromoOfferSend() {
 
       {activeTemplates.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-dark-400">{t('admin.promoOffers.noActiveTemplates')}</p>
+          <p className="text-muted-foreground">{t('admin.promoOffers.noActiveTemplates')}</p>
         </div>
       ) : (
         <div className="mx-auto max-w-2xl space-y-6">
           {/* Template Selection */}
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+          <div className="border-border bg-card rounded-xl border p-6">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promoOffers.send.offerTemplate')}
               <span className="text-error-400">*</span>
             </label>
             <div className="space-y-2">
               {activeTemplates.map((template) => (
-                <button
+                <Button
                   key={template.id}
+                  variant="outline"
                   onClick={() => setSelectedTemplateId(template.id)}
-                  className={`w-full rounded-lg border p-4 text-left transition-colors ${
+                  className={`h-auto w-full justify-start rounded-lg p-4 text-left transition-colors ${
                     selectedTemplateId === template.id
-                      ? 'border-accent-500 bg-accent-500/10'
-                      : 'border-dark-600 bg-dark-700 hover:border-dark-500'
+                      ? 'border-primary bg-primary/10 hover:bg-primary/10'
+                      : 'bg-muted hover:border-border'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{getOfferTypeIcon(template.offer_type)}</span>
                     <div className="flex-1">
-                      <div className="font-medium text-dark-100">{template.name}</div>
-                      <div className="text-sm text-dark-400">
+                      <div className="text-foreground font-medium">{template.name}</div>
+                      <div className="text-muted-foreground text-sm">
                         {template.discount_percent > 0 &&
                           t('admin.promoOffers.send.discountLabel', {
                             percent: template.discount_percent,
@@ -333,95 +337,98 @@ export default function AdminPromoOfferSend() {
                       </div>
                     </div>
                     {selectedTemplateId === template.id && (
-                      <div className="text-accent-400">
+                      <div className="text-primary">
                         <CheckIcon />
                       </div>
                     )}
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Send Mode */}
-          <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
-            <label className="mb-2 block text-sm font-medium text-dark-300">
+          <div className="border-border bg-card rounded-xl border p-6">
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">
               {t('admin.promoOffers.send.sendTo')}
               <span className="text-error-400">*</span>
             </label>
             <div className="mb-4 flex gap-2">
-              <button
+              <Button
+                variant={sendMode === 'segment' ? 'default' : 'outline'}
                 onClick={() => setSendMode('segment')}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium transition-colors ${
+                className={`flex h-auto flex-1 items-center justify-center gap-2 rounded-lg py-2.5 ${
                   sendMode === 'segment'
-                    ? 'border-accent-500 bg-accent-500/10 text-accent-400'
-                    : 'border-dark-600 text-dark-400 hover:text-dark-200'
+                    ? 'border-primary bg-primary/10 text-primary hover:bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <UsersIcon />
                 <span>{t('admin.promoOffers.send.segment')}</span>
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={sendMode === 'user' ? 'default' : 'outline'}
                 onClick={() => setSendMode('user')}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium transition-colors ${
+                className={`flex h-auto flex-1 items-center justify-center gap-2 rounded-lg py-2.5 ${
                   sendMode === 'user'
-                    ? 'border-accent-500 bg-accent-500/10 text-accent-400'
-                    : 'border-dark-600 text-dark-400 hover:text-dark-200'
+                    ? 'border-primary bg-primary/10 text-primary hover:bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <UserIcon />
                 <span>{t('admin.promoOffers.send.user')}</span>
-              </button>
+              </Button>
             </div>
 
             {sendMode === 'segment' ? (
-              <select
+              <Select
                 value={selectedTarget}
-                onChange={(e) => setSelectedTarget(e.target.value as TargetSegment)}
-                className="input"
+                onValueChange={(v) => setSelectedTarget(v as TargetSegment)}
               >
-                {Object.entries(TARGET_SEGMENTS).map(([key, labelKey]) => (
-                  <option key={key} value={key}>
-                    {t(labelKey)}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(TARGET_SEGMENTS).map(([key, labelKey]) => (
+                    <SelectItem key={key} value={key}>
+                      {t(labelKey)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             ) : (
               <div ref={searchRef} className="relative">
                 {selectedUser ? (
                   // Selected user display
-                  <div className="flex items-center justify-between rounded-lg border border-accent-500 bg-accent-500/10 px-3 py-2.5">
+                  <div className="border-primary bg-primary/10 flex items-center justify-between rounded-lg border px-3 py-2.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-dark-600">
+                      <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
                         <UserIcon />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-dark-100">
+                        <div className="text-foreground text-sm font-medium">
                           {selectedUser.full_name ||
                             selectedUser.username ||
                             `ID: ${selectedUser.telegram_id}`}
                         </div>
-                        <div className="text-xs text-dark-400">
+                        <div className="text-muted-foreground text-xs">
                           {selectedUser.username && `@${selectedUser.username} · `}
                           Telegram: {selectedUser.telegram_id}
                         </div>
                       </div>
                     </div>
-                    <button
-                      onClick={handleClearUser}
-                      className="rounded-lg p-1.5 text-dark-400 transition-colors hover:bg-dark-600 hover:text-dark-100"
-                    >
+                    <Button variant="ghost" size="icon" onClick={handleClearUser}>
                       <CloseIcon />
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   // Search input
                   <>
                     <div className="relative">
-                      <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-dark-400">
+                      <div className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
                         <SearchIcon />
                       </div>
-                      <input
+                      <Input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => {
@@ -430,46 +437,47 @@ export default function AdminPromoOfferSend() {
                         }}
                         onFocus={() => setShowDropdown(true)}
                         placeholder={t('admin.promoOffers.send.searchUserPlaceholder')}
-                        className="input pl-10"
+                        className="pl-10"
                       />
                       {isSearching && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                        <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                          <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                         </div>
                       )}
                     </div>
 
                     {/* Dropdown results */}
                     {showDropdown && searchQuery.length >= 2 && (
-                      <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-lg border border-dark-600 bg-dark-800 shadow-xl">
+                      <div className="border-border bg-card absolute top-full right-0 left-0 z-50 mt-1 max-h-64 overflow-y-auto rounded-lg border shadow-xl">
                         {filteredUsers.length > 0 ? (
                           filteredUsers.map((user) => (
-                            <button
+                            <Button
                               key={user.id}
+                              variant="ghost"
                               onClick={() => handleSelectUser(user)}
-                              className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-dark-700"
+                              className="hover:bg-muted flex h-auto w-full items-center justify-start gap-3 px-3 py-2.5 text-left transition-colors"
                             >
-                              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-dark-600">
+                              <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
                                 <UserIcon />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className="truncate text-sm font-medium text-dark-100">
+                                <div className="text-foreground truncate text-sm font-medium">
                                   {user.full_name || user.username || `User #${user.id}`}
                                 </div>
-                                <div className="truncate text-xs text-dark-400">
+                                <div className="text-muted-foreground truncate text-xs">
                                   {user.username && `@${user.username} · `}
                                   Telegram: {user.telegram_id}
                                 </div>
                               </div>
                               {user.has_subscription && (
-                                <span className="flex-shrink-0 rounded bg-success-500/20 px-1.5 py-0.5 text-xs text-success-400">
+                                <span className="bg-success-500/20 text-success-400 shrink-0 rounded px-1.5 py-0.5 text-xs">
                                   {t('admin.promoOffers.send.hasSubscription')}
                                 </span>
                               )}
-                            </button>
+                            </Button>
                           ))
                         ) : !isSearching ? (
-                          <div className="px-3 py-4 text-center text-sm text-dark-400">
+                          <div className="text-muted-foreground px-3 py-4 text-center text-sm">
                             {t('admin.promoOffers.send.noUsersFound')}
                           </div>
                         ) : null}
@@ -483,16 +491,16 @@ export default function AdminPromoOfferSend() {
 
           {/* Preview */}
           {selectedTemplate && (
-            <div className="rounded-xl border border-dark-700 bg-dark-800 p-6">
-              <h4 className="mb-2 text-sm font-medium text-dark-300">
+            <div className="border-border bg-card rounded-xl border p-6">
+              <h4 className="text-muted-foreground mb-2 text-sm font-medium">
                 {t('admin.promoOffers.send.preview')}
               </h4>
-              <div className="rounded-lg bg-dark-700/50 p-4">
-                <div className="whitespace-pre-wrap text-sm text-dark-200">
+              <div className="bg-muted/50 rounded-lg p-4">
+                <div className="text-foreground text-sm whitespace-pre-wrap">
                   {selectedTemplate.message_text}
                 </div>
                 <div className="mt-4">
-                  <span className="inline-block rounded-lg bg-accent-500 px-4 py-2 text-sm text-white">
+                  <span className="bg-primary inline-block rounded-lg px-4 py-2 text-sm text-white">
                     {selectedTemplate.button_text}
                   </span>
                 </div>
@@ -502,19 +510,19 @@ export default function AdminPromoOfferSend() {
 
           {/* Actions */}
           <div className="flex justify-end gap-3">
-            <button onClick={() => navigate('/admin/promo-offers')} className="btn-secondary">
+            <Button variant="secondary" onClick={() => navigate('/admin/promo-offers')}>
               {t('common.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSubmit}
               disabled={!isValid() || broadcastMutation.isPending}
-              className="btn-primary flex items-center gap-2"
+              className="flex items-center gap-2"
             >
               <SendIcon />
               {broadcastMutation.isPending
                 ? t('admin.promoOffers.send.sending')
                 : t('admin.promoOffers.send.sendButton')}
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -9,6 +9,8 @@ import { partnerApi } from '../api/partners';
 import { withdrawalApi } from '../api/withdrawals';
 import { CampaignCard } from '../components/partner/CampaignCard';
 import { useCurrency } from '../hooks/useCurrency';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const LinkIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -179,32 +181,36 @@ export default function Referral() {
 
     return (
       <div className="bento-card">
-        <h2 className="mb-4 text-lg font-semibold text-dark-100">{t('referral.terms.title')}</h2>
+        <h2 className="text-foreground mb-4 text-lg font-semibold">{t('referral.terms.title')}</h2>
         <div className={`grid grid-cols-2 gap-4 ${gridCols}`}>
-          <div className="rounded-xl bg-dark-800/30 p-3">
-            <div className="text-sm text-dark-500">{t('referral.terms.commission')}</div>
-            <div className="mt-1 text-lg font-semibold text-dark-100">
+          <div className="bg-card/30 rounded-xl p-3">
+            <div className="text-muted-foreground text-sm">{t('referral.terms.commission')}</div>
+            <div className="text-foreground mt-1 text-lg font-semibold">
               {terms.commission_percent}%
             </div>
           </div>
-          <div className="rounded-xl bg-dark-800/30 p-3">
-            <div className="text-sm text-dark-500">{t('referral.terms.minTopup')}</div>
-            <div className="mt-1 text-lg font-semibold text-dark-100">
+          <div className="bg-card/30 rounded-xl p-3">
+            <div className="text-muted-foreground text-sm">{t('referral.terms.minTopup')}</div>
+            <div className="text-foreground mt-1 text-lg font-semibold">
               {formatAmount(terms.minimum_topup_rubles)} {currencySymbol}
             </div>
           </div>
           {showNewUserBonus && (
-            <div className="rounded-xl bg-dark-800/30 p-3">
-              <div className="text-sm text-dark-500">{t('referral.terms.newUserBonus')}</div>
-              <div className="mt-1 text-lg font-semibold text-success-400">
+            <div className="bg-card/30 rounded-xl p-3">
+              <div className="text-muted-foreground text-sm">
+                {t('referral.terms.newUserBonus')}
+              </div>
+              <div className="text-success-400 mt-1 text-lg font-semibold">
                 {formatPositive(terms.first_topup_bonus_rubles)}
               </div>
             </div>
           )}
           {showInviterBonus && (
-            <div className="rounded-xl bg-dark-800/30 p-3">
-              <div className="text-sm text-dark-500">{t('referral.terms.inviterBonus')}</div>
-              <div className="mt-1 text-lg font-semibold text-success-400">
+            <div className="bg-card/30 rounded-xl p-3">
+              <div className="text-muted-foreground text-sm">
+                {t('referral.terms.inviterBonus')}
+              </div>
+              <div className="text-success-400 mt-1 text-lg font-semibold">
                 {formatPositive(terms.inviter_bonus_rubles)}
               </div>
             </div>
@@ -253,7 +259,7 @@ export default function Referral() {
   if (isLoading) {
     return (
       <div className="flex min-h-64 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -262,9 +268,9 @@ export default function Referral() {
   if (terms && !terms.is_enabled) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-dark-800">
+        <div className="bg-card flex h-24 w-24 items-center justify-center rounded-full">
           <svg
-            className="h-12 w-12 text-dark-500"
+            className="text-muted-foreground h-12 w-12"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -278,8 +284,8 @@ export default function Referral() {
           </svg>
         </div>
         <div className="text-center">
-          <h1 className="mb-2 text-2xl font-bold text-dark-100">{t('referral.title')}</h1>
-          <p className="text-dark-400">{t('referral.disabled')}</p>
+          <h1 className="text-foreground mb-2 text-2xl font-bold">{t('referral.title')}</h1>
+          <p className="text-muted-foreground">{t('referral.disabled')}</p>
         </div>
       </div>
     );
@@ -293,68 +299,61 @@ export default function Referral() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('referral.title')}</h1>
+      <h1 className="text-foreground text-2xl font-bold sm:text-3xl">{t('referral.title')}</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
         <div className="bento-card-hover col-span-2 md:col-span-1">
-          <div className="text-sm text-dark-400">{t('referral.stats.totalReferrals')}</div>
+          <div className="text-muted-foreground text-sm">{t('referral.stats.totalReferrals')}</div>
           <div className="stat-value mt-1">{info?.total_referrals || 0}</div>
-          <div className="mt-1 text-sm text-dark-500">
+          <div className="text-muted-foreground mt-1 text-sm">
             {info?.active_referrals || 0} {t('referral.stats.activeReferrals').toLowerCase()}
           </div>
         </div>
         <div className="bento-card-hover">
-          <div className="text-sm text-dark-400">{t('referral.stats.totalEarnings')}</div>
-          <div className="stat-value mt-1 text-success-400">
+          <div className="text-muted-foreground text-sm">{t('referral.stats.totalEarnings')}</div>
+          <div className="stat-value text-success-400 mt-1">
             {formatPositive(info?.total_earnings_rubles || 0)}
           </div>
         </div>
         <div className="bento-card-hover">
-          <div className="text-sm text-dark-400">{t('referral.stats.commissionRate')}</div>
-          <div className="stat-value mt-1 text-accent-400">{info?.commission_percent || 0}%</div>
+          <div className="text-muted-foreground text-sm">{t('referral.stats.commissionRate')}</div>
+          <div className="stat-value text-primary mt-1">{info?.commission_percent || 0}%</div>
         </div>
       </div>
 
       {/* Referral Links */}
       <div className="bento-card">
-        <h2 className="mb-4 text-lg font-semibold text-dark-100">{t('referral.yourLink')}</h2>
+        <h2 className="text-foreground mb-4 text-lg font-semibold">{t('referral.yourLink')}</h2>
         <div className="space-y-3">
           {/* Bot link */}
           {botReferralLink && (
             <div>
-              <div className="mb-1.5 flex items-center gap-2 text-sm font-medium text-dark-300">
-                <svg className="h-4 w-4 text-accent-400" viewBox="0 0 24 24" fill="currentColor">
+              <div className="text-muted-foreground mb-1.5 flex items-center gap-2 text-sm font-medium">
+                <svg className="text-primary h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
                 </svg>
                 {t('referral.botLink')}
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="text"
-                  readOnly
-                  value={botReferralLink}
-                  className="input flex-1 text-sm"
-                />
-                <button
+                <Input type="text" readOnly value={botReferralLink} className="flex-1 text-sm" />
+                <Button
                   onClick={() => copyLink(botReferralLink, 'bot')}
-                  className={`btn-primary shrink-0 px-4 ${
-                    copiedLink === 'bot' ? 'bg-success-500 hover:bg-success-500' : ''
-                  }`}
+                  className={`shrink-0 ${copiedLink === 'bot' ? 'bg-success-500 hover:bg-success-500' : ''}`}
                 >
                   {copiedLink === 'bot' ? <CheckIcon /> : <CopyIcon />}
                   <span className="ml-2">
                     {copiedLink === 'bot' ? t('referral.copied') : t('referral.copyLink')}
                   </span>
-                </button>
+                </Button>
               </div>
             </div>
           )}
           {/* Cabinet link */}
           <div>
-            <div className="mb-1.5 flex items-center gap-2 text-sm font-medium text-dark-300">
+            <div className="text-muted-foreground mb-1.5 flex items-center gap-2 text-sm font-medium">
               <svg
-                className="h-4 w-4 text-accent-400"
+                className="text-primary h-4 w-4"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -369,35 +368,32 @@ export default function Referral() {
               {t('referral.cabinetLink')}
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <input type="text" readOnly value={referralLink} className="input flex-1 text-sm" />
+              <Input type="text" readOnly value={referralLink} className="flex-1 text-sm" />
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={() => copyLink(referralLink, 'cabinet')}
                   disabled={!referralLink}
-                  className={`btn-primary shrink-0 px-4 ${
-                    copiedLink === 'cabinet' ? 'bg-success-500 hover:bg-success-500' : ''
-                  } ${!referralLink ? 'cursor-not-allowed opacity-50' : ''}`}
+                  className={`shrink-0 ${copiedLink === 'cabinet' ? 'bg-success-500 hover:bg-success-500' : ''}`}
                 >
                   {copiedLink === 'cabinet' ? <CheckIcon /> : <CopyIcon />}
                   <span className="ml-2">
                     {copiedLink === 'cabinet' ? t('referral.copied') : t('referral.copyLink')}
                   </span>
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="secondary"
                   onClick={shareLink}
                   disabled={!referralLink}
-                  className={`btn-secondary flex shrink-0 items-center px-4 ${
-                    !referralLink ? 'cursor-not-allowed opacity-50' : ''
-                  }`}
+                  className="shrink-0"
                 >
                   <ShareIcon />
                   <span className="ml-2">{t('referral.shareButton')}</span>
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         </div>
-        <p className="mt-3 text-sm text-dark-500">
+        <p className="text-muted-foreground mt-3 text-sm">
           {t('referral.shareHint', { percent: info?.commission_percent || 0 })}
         </p>
       </div>
@@ -407,19 +403,21 @@ export default function Referral() {
 
       {/* Referrals List */}
       <div className="bento-card">
-        <h2 className="mb-4 text-lg font-semibold text-dark-100">{t('referral.yourReferrals')}</h2>
+        <h2 className="text-foreground mb-4 text-lg font-semibold">
+          {t('referral.yourReferrals')}
+        </h2>
         {referralList?.items && referralList.items.length > 0 ? (
           <div className="space-y-3">
             {referralList.items.map((ref) => (
               <div
                 key={ref.id}
-                className="flex items-center justify-between rounded-xl border border-dark-700/30 bg-dark-800/30 p-3"
+                className="border-border/30 bg-card/30 flex items-center justify-between rounded-xl border p-3"
               >
                 <div>
-                  <div className="font-medium text-dark-100">
+                  <div className="text-foreground font-medium">
                     {ref.first_name || ref.username || t('referral.anonymousUser', { id: ref.id })}
                   </div>
-                  <div className="mt-0.5 text-xs text-dark-500">
+                  <div className="text-muted-foreground mt-0.5 text-xs">
                     {new Date(ref.created_at).toLocaleDateString(i18n.language)}
                   </div>
                 </div>
@@ -433,9 +431,9 @@ export default function Referral() {
           </div>
         ) : (
           <div className="py-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-dark-800">
+            <div className="bg-card mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
               <svg
-                className="h-8 w-8 text-dark-500"
+                className="text-muted-foreground h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -448,7 +446,7 @@ export default function Referral() {
                 />
               </svg>
             </div>
-            <div className="text-dark-400">{t('referral.noReferrals')}</div>
+            <div className="text-muted-foreground">{t('referral.noReferrals')}</div>
           </div>
         )}
       </div>
@@ -456,27 +454,27 @@ export default function Referral() {
       {/* Earnings History */}
       {earnings?.items && earnings.items.length > 0 && (
         <div className="bento-card">
-          <h2 className="mb-4 text-lg font-semibold text-dark-100">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">
             {t('referral.earningsHistory')}
           </h2>
           <div className="space-y-3">
             {earnings.items.map((earning) => (
               <div
                 key={earning.id}
-                className="flex items-center justify-between rounded-xl border border-dark-700/30 bg-dark-800/30 p-3"
+                className="border-border/30 bg-card/30 flex items-center justify-between rounded-xl border p-3"
               >
                 <div>
-                  <div className="text-dark-100">
+                  <div className="text-foreground">
                     {earning.referral_first_name ||
                       earning.referral_username ||
                       t('referral.anonymousReferral')}
                   </div>
-                  <div className="mt-0.5 text-xs text-dark-500">
+                  <div className="text-muted-foreground mt-0.5 text-xs">
                     {t(`referral.reasons.${earning.reason}`, earning.reason)} •{' '}
                     {new Date(earning.created_at).toLocaleDateString(i18n.language)}
                   </div>
                 </div>
-                <div className="font-semibold text-success-400">
+                <div className="text-success-400 font-semibold">
                   {formatPositive(earning.amount_rubles)}
                 </div>
               </div>
@@ -491,22 +489,19 @@ export default function Referral() {
       {terms?.partner_section_visible !== false && showApplySection && (
         <div className="bento-card">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/10 text-accent-400">
+            <div className="bg-primary/10 text-primary flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
               <PartnerIcon />
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-dark-100">
+              <h2 className="text-foreground text-lg font-semibold">
                 {t('referral.partner.becomePartner')}
               </h2>
-              <p className="mt-1 text-sm text-dark-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {t('referral.partner.becomePartnerDesc')}
               </p>
-              <button
-                onClick={() => navigate('/referral/partner/apply')}
-                className="btn-primary mt-4 px-6"
-              >
+              <Button onClick={() => navigate('/referral/partner/apply')} className="mt-4">
                 {t('referral.partner.applyButton')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -516,16 +511,18 @@ export default function Referral() {
       {terms?.partner_section_visible !== false && showPendingSection && (
         <div className="bento-card border-warning-500/20">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-warning-500/10 text-warning-400">
+            <div className="bg-warning-500/10 text-warning-400 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
               <ClockIcon />
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-dark-100">
+              <h2 className="text-foreground text-lg font-semibold">
                 {t('referral.partner.underReview')}
               </h2>
-              <p className="mt-1 text-sm text-dark-400">{t('referral.partner.underReviewDesc')}</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {t('referral.partner.underReviewDesc')}
+              </p>
               {partnerStatus?.latest_application?.created_at && (
-                <p className="mt-2 text-xs text-dark-500">
+                <p className="text-muted-foreground mt-2 text-xs">
                   {t('referral.partner.submittedAt', {
                     date: new Date(partnerStatus.latest_application.created_at).toLocaleDateString(
                       i18n.language,
@@ -542,17 +539,17 @@ export default function Referral() {
       {terms?.partner_section_visible !== false && showApprovedSection && (
         <div className="bento-card border-success-500/20">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-success-500/10 text-success-400">
+            <div className="bg-success-500/10 text-success-400 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
               <PartnerIcon />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-dark-100">
+                <h2 className="text-foreground text-lg font-semibold">
                   {t('referral.partner.partnerStatus')}
                 </h2>
                 <span className="badge-success">{t('referral.partner.active')}</span>
               </div>
-              <p className="mt-1 text-sm text-dark-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {t('referral.partner.commissionInfo', {
                   percent: partnerStatus?.commission_percent ?? 0,
                 })}
@@ -569,7 +566,7 @@ export default function Referral() {
       {terms?.partner_section_visible !== false && showRejectedSection && (
         <div className="bento-card border-error-500/20">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-error-500/10 text-error-400">
+            <div className="bg-error-500/10 text-error-400 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
               <svg
                 className="h-8 w-8"
                 fill="none"
@@ -585,20 +582,17 @@ export default function Referral() {
               </svg>
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-dark-100">
+              <h2 className="text-foreground text-lg font-semibold">
                 {t('referral.partner.rejected')}
               </h2>
               {partnerStatus?.latest_application?.admin_comment && (
-                <p className="mt-1 text-sm text-dark-300">
+                <p className="text-muted-foreground mt-1 text-sm">
                   {partnerStatus.latest_application.admin_comment}
                 </p>
               )}
-              <button
-                onClick={() => navigate('/referral/partner/apply')}
-                className="btn-primary mt-4 px-6"
-              >
+              <Button onClick={() => navigate('/referral/partner/apply')} className="mt-4">
                 {t('referral.partner.reapplyButton')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -612,10 +606,10 @@ export default function Referral() {
         partnerStatus.campaigns.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-500/10 text-accent-400">
+              <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
                 <LinkIcon />
               </div>
-              <h2 className="text-lg font-semibold text-dark-100">
+              <h2 className="text-foreground text-lg font-semibold">
                 {t('referral.partner.yourCampaigns')}
               </h2>
             </div>
@@ -634,66 +628,72 @@ export default function Referral() {
           {withdrawalBalance && (
             <div className="bento-card">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-500/10 text-accent-400">
+                <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
                   <WalletIcon />
                 </div>
-                <h2 className="text-lg font-semibold text-dark-100">
+                <h2 className="text-foreground text-lg font-semibold">
                   {t('referral.withdrawal.title')}
                 </h2>
               </div>
 
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                <div className="col-span-2 rounded-xl bg-dark-800/30 p-4 md:col-span-1">
-                  <div className="text-sm text-dark-500">{t('referral.withdrawal.available')}</div>
-                  <div className="mt-1 text-2xl font-bold text-success-400">
+                <div className="bg-card/30 col-span-2 rounded-xl p-4 md:col-span-1">
+                  <div className="text-muted-foreground text-sm">
+                    {t('referral.withdrawal.available')}
+                  </div>
+                  <div className="text-success-400 mt-1 text-2xl font-bold">
                     {formatWithCurrency(withdrawalBalance.available_total / 100)}
                   </div>
                 </div>
-                <div className="rounded-xl bg-dark-800/30 p-3">
-                  <div className="text-sm text-dark-500">
+                <div className="bg-card/30 rounded-xl p-3">
+                  <div className="text-muted-foreground text-sm">
                     {t('referral.withdrawal.totalEarned')}
                   </div>
-                  <div className="mt-1 text-lg font-semibold text-dark-100">
+                  <div className="text-foreground mt-1 text-lg font-semibold">
                     {formatWithCurrency(withdrawalBalance.total_earned / 100)}
                   </div>
                 </div>
-                <div className="rounded-xl bg-dark-800/30 p-3">
-                  <div className="text-sm text-dark-500">{t('referral.withdrawal.withdrawn')}</div>
-                  <div className="mt-1 text-lg font-semibold text-dark-100">
+                <div className="bg-card/30 rounded-xl p-3">
+                  <div className="text-muted-foreground text-sm">
+                    {t('referral.withdrawal.withdrawn')}
+                  </div>
+                  <div className="text-foreground mt-1 text-lg font-semibold">
                     {formatWithCurrency(withdrawalBalance.withdrawn / 100)}
                   </div>
                 </div>
-                <div className="rounded-xl bg-dark-800/30 p-3">
-                  <div className="text-sm text-dark-500">{t('referral.withdrawal.spent')}</div>
-                  <div className="mt-1 text-lg font-semibold text-dark-100">
+                <div className="bg-card/30 rounded-xl p-3">
+                  <div className="text-muted-foreground text-sm">
+                    {t('referral.withdrawal.spent')}
+                  </div>
+                  <div className="text-foreground mt-1 text-lg font-semibold">
                     {formatWithCurrency(withdrawalBalance.referral_spent / 100)}
                   </div>
                 </div>
-                <div className="rounded-xl bg-dark-800/30 p-3">
-                  <div className="text-sm text-dark-500">{t('referral.withdrawal.pending')}</div>
-                  <div className="mt-1 text-lg font-semibold text-warning-400">
+                <div className="bg-card/30 rounded-xl p-3">
+                  <div className="text-muted-foreground text-sm">
+                    {t('referral.withdrawal.pending')}
+                  </div>
+                  <div className="text-warning-400 mt-1 text-lg font-semibold">
                     {formatWithCurrency(withdrawalBalance.pending / 100)}
                   </div>
                 </div>
               </div>
 
               <div className="mt-4">
-                <button
+                <Button
                   onClick={() => navigate('/referral/withdrawal/request')}
                   disabled={!withdrawalBalance.can_request}
-                  className={`btn-primary w-full px-6 sm:w-auto ${
-                    !withdrawalBalance.can_request ? 'cursor-not-allowed opacity-50' : ''
-                  }`}
+                  className="w-full sm:w-auto"
                 >
                   {t('referral.withdrawal.requestButton')}
-                </button>
+                </Button>
                 {!withdrawalBalance.can_request && withdrawalBalance.cannot_request_reason ? (
-                  <p className="mt-2 text-xs text-dark-500">
+                  <p className="text-muted-foreground mt-2 text-xs">
                     {withdrawalBalance.cannot_request_reason}
                   </p>
                 ) : (
                   withdrawalBalance.min_amount_kopeks > 0 && (
-                    <p className="mt-2 text-xs text-dark-500">
+                    <p className="text-muted-foreground mt-2 text-xs">
                       {t('referral.withdrawal.minAmount', {
                         amount: formatWithCurrency(withdrawalBalance.min_amount_kopeks / 100),
                       })}
@@ -706,7 +706,7 @@ export default function Referral() {
 
           {/* Withdrawal History */}
           <div className="bento-card">
-            <h2 className="mb-4 text-lg font-semibold text-dark-100">
+            <h2 className="text-foreground mb-4 text-lg font-semibold">
               {t('referral.withdrawal.history')}
             </h2>
             {withdrawalHistory?.items && withdrawalHistory.items.length > 0 ? (
@@ -714,18 +714,18 @@ export default function Referral() {
                 {withdrawalHistory.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-xl border border-dark-700/30 bg-dark-800/30 p-3"
+                    className="border-border/30 bg-card/30 flex items-center justify-between rounded-xl border p-3"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-dark-100">
+                        <span className="text-foreground font-medium">
                           {formatWithCurrency(item.amount_rubles)}
                         </span>
                         <span className={getWithdrawalStatusBadge(item.status)}>
                           {t(`referral.withdrawal.status.${item.status}`, item.status)}
                         </span>
                       </div>
-                      <div className="mt-0.5 text-xs text-dark-500">
+                      <div className="text-muted-foreground mt-0.5 text-xs">
                         {new Date(item.created_at).toLocaleDateString(i18n.language)}
                         {item.payment_details && (
                           <span className="ml-1">
@@ -737,24 +737,27 @@ export default function Referral() {
                         )}
                       </div>
                       {item.admin_comment && (
-                        <div className="mt-1 text-xs text-dark-400">{item.admin_comment}</div>
+                        <div className="text-muted-foreground mt-1 text-xs">
+                          {item.admin_comment}
+                        </div>
                       )}
                     </div>
                     {item.status === 'pending' && (
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={() => cancelWithdrawalMutation.mutate(item.id)}
                         disabled={cancelWithdrawalMutation.isPending}
-                        className="ml-3 shrink-0 text-sm text-error-400 transition-colors hover:text-error-300"
+                        className="text-error-400 hover:text-error-300 ml-3 shrink-0 text-sm"
                       >
                         {t('common.cancel')}
-                      </button>
+                      </Button>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
               <div className="py-8 text-center">
-                <div className="text-dark-400">{t('referral.withdrawal.noHistory')}</div>
+                <div className="text-muted-foreground">{t('referral.withdrawal.noHistory')}</div>
               </div>
             )}
           </div>

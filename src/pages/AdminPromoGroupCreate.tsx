@@ -8,7 +8,10 @@ import {
   PromoGroupCreateRequest,
   PromoGroupUpdateRequest,
 } from '../api/promocodes';
+import { Button } from '@/components/ui/button';
 import { AdminBackButton } from '../components/admin';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
 // Icons
 const PlusIcon = () => (
@@ -171,7 +174,7 @@ export default function AdminPromoGroupCreate() {
   if (isEdit && isLoadingGroup) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -182,18 +185,18 @@ export default function AdminPromoGroupCreate() {
       <div className="flex items-center gap-3">
         <AdminBackButton to="/admin/promo-groups" />
         <div>
-          <h1 className="text-xl font-bold text-dark-100">
+          <h1 className="text-foreground text-xl font-bold">
             {isEdit ? t('admin.promoGroups.editTitle') : t('admin.promoGroups.createTitle')}
           </h1>
-          <p className="text-sm text-dark-400">{t('admin.promoGroups.subtitle')}</p>
+          <p className="text-muted-foreground text-sm">{t('admin.promoGroups.subtitle')}</p>
         </div>
       </div>
 
       {/* Form */}
-      <div className="card space-y-4">
+      <Card className="space-y-4">
         {/* Name */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promoGroups.form.name')}
             <span className="text-error-400">*</span>
           </label>
@@ -205,21 +208,23 @@ export default function AdminPromoGroupCreate() {
             placeholder={t('admin.promoGroups.form.namePlaceholder')}
           />
           {name.length > 0 && name.trim().length === 0 && (
-            <p className="mt-1 text-xs text-error-400">
+            <p className="text-error-400 mt-1 text-xs">
               {t('admin.promoGroups.form.nameRequired')}
             </p>
           )}
         </div>
 
         {/* Category Discounts */}
-        <div className="space-y-3 rounded-lg bg-dark-700/50 p-4">
-          <h4 className="mb-3 text-sm font-medium text-dark-200">
+        <div className="bg-muted/50 space-y-3 rounded-lg p-4">
+          <h4 className="text-foreground mb-3 text-sm font-medium">
             {t('admin.promoGroups.form.categoryDiscounts')}
           </h4>
 
           <div className="flex items-center gap-3">
-            <span className="w-32 text-sm text-dark-400">{t('admin.promoGroups.servers')}:</span>
-            <input
+            <span className="text-muted-foreground w-32 text-sm">
+              {t('admin.promoGroups.servers')}:
+            </span>
+            <Input
               type="number"
               value={serverDiscount}
               onChange={(e) => {
@@ -230,17 +235,19 @@ export default function AdminPromoGroupCreate() {
                   setServerDiscount(Math.min(100, Math.max(0, parseInt(val) || 0)));
                 }
               }}
-              className="input w-20"
+              className="w-20"
               min={0}
               max={100}
               placeholder="0"
             />
-            <span className="text-dark-400">%</span>
+            <span className="text-muted-foreground">%</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="w-32 text-sm text-dark-400">{t('admin.promoGroups.traffic')}:</span>
-            <input
+            <span className="text-muted-foreground w-32 text-sm">
+              {t('admin.promoGroups.traffic')}:
+            </span>
+            <Input
               type="number"
               value={trafficDiscount}
               onChange={(e) => {
@@ -251,17 +258,19 @@ export default function AdminPromoGroupCreate() {
                   setTrafficDiscount(Math.min(100, Math.max(0, parseInt(val) || 0)));
                 }
               }}
-              className="input w-20"
+              className="w-20"
               min={0}
               max={100}
               placeholder="0"
             />
-            <span className="text-dark-400">%</span>
+            <span className="text-muted-foreground">%</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="w-32 text-sm text-dark-400">{t('admin.promoGroups.devices')}:</span>
-            <input
+            <span className="text-muted-foreground w-32 text-sm">
+              {t('admin.promoGroups.devices')}:
+            </span>
+            <Input
               type="number"
               value={deviceDiscount}
               onChange={(e) => {
@@ -272,41 +281,45 @@ export default function AdminPromoGroupCreate() {
                   setDeviceDiscount(Math.min(100, Math.max(0, parseInt(val) || 0)));
                 }
               }}
-              className="input w-20"
+              className="w-20"
               min={0}
               max={100}
               placeholder="0"
             />
-            <span className="text-dark-400">%</span>
+            <span className="text-muted-foreground">%</span>
           </div>
         </div>
 
         {/* Period Discounts */}
-        <div className="space-y-3 rounded-lg bg-dark-700/50 p-4">
+        <div className="bg-muted/50 space-y-3 rounded-lg p-4">
           <div className="mb-2 flex items-center justify-between">
-            <h4 className="text-sm font-medium text-dark-200">
+            <h4 className="text-foreground text-sm font-medium">
               {t('admin.promoGroups.form.periodDiscounts')}
             </h4>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={addPeriodDiscount}
-              className="flex items-center gap-1 rounded bg-accent-500/20 px-2 py-1 text-xs text-accent-400 transition-colors hover:bg-accent-500/30"
+              className="bg-primary/20 text-primary hover:bg-primary/30 flex h-auto items-center gap-1 px-2 py-1 text-xs"
             >
               <PlusIcon />
               {t('admin.promoGroups.form.add')}
-            </button>
+            </Button>
           </div>
-          <p className="mb-3 text-xs text-dark-500">{t('admin.promoGroups.form.periodHint')}</p>
+          <p className="text-muted-foreground mb-3 text-xs">
+            {t('admin.promoGroups.form.periodHint')}
+          </p>
 
           {periodDiscounts.length === 0 ? (
-            <p className="py-2 text-center text-sm text-dark-500">
+            <p className="text-muted-foreground py-2 text-center text-sm">
               {t('admin.promoGroups.form.noPeriods')}
             </p>
           ) : (
             <div className="space-y-2">
               {periodDiscounts.map((pd, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="number"
                     value={pd.days}
                     onChange={(e) => {
@@ -315,12 +328,14 @@ export default function AdminPromoGroupCreate() {
                       const num = parseInt(val);
                       if (!isNaN(num)) updatePeriodDiscount(index, 'days', num);
                     }}
-                    className="input w-20"
+                    className="w-20"
                     min={1}
                     placeholder={t('admin.promoGroups.form.daysPlaceholder')}
                   />
-                  <span className="text-xs text-dark-400">{t('admin.promoGroups.form.arrow')}</span>
-                  <input
+                  <span className="text-muted-foreground text-xs">
+                    {t('admin.promoGroups.form.arrow')}
+                  </span>
+                  <Input
                     type="number"
                     value={pd.percent}
                     onChange={(e) => {
@@ -329,19 +344,21 @@ export default function AdminPromoGroupCreate() {
                       const num = parseInt(val);
                       if (!isNaN(num)) updatePeriodDiscount(index, 'percent', num);
                     }}
-                    className="input w-20"
+                    className="w-20"
                     min={0}
                     max={100}
                     placeholder="%"
                   />
-                  <span className="text-dark-400">%</span>
-                  <button
+                  <span className="text-muted-foreground">%</span>
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => removePeriodDiscount(index)}
-                    className="p-1 text-dark-400 transition-colors hover:text-error-400"
+                    className="text-muted-foreground hover:text-error-400"
                   >
                     <TrashIcon />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -350,11 +367,11 @@ export default function AdminPromoGroupCreate() {
 
         {/* Auto-assign */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-dark-300">
+          <label className="text-muted-foreground mb-2 block text-sm font-medium">
             {t('admin.promoGroups.form.autoAssign')}
           </label>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="number"
               value={autoAssignSpent}
               onChange={(e) => {
@@ -365,22 +382,25 @@ export default function AdminPromoGroupCreate() {
                   setAutoAssignSpent(Math.max(0, parseFloat(val) || 0));
                 }
               }}
-              className="input w-32"
+              className="w-32"
               min={0}
               placeholder="0"
             />
-            <span className="text-dark-400">{t('admin.promoGroups.form.rub')}</span>
+            <span className="text-muted-foreground">{t('admin.promoGroups.form.rub')}</span>
           </div>
-          <p className="mt-1 text-xs text-dark-500">{t('admin.promoGroups.form.autoAssignHint')}</p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {t('admin.promoGroups.form.autoAssignHint')}
+          </p>
         </div>
 
         {/* Apply to addons */}
         <label className="flex cursor-pointer items-center gap-3">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setApplyToAddons(!applyToAddons)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
-              applyToAddons ? 'bg-accent-500' : 'bg-dark-600'
+            className={`relative h-6 w-11 rounded-full p-0 transition-colors ${
+              applyToAddons ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
             }`}
           >
             <span
@@ -388,17 +408,20 @@ export default function AdminPromoGroupCreate() {
                 applyToAddons ? 'left-6' : 'left-1'
               }`}
             />
-          </button>
-          <span className="text-sm text-dark-200">{t('admin.promoGroups.form.applyToAddons')}</span>
+          </Button>
+          <span className="text-foreground text-sm">
+            {t('admin.promoGroups.form.applyToAddons')}
+          </span>
         </label>
 
         {/* Default group */}
         <label className="flex cursor-pointer items-center gap-3">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setIsDefault(!isDefault)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
-              isDefault ? 'bg-accent-500' : 'bg-dark-600'
+            className={`relative h-6 w-11 rounded-full p-0 transition-colors ${
+              isDefault ? 'bg-primary hover:bg-primary' : 'bg-muted hover:bg-muted'
             }`}
           >
             <span
@@ -406,27 +429,27 @@ export default function AdminPromoGroupCreate() {
                 isDefault ? 'left-6' : 'left-1'
               }`}
             />
-          </button>
-          <span className="text-sm text-dark-200">{t('admin.promoGroups.form.isDefault')}</span>
+          </Button>
+          <span className="text-foreground text-sm">{t('admin.promoGroups.form.isDefault')}</span>
         </label>
-      </div>
+      </Card>
 
       {/* Footer */}
-      <div className="card">
+      <Card>
         <div className="flex justify-end gap-3">
-          <button onClick={() => navigate('/admin/promo-groups')} className="btn-secondary">
+          <Button variant="secondary" onClick={() => navigate('/admin/promo-groups')}>
             {t('admin.promoGroups.form.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
             disabled={!isValid || isLoading}
-            className="btn-primary flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             {isLoading && <RefreshIcon />}
             {isLoading ? t('admin.promoGroups.form.saving') : t('admin.promoGroups.form.save')}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

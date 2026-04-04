@@ -35,7 +35,7 @@ export interface SkeletonProps {
   animate?: boolean;
 }
 
-const baseClasses = 'bg-dark-800/50 rounded';
+const baseClasses = 'bg-muted rounded';
 const animateClasses = 'animate-pulse';
 
 export function Skeleton({
@@ -78,22 +78,22 @@ export function Skeleton({
         return (
           <div
             key={index}
-            className={`${baseClasses} ${animation} rounded-[var(--bento-radius,24px)] border border-dark-700/30 p-4 ${className}`}
+            className={`${baseClasses} ${animation} border-border rounded-[var(--bento-radius,24px)] border p-4 ${className}`}
             style={style}
           >
             {/* Header */}
             <div className="mb-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-dark-700/50" />
+              <div className="bg-muted/50 h-10 w-10 rounded-full" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 rounded bg-dark-700/50" />
-                <div className="h-3 w-1/2 rounded bg-dark-700/50" />
+                <div className="bg-muted/50 h-4 w-3/4 rounded" />
+                <div className="bg-muted/50 h-3 w-1/2 rounded" />
               </div>
             </div>
             {/* Content */}
             <div className="space-y-2">
-              <div className="h-3 w-full rounded bg-dark-700/50" />
-              <div className="h-3 w-5/6 rounded bg-dark-700/50" />
-              <div className="h-3 w-4/6 rounded bg-dark-700/50" />
+              <div className="bg-muted/50 h-3 w-full rounded" />
+              <div className="bg-muted/50 h-3 w-5/6 rounded" />
+              <div className="bg-muted/50 h-3 w-4/6 rounded" />
             </div>
           </div>
         );
@@ -105,10 +105,10 @@ export function Skeleton({
             className={`${baseClasses} ${animation} flex items-center gap-3 p-3 ${className}`}
             style={style}
           >
-            <div className="h-10 w-10 shrink-0 rounded-lg bg-dark-700/50" />
+            <div className="bg-muted/50 h-10 w-10 shrink-0 rounded-lg" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 w-3/4 rounded bg-dark-700/50" />
-              <div className="h-3 w-1/2 rounded bg-dark-700/50" />
+              <div className="bg-muted/50 h-4 w-3/4 rounded" />
+              <div className="bg-muted/50 h-3 w-1/2 rounded" />
             </div>
           </div>
         );
@@ -118,7 +118,7 @@ export function Skeleton({
         return (
           <div
             key={index}
-            className={`${baseClasses} ${animation} min-h-[160px] w-full rounded-[var(--bento-radius,24px)] border border-dark-700/30 ${className}`}
+            className={`${baseClasses} ${animation} border-border min-h-40 w-full rounded-[var(--bento-radius,24px)] border ${className}`}
             style={style}
           />
         );

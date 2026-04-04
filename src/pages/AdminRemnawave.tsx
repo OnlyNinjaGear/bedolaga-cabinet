@@ -24,10 +24,11 @@ import {
   ArrowPathIcon,
   RemnawaveIcon,
 } from '../components/icons';
+import { Button } from '@/components/ui/button';
 
 const BackIcon = () => (
   <svg
-    className="h-5 w-5 text-dark-400"
+    className="text-muted-foreground h-5 w-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -98,22 +99,22 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, color = 'accent', subValue }: StatCardProps) {
   const colorClasses: Record<string, string> = {
-    accent: 'bg-accent-500/20 text-accent-400',
+    accent: 'bg-primary/20 text-primary',
     green: 'bg-success-500/20 text-success-400',
-    blue: 'bg-accent-500/20 text-accent-400',
+    blue: 'bg-primary/20 text-primary',
     orange: 'bg-warning-500/20 text-warning-400',
     red: 'bg-error-500/20 text-error-400',
-    purple: 'bg-accent-500/20 text-accent-400',
+    purple: 'bg-primary/20 text-primary',
   };
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+    <div className="border-border bg-card/50 rounded-xl border p-4">
       <div className="flex items-center gap-3">
         <div className={`rounded-lg p-2 ${colorClasses[color]}`}>{icon}</div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs text-dark-400">{label}</p>
-          <p className="text-lg font-semibold text-dark-100">{value}</p>
-          {subValue && <p className="text-xs text-dark-500">{subValue}</p>}
+          <p className="text-muted-foreground truncate text-xs">{label}</p>
+          <p className="text-foreground text-lg font-semibold">{value}</p>
+          {subValue && <p className="text-muted-foreground text-xs">{subValue}</p>}
         </div>
       </div>
     </div>
@@ -130,7 +131,7 @@ function NodeCard({ node, onAction, isLoading }: NodeCardProps) {
   const { t } = useTranslation();
 
   const statusColor = node.is_disabled
-    ? 'text-dark-500'
+    ? 'text-muted-foreground'
     : node.is_connected && node.is_node_online
       ? 'text-success-400'
       : 'text-error-400';
@@ -142,19 +143,19 @@ function NodeCard({ node, onAction, isLoading }: NodeCardProps) {
       : t('admin.remnawave.nodes.offline', 'Offline');
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4 transition-colors hover:border-dark-600">
+    <div className="border-border bg-card/50 hover:border-border rounded-xl border p-4 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-lg">{getCountryFlag(node.country_code)}</span>
-            <h3 className="truncate font-medium text-dark-100">{node.name}</h3>
+            <h3 className="text-foreground truncate font-medium">{node.name}</h3>
             <span className={`rounded-full px-2 py-0.5 text-xs ${statusColor} bg-current/10`}>
               {statusText}
             </span>
           </div>
-          <p className="mt-1 truncate text-xs text-dark-500">{node.address}</p>
+          <p className="text-muted-foreground mt-1 truncate text-xs">{node.address}</p>
 
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-dark-400">
+          <div className="text-muted-foreground mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
             <span className="flex items-center gap-1">
               <UsersIcon className="h-3.5 w-3.5" />
               {t('admin.remnawave.nodes.usersOnlineCount', '{{count}} online', {
@@ -177,18 +178,21 @@ function NodeCard({ node, onAction, isLoading }: NodeCardProps) {
         </div>
 
         <div className="flex shrink-0 gap-1.5">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onAction(node.uuid, 'restart')}
             disabled={isLoading || node.is_disabled}
-            className="rounded-lg bg-dark-700 p-2 text-dark-300 transition-colors hover:bg-dark-600 hover:text-dark-100 disabled:cursor-not-allowed disabled:opacity-50"
             title={t('admin.remnawave.nodes.restart', 'Restart')}
           >
             <ArrowPathIcon className="h-4 w-4" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onAction(node.uuid, node.is_disabled ? 'enable' : 'disable')}
             disabled={isLoading}
-            className={`rounded-lg p-2 transition-colors disabled:opacity-50 ${
+            className={`rounded-lg transition-colors disabled:opacity-50 ${
               node.is_disabled
                 ? 'bg-success-500/20 text-success-400 hover:bg-success-500/30'
                 : 'bg-error-500/20 text-error-400 hover:bg-error-500/30'
@@ -200,7 +204,7 @@ function NodeCard({ node, onAction, isLoading }: NodeCardProps) {
             }
           >
             {node.is_disabled ? <PlayIcon className="h-4 w-4" /> : <StopIcon className="h-4 w-4" />}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -218,28 +222,28 @@ function SquadCard({ squad, onClick }: SquadCardProps) {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer rounded-xl border border-dark-700 bg-dark-800/50 p-4 transition-colors hover:border-dark-600"
+      className="border-border bg-card/50 hover:border-border cursor-pointer rounded-xl border p-4 transition-colors"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-lg">{getCountryFlag(squad.country_code)}</span>
-            <h3 className="truncate font-medium text-dark-100">
+            <h3 className="text-foreground truncate font-medium">
               {squad.display_name || squad.name}
             </h3>
             {squad.is_synced ? (
-              <span className="rounded-full bg-success-500/20 px-2 py-0.5 text-xs text-success-400">
+              <span className="bg-success-500/20 text-success-400 rounded-full px-2 py-0.5 text-xs">
                 {t('admin.remnawave.squads.synced', 'Synced')}
               </span>
             ) : (
-              <span className="rounded-full bg-warning-500/20 px-2 py-0.5 text-xs text-warning-400">
+              <span className="bg-warning-500/20 text-warning-400 rounded-full px-2 py-0.5 text-xs">
                 {t('admin.remnawave.squads.notSynced', 'Not synced')}
               </span>
             )}
           </div>
-          <p className="mt-1 truncate text-xs text-dark-500">{squad.name}</p>
+          <p className="text-muted-foreground mt-1 truncate text-xs">{squad.name}</p>
 
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-dark-400">
+          <div className="text-muted-foreground mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
             <span className="flex items-center gap-1">
               <UsersIcon className="h-3.5 w-3.5" />
               {t('admin.remnawave.squads.membersCount', '{{count}} members', {
@@ -267,7 +271,7 @@ function SquadCard({ squad, onClick }: SquadCardProps) {
         </div>
 
         <svg
-          className="h-5 w-5 shrink-0 text-dark-500"
+          className="text-muted-foreground h-5 w-5 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -292,11 +296,11 @@ function SyncCard({ title, description, onAction, isLoading, lastResult }: SyncC
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+    <div className="border-border bg-card/50 rounded-xl border p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="font-medium text-dark-100">{title}</h3>
-          <p className="mt-1 text-xs text-dark-400">{description}</p>
+          <h3 className="text-foreground font-medium">{title}</h3>
+          <p className="text-muted-foreground mt-1 text-xs">{description}</p>
           {lastResult && (
             <p
               className={`mt-2 text-xs ${lastResult.success ? 'text-success-400' : 'text-error-400'}`}
@@ -305,16 +309,18 @@ function SyncCard({ title, description, onAction, isLoading, lastResult }: SyncC
             </p>
           )}
         </div>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAction}
           disabled={isLoading}
-          className="flex shrink-0 items-center gap-2 rounded-lg bg-accent-500/20 px-3 py-1.5 text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
+          className="flex shrink-0 items-center gap-2"
         >
           <RefreshIcon spinning={isLoading} />
           {isLoading
             ? t('admin.remnawave.sync.running', 'Running...')
             : t('admin.remnawave.sync.run', 'Run')}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -332,7 +338,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -340,10 +346,12 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
   if (!stats) {
     return (
       <div className="py-12 text-center">
-        <p className="text-dark-400">{t('admin.remnawave.noData', 'Failed to load data')}</p>
-        <button onClick={onRefresh} className="btn-primary mt-4">
+        <p className="text-muted-foreground">
+          {t('admin.remnawave.noData', 'Failed to load data')}
+        </p>
+        <Button onClick={onRefresh} className="mt-4">
           {t('common.retry', 'Retry')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -357,7 +365,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
     <div className="space-y-6">
       {/* System Stats */}
       <div>
-        <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-dark-300">
+        <h3 className="text-muted-foreground mb-3 flex items-center gap-2 text-sm font-medium">
           <ChartIcon className="h-4 w-4" />
           {t('admin.remnawave.overview.system', 'System')}
         </h3>
@@ -391,7 +399,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
 
       {/* Bandwidth */}
       <div>
-        <h3 className="mb-3 text-sm font-medium text-dark-300">
+        <h3 className="text-muted-foreground mb-3 text-sm font-medium">
           {t('admin.remnawave.overview.bandwidth', 'Inbound Traffic')}
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -418,7 +426,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
 
       {/* Server Info */}
       <div>
-        <h3 className="mb-3 text-sm font-medium text-dark-300">
+        <h3 className="text-muted-foreground mb-3 text-sm font-medium">
           {t('admin.remnawave.overview.server', 'Server')}
         </h3>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
@@ -446,7 +454,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
 
       {/* Traffic Periods */}
       <div>
-        <h3 className="mb-3 text-sm font-medium text-dark-300">
+        <h3 className="text-muted-foreground mb-3 text-sm font-medium">
           {t('admin.remnawave.overview.traffic', 'Traffic Statistics')}
         </h3>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
@@ -485,7 +493,7 @@ function OverviewTab({ stats, isLoading, onRefresh }: OverviewTabProps) {
 
       {/* Users by Status */}
       <div>
-        <h3 className="mb-3 text-sm font-medium text-dark-300">
+        <h3 className="text-muted-foreground mb-3 text-sm font-medium">
           {t('admin.remnawave.overview.usersByStatus', 'Users by Status')}
         </h3>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -537,7 +545,7 @@ function NodesTab({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -580,27 +588,31 @@ function NodesTab({
 
       {/* Actions */}
       <div className="flex gap-2">
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={onRefresh}
-          className="flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-1.5 text-dark-300 transition-colors hover:bg-dark-600"
+          className="flex items-center gap-2"
         >
           <RefreshIcon />
           {t('common.refresh', 'Refresh')}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onRestartAll}
           disabled={isActionLoading}
-          className="flex items-center gap-2 rounded-lg bg-warning-500/20 px-3 py-1.5 text-warning-400 transition-colors hover:bg-warning-500/30 disabled:opacity-50"
+          className="text-warning-400 hover:bg-warning-500/20 hover:text-warning-400 flex items-center gap-2"
         >
           <ArrowPathIcon />
           {t('admin.remnawave.nodes.restartAll', 'Restart All')}
-        </button>
+        </Button>
       </div>
 
       {/* Nodes List */}
       <div className="space-y-3">
         {nodes.length === 0 ? (
-          <p className="py-8 text-center text-dark-400">
+          <p className="text-muted-foreground py-8 text-center">
             {t('admin.remnawave.nodes.noNodes', 'No nodes found')}
           </p>
         ) : (
@@ -643,7 +655,7 @@ function SquadsTab({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -680,27 +692,31 @@ function SquadsTab({
 
       {/* Actions */}
       <div className="flex gap-2">
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={onRefresh}
-          className="flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-1.5 text-dark-300 transition-colors hover:bg-dark-600"
+          className="flex items-center gap-2"
         >
           <RefreshIcon />
           {t('common.refresh', 'Refresh')}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onSync}
           disabled={isSyncing}
-          className="flex items-center gap-2 rounded-lg bg-accent-500/20 px-3 py-1.5 text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
+          className="flex items-center gap-2"
         >
           <RefreshIcon spinning={isSyncing} />
           {t('admin.remnawave.squads.syncServers', 'Sync Servers')}
-        </button>
+        </Button>
       </div>
 
       {/* Squads List */}
       <div className="space-y-3">
         {squads.length === 0 ? (
-          <p className="py-8 text-center text-dark-400">
+          <p className="text-muted-foreground py-8 text-center">
             {t('admin.remnawave.squads.noSquads', 'No squads found')}
           </p>
         ) : (
@@ -737,7 +753,7 @@ function SyncTab({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -746,9 +762,9 @@ function SyncTab({
     <div className="space-y-6">
       {/* Auto Sync Status */}
       {autoSyncStatus && (
-        <div className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+        <div className="border-border bg-card/50 rounded-xl border p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="flex items-center gap-2 font-medium text-dark-100">
+            <h3 className="text-foreground flex items-center gap-2 font-medium">
               <SyncIcon />
               {t('admin.remnawave.sync.autoSync', 'Auto Sync')}
             </h3>
@@ -756,7 +772,7 @@ function SyncTab({
               className={`rounded-full px-2 py-0.5 text-xs ${
                 autoSyncStatus.enabled
                   ? 'bg-success-500/20 text-success-400'
-                  : 'bg-dark-600 text-dark-400'
+                  : 'bg-muted text-muted-foreground'
               }`}
             >
               {autoSyncStatus.enabled
@@ -766,23 +782,25 @@ function SyncTab({
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-muted-foreground text-xs">
                 {t('admin.remnawave.sync.schedule', 'Schedule')}
               </p>
-              <p className="mt-1 text-dark-200">
+              <p className="text-foreground mt-1">
                 {autoSyncStatus.times.length > 0 ? autoSyncStatus.times.join(', ') : '—'}
               </p>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">{t('admin.remnawave.sync.status', 'Status')}</p>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-muted-foreground text-xs">
+                {t('admin.remnawave.sync.status', 'Status')}
+              </p>
               <p
                 className={`mt-1 ${
                   autoSyncStatus.is_running
                     ? 'text-warning-400'
                     : autoSyncStatus.last_run_success
                       ? 'text-success-400'
-                      : 'text-dark-200'
+                      : 'text-foreground'
                 }`}
               >
                 {autoSyncStatus.is_running
@@ -792,36 +810,37 @@ function SyncTab({
                     : autoSyncStatus.last_run_error || '—'}
               </p>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-muted-foreground text-xs">
                 {t('admin.remnawave.sync.lastRun', 'Last Run')}
               </p>
-              <p className="mt-1 text-dark-200">
+              <p className="text-foreground mt-1">
                 {autoSyncStatus.last_run_finished_at
                   ? new Date(autoSyncStatus.last_run_finished_at).toLocaleString()
                   : '—'}
               </p>
             </div>
-            <div className="rounded-lg bg-dark-700/50 p-3">
-              <p className="text-xs text-dark-500">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-muted-foreground text-xs">
                 {t('admin.remnawave.sync.nextRun', 'Next Run')}
               </p>
-              <p className="mt-1 text-dark-200">
+              <p className="text-foreground mt-1">
                 {autoSyncStatus.next_run ? new Date(autoSyncStatus.next_run).toLocaleString() : '—'}
               </p>
             </div>
           </div>
 
-          <button
+          <Button
+            variant="ghost"
             onClick={onRunAutoSync}
             disabled={loadingStates.autoSync || autoSyncStatus.is_running}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-accent-500/20 px-4 py-2.5 text-sm font-medium text-accent-400 transition-colors hover:bg-accent-500/30 disabled:opacity-50"
+            className="bg-primary/20 text-primary hover:bg-primary/30 mt-4 w-full"
           >
             <RefreshIcon spinning={loadingStates.autoSync || autoSyncStatus.is_running} />
             {autoSyncStatus.is_running
               ? t('admin.remnawave.sync.running', 'Running...')
               : t('admin.remnawave.sync.runAutoSyncNow', 'Run Auto Sync Now')}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -864,7 +883,7 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -872,12 +891,12 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
   if (!data || data.length === 0) {
     return (
       <div className="py-12 text-center">
-        <p className="text-dark-400">
+        <p className="text-muted-foreground">
           {t('admin.remnawave.traffic.noData', 'No traffic data available')}
         </p>
-        <button onClick={onRefresh} className="btn-primary mt-4">
+        <Button onClick={onRefresh} className="mt-4">
           {t('common.retry', 'Retry')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -911,26 +930,26 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
 
       {/* Per-node inbound breakdown */}
       {data.map((node) => (
-        <div key={node.nodeUuid} className="rounded-xl border border-dark-700 bg-dark-800/50 p-4">
+        <div key={node.nodeUuid} className="border-border bg-card/50 rounded-xl border p-4">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {node.countryEmoji && <span className="text-lg">{node.countryEmoji}</span>}
-              <h3 className="font-medium text-dark-100">{node.nodeName}</h3>
+              <h3 className="text-foreground font-medium">{node.nodeName}</h3>
               {node.providerName && (
-                <span className="rounded bg-dark-700/50 px-1.5 py-0.5 text-xs text-dark-400">
+                <span className="bg-muted/50 text-muted-foreground rounded px-1.5 py-0.5 text-xs">
                   {node.providerName}
                 </span>
               )}
-              <span className="text-xs text-dark-500">
+              <span className="text-muted-foreground text-xs">
                 {node.usersOnline} {t('admin.remnawave.traffic.online', 'online')}
               </span>
             </div>
-            <span className="text-sm text-dark-300">{formatBytes(node.totalBytes)}</span>
+            <span className="text-muted-foreground text-sm">{formatBytes(node.totalBytes)}</span>
           </div>
 
           {(node.inbounds?.length ?? 0) > 0 && (
             <div className="space-y-1">
-              <p className="mb-2 text-xs font-medium text-dark-400">
+              <p className="text-muted-foreground mb-2 text-xs font-medium">
                 {t('admin.remnawave.traffic.inbounds', 'Inbounds')}
               </p>
               {[...(node.inbounds ?? [])]
@@ -938,13 +957,13 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
                 .map((ib) => (
                   <div
                     key={ib.tag}
-                    className="flex items-center justify-between rounded-lg bg-dark-900/50 px-3 py-2"
+                    className="bg-background/50 flex items-center justify-between rounded-lg px-3 py-2"
                   >
-                    <span className="truncate text-sm text-dark-200">{ib.tag}</span>
-                    <div className="flex shrink-0 gap-4 text-xs text-dark-400">
+                    <span className="text-foreground truncate text-sm">{ib.tag}</span>
+                    <div className="text-muted-foreground flex shrink-0 gap-4 text-xs">
                       <span>↓ {formatBytes(ib.downloadBytes)}</span>
                       <span>↑ {formatBytes(ib.uploadBytes)}</span>
-                      <span className="font-medium text-dark-300">
+                      <span className="text-muted-foreground font-medium">
                         {formatBytes(ib.totalBytes)}
                       </span>
                     </div>
@@ -955,7 +974,7 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
 
           {(node.outbounds?.length ?? 0) > 0 && (
             <div className="mt-3 space-y-1">
-              <p className="mb-2 text-xs font-medium text-dark-400">
+              <p className="text-muted-foreground mb-2 text-xs font-medium">
                 {t('admin.remnawave.traffic.outbounds', 'Outbounds')}
               </p>
               {[...(node.outbounds ?? [])]
@@ -963,13 +982,13 @@ function TrafficTab({ data, isLoading, onRefresh }: TrafficTabProps) {
                 .map((ob) => (
                   <div
                     key={ob.tag}
-                    className="flex items-center justify-between rounded-lg bg-dark-900/50 px-3 py-2"
+                    className="bg-background/50 flex items-center justify-between rounded-lg px-3 py-2"
                   >
-                    <span className="truncate text-sm text-dark-200">{ob.tag}</span>
-                    <div className="flex shrink-0 gap-4 text-xs text-dark-400">
+                    <span className="text-foreground truncate text-sm">{ob.tag}</span>
+                    <div className="text-muted-foreground flex shrink-0 gap-4 text-xs">
                       <span>↓ {formatBytes(ob.downloadBytes)}</span>
                       <span>↑ {formatBytes(ob.uploadBytes)}</span>
-                      <span className="font-medium text-dark-300">
+                      <span className="text-muted-foreground font-medium">
                         {formatBytes(ob.totalBytes)}
                       </span>
                     </div>
@@ -1143,21 +1162,23 @@ export default function AdminRemnawave() {
         <div className="flex items-center gap-3">
           {/* Show back button only on web, not in Telegram Mini App */}
           {!capabilities.hasBackButton && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => navigate('/admin')}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-dark-700 bg-dark-800 transition-colors hover:border-dark-600"
+              className="rounded-xl"
             >
               <BackIcon />
-            </button>
+            </Button>
           )}
-          <div className="rounded-lg bg-accent-500/20 p-2">
-            <RemnawaveIcon className="h-6 w-6 text-accent-400" />
+          <div className="bg-primary/20 rounded-lg p-2">
+            <RemnawaveIcon className="text-primary h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-dark-100">
+            <h1 className="text-foreground text-xl font-semibold">
               {t('admin.remnawave.title', 'RemnaWave')}
             </h1>
-            <p className="text-sm text-dark-400">
+            <p className="text-muted-foreground text-sm">
               {t('admin.remnawave.subtitle', 'Panel management and statistics')}
             </p>
           </div>
@@ -1180,26 +1201,27 @@ export default function AdminRemnawave() {
 
       {/* Configuration Error */}
       {status?.configuration_error && (
-        <div className="mb-4 rounded-xl border border-error-500/30 bg-error-500/10 p-4">
-          <p className="text-sm text-error-400">{status.configuration_error}</p>
+        <div className="border-error-500/30 bg-error-500/10 mb-4 rounded-xl border p-4">
+          <p className="text-error-400 text-sm">{status.configuration_error}</p>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-dark-800/50 p-1">
+      <div className="bg-card/50 mb-6 flex gap-1 overflow-x-auto rounded-xl p-1">
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.id}
+            variant="ghost"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex min-w-[80px] flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            className={`min-w-20 flex-1 gap-2 ${
               activeTab === tab.id
-                ? 'bg-accent-500/20 text-accent-400'
-                : 'text-dark-400 hover:bg-dark-700/50 hover:text-dark-200'
+                ? 'bg-primary/20 text-primary hover:bg-primary/20 hover:text-primary'
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
             }`}
           >
             {tab.icon}
             <span className="hidden sm:inline">{tab.label}</span>
-          </button>
+          </Button>
         ))}
       </div>
 

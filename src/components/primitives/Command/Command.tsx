@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 // Search icon
 const SearchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-dark-400">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-muted-foreground">
     <path
       d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9"
       stroke="currentColor"
@@ -22,8 +22,8 @@ export const Command = forwardRef<HTMLDivElement, CommandProps>(({ className, ..
   <CommandPrimitive
     ref={ref}
     className={cn(
-      'flex h-full w-full flex-col overflow-hidden rounded-linear-lg',
-      'bg-dark-900/95 text-dark-100 backdrop-blur-linear',
+      'rounded-linear-lg flex h-full w-full flex-col overflow-hidden',
+      'bg-popover text-popover-foreground backdrop-blur-linear',
       className,
     )}
     {...props}
@@ -37,13 +37,13 @@ export type CommandInputProps = ComponentPropsWithoutRef<typeof CommandPrimitive
 
 export const CommandInput = forwardRef<HTMLInputElement, CommandInputProps>(
   ({ className, ...props }, ref) => (
-    <div className="flex items-center border-b border-dark-700/50 px-3" cmdk-input-wrapper="">
+    <div className="border-input flex items-center border-b px-3" cmdk-input-wrapper="">
       <SearchIcon />
       <CommandPrimitive.Input
         ref={ref}
         className={cn(
-          'flex h-12 w-full bg-transparent py-3 pl-2 text-sm text-dark-100',
-          'placeholder:text-dark-400',
+          'text-foreground flex h-12 w-full bg-transparent py-3 pl-2 text-sm',
+          'placeholder:text-muted-foreground',
           'focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           className,
@@ -64,8 +64,8 @@ export const CommandList = forwardRef<HTMLDivElement, CommandListProps>(
     <CommandPrimitive.List
       ref={ref}
       className={cn(
-        'max-h-[300px] overflow-y-auto overflow-x-hidden',
-        'scrollbar-thin scrollbar-track-transparent scrollbar-thumb-dark-700',
+        'max-h-75 overflow-x-hidden overflow-y-auto',
+        'scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted',
         className,
       )}
       {...props}
@@ -82,7 +82,7 @@ export const CommandEmpty = forwardRef<HTMLDivElement, CommandEmptyProps>(
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Empty
       ref={ref}
-      className={cn('py-6 text-center text-sm text-dark-400', className)}
+      className={cn('text-muted-foreground py-6 text-center text-sm', className)}
       {...props}
     />
   ),
@@ -98,9 +98,9 @@ export const CommandGroup = forwardRef<HTMLDivElement, CommandGroupProps>(
     <CommandPrimitive.Group
       ref={ref}
       className={cn(
-        'overflow-hidden p-1 text-dark-100',
+        'text-foreground overflow-hidden p-1',
         '[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5',
-        '[&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-dark-400',
+        '[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
         className,
       )}
       {...props}
@@ -117,7 +117,7 @@ export const CommandSeparator = forwardRef<HTMLDivElement, CommandSeparatorProps
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Separator
       ref={ref}
-      className={cn('-mx-1 h-px bg-dark-700/50', className)}
+      className={cn('bg-border -mx-1 h-px', className)}
       {...props}
     />
   ),
@@ -133,9 +133,9 @@ export const CommandItem = forwardRef<HTMLDivElement, CommandItemProps>(
     <CommandPrimitive.Item
       ref={ref}
       className={cn(
-        'relative flex cursor-pointer select-none items-center gap-2 rounded-linear px-2 py-2',
-        'text-sm text-dark-200 outline-none',
-        'aria-selected:bg-dark-800/80 aria-selected:text-dark-100',
+        'rounded-linear relative flex cursor-pointer items-center gap-2 px-2 py-2 select-none',
+        'text-foreground text-sm outline-none',
+        'aria-selected:bg-muted aria-selected:text-foreground',
         'data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
         'transition-colors duration-150',
         className,
@@ -151,7 +151,10 @@ CommandItem.displayName = 'CommandItem';
 export type CommandShortcutProps = HTMLAttributes<HTMLSpanElement>;
 
 export const CommandShortcut = ({ className, ...props }: CommandShortcutProps) => (
-  <span className={cn('ml-auto text-xs tracking-widest text-dark-400', className)} {...props} />
+  <span
+    className={cn('text-muted-foreground ml-auto text-xs tracking-widest', className)}
+    {...props}
+  />
 );
 
 CommandShortcut.displayName = 'CommandShortcut';
@@ -163,7 +166,7 @@ export const CommandLoading = forwardRef<HTMLDivElement, CommandLoadingProps>(
   ({ className, ...props }, ref) => (
     <CommandPrimitive.Loading
       ref={ref}
-      className={cn('py-6 text-center text-sm text-dark-400', className)}
+      className={cn('text-muted-foreground py-6 text-center text-sm', className)}
       {...props}
     />
   ),

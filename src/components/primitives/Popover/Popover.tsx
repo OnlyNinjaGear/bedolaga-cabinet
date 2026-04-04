@@ -43,8 +43,8 @@ export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
         sideOffset={sideOffset}
         className={cn(
           'z-50 w-72 overflow-hidden',
-          'rounded-linear-lg border border-dark-700/50 bg-dark-900/95 backdrop-blur-linear',
-          'p-4 text-dark-100 shadow-linear-lg outline-none',
+          'rounded-linear-lg border-border bg-popover backdrop-blur-linear border',
+          'text-popover-foreground shadow-linear-lg p-4 outline-none',
           className,
         )}
         asChild
@@ -61,10 +61,10 @@ export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
           {showCloseButton && (
             <PopoverPrimitive.Close
               className={cn(
-                'absolute right-2 top-2 rounded-linear p-1.5',
-                'text-dark-400 opacity-70 transition-all',
-                'hover:bg-dark-800/80 hover:opacity-100',
-                'focus:outline-none focus:ring-2 focus:ring-accent-500/50',
+                'rounded-linear absolute top-2 right-2 p-1.5',
+                'text-muted-foreground opacity-70 transition-all',
+                'hover:bg-muted hover:opacity-100',
+                'focus:ring-ring/50 focus:ring-2 focus:outline-none',
               )}
             >
               <CloseIcon />
@@ -84,7 +84,7 @@ export type PopoverArrowProps = ComponentPropsWithoutRef<typeof PopoverPrimitive
 
 export const PopoverArrow = forwardRef<SVGSVGElement, PopoverArrowProps>(
   ({ className, ...props }, ref) => (
-    <PopoverPrimitive.Arrow ref={ref} className={cn('fill-dark-800', className)} {...props} />
+    <PopoverPrimitive.Arrow ref={ref} className={cn('fill-card', className)} {...props} />
   ),
 );
 

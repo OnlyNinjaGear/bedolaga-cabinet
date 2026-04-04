@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { RemnawaveButtonClient, LocalizedText } from '@/types';
+import { Button } from '@/components/ui/button';
 
 // eslint-disable-next-line no-script-url
 const dangerousSchemes = ['javascript:', 'data:', 'vbscript:', 'file:'];
@@ -83,11 +84,11 @@ export function BlockButtons({
   const baseClass =
     variant === 'light'
       ? isLight
-        ? 'rounded-xl border border-accent-500/50 px-4 py-2 text-sm font-medium text-accent-600 shadow-sm transition-all hover:bg-accent-500/10'
-        : 'rounded-xl border border-accent-500/40 px-4 py-2 text-sm font-medium text-accent-400 transition-all hover:bg-accent-500/10'
+        ? 'rounded-xl border border-primary/50 px-4 py-2 text-sm font-medium text-primary shadow-sm transition-all hover:bg-primary/10'
+        : 'rounded-xl border border-primary/40 px-4 py-2 text-sm font-medium text-primary transition-all hover:bg-primary/10'
       : isLight
-        ? 'rounded-xl px-3 py-1.5 text-sm font-medium text-dark-300 transition-all hover:bg-dark-700/30'
-        : 'rounded-xl px-3 py-1.5 text-sm font-medium text-dark-300 transition-all hover:bg-dark-700/50';
+        ? 'rounded-xl px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:bg-muted/30'
+        : 'rounded-xl px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:bg-muted/50';
 
   return (
     <div className="mt-3 flex flex-wrap gap-2">
@@ -105,14 +106,15 @@ export function BlockButtons({
           const url = btn.resolvedUrl || btn.url || btn.link || deepLink || subscriptionUrl;
           if (!url || !isValidDeepLink(url)) return null;
           return (
-            <button
+            <Button
               key={idx}
               onClick={() => onOpenDeepLink(url)}
+              variant="outline"
               className={`flex items-center gap-2 ${baseClass}`}
             >
               {btnIcon}
               {btnText || getBaseTranslation('openApp', 'subscription.connection.openLink')}
-            </button>
+            </Button>
           );
         }
 
@@ -121,12 +123,13 @@ export function BlockButtons({
           const url = btn.resolvedUrl || subscriptionUrl;
           if (!url) return null;
           return (
-            <button
+            <Button
               key={idx}
               onClick={() => handleCopy(url)}
+              variant="outline"
               className={`flex items-center gap-2 ${
                 copied
-                  ? `rounded-xl border border-success-500 bg-success-500/10 px-4 py-2 text-sm font-medium ${isLight ? 'text-success-600' : 'text-success-400'}`
+                  ? `border-success-500 bg-success-500/10 rounded-xl border px-4 py-2 text-sm font-medium ${isLight ? 'text-success-600' : 'text-success-400'}`
                   : baseClass
               }`}
             >
@@ -134,7 +137,7 @@ export function BlockButtons({
               {copied
                 ? t('subscription.connection.copied')
                 : btnText || getBaseTranslation('copyLink', 'subscription.connection.copyLink')}
-            </button>
+            </Button>
           );
         }
 

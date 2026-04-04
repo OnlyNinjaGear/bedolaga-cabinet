@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router';
 import { promoApi, PromoOffer } from '../api/promo';
 import { ClockIcon, CheckIcon } from './icons';
 import { usePlatform } from '@/platform/hooks/usePlatform';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // Helper functions
 const formatTimeLeft = (
@@ -209,25 +211,25 @@ export default function PromoOffersSection({ className = '' }: PromoOffersSectio
     <div className={`space-y-4 ${className}`}>
       {/* Active Discount Banner with actions */}
       {activeDiscount && activeDiscount.is_active && activeDiscount.discount_percent > 0 && (
-        <div className="card border-success-500/30 bg-gradient-to-br from-success-500/10 to-accent-500/5">
+        <Card className="border-success-500/30 from-success-500/10 to-primary/5 bg-linear-to-br">
           <div className="flex flex-col gap-4">
             {/* Header */}
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-success-500/20 text-success-400">
+              <div className="bg-success-500/20 text-success-400 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
                 <span className="text-2xl">🏷️</span>
               </div>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold text-dark-100">
+                  <h3 className="text-foreground font-semibold">
                     {t('promo.offers.discountActiveTitle', {
                       percent: activeDiscount.discount_percent,
                     })}
                   </h3>
-                  <span className="rounded bg-success-500/20 px-2 py-0.5 text-xs font-bold text-success-400">
+                  <span className="bg-success-500/20 text-success-400 rounded px-2 py-0.5 text-xs font-bold">
                     -{activeDiscount.discount_percent}%
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-dark-400">
+                <div className="text-muted-foreground flex items-center gap-4 text-sm">
                   {activeDiscount.expires_at && (
                     <div className="flex items-center gap-1">
                       <ClockIcon />
@@ -244,34 +246,35 @@ export default function PromoOffersSection({ className = '' }: PromoOffersSectio
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2 sm:flex-row">
-              <button
+              <Button
                 onClick={handleUseNow}
-                className="flex-1 rounded-xl bg-gradient-to-r from-success-500 to-success-600 px-4 py-2.5 font-semibold text-white shadow-lg shadow-success-500/25 transition-all hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700"
+                className="from-success-500 to-success-600 text-primary-foreground shadow-success-500/25 hover:from-success-400 hover:to-success-500 active:from-success-600 active:to-success-700 flex-1 bg-linear-to-r font-semibold shadow-lg"
               >
                 {t('promo.useNow')}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleDeactivateClick}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-dark-600/50 bg-dark-900/50 px-4 py-2.5 text-sm text-dark-400 transition-colors hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400"
+                className="hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive gap-1.5"
               >
                 <XCircleIcon />
                 <span>{t('promo.deactivate.button')}</span>
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Success/Error Messages */}
       {successMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-success-500/30 bg-success-500/10 p-4 text-success-400">
+        <div className="border-success-500/30 bg-success-500/10 text-success-400 flex items-center gap-3 rounded-xl border p-4">
           <CheckIcon />
           <span>{successMessage}</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="rounded-xl border border-error-500/30 bg-error-500/10 p-4 text-error-400">
+        <div className="border-error-500/30 bg-error-500/10 text-error-400 rounded-xl border p-4">
           {errorMessage}
         </div>
       )}
@@ -280,41 +283,43 @@ export default function PromoOffersSection({ className = '' }: PromoOffersSectio
       {availableOffers.length > 0 && (
         <div className="space-y-3">
           {availableOffers.map((offer) => (
-            <div
+            <Card
               key={offer.id}
-              className="card border-orange-500/30 bg-gradient-to-br from-orange-500/5 to-transparent transition-colors hover:border-orange-500/50"
+              className="border-primary/30 from-primary/5 hover:border-primary/50 bg-linear-to-br to-transparent transition-colors"
             >
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500/30 to-amber-500/20">
+                <div className="from-primary/30 to-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br">
                   {getOfferIcon(offer.effect_type, offer.discount_percent)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex items-center gap-2">
-                    <h3 className="font-semibold text-dark-100">{getOfferTitle(offer, t)}</h3>
+                    <h3 className="text-foreground font-semibold">{getOfferTitle(offer, t)}</h3>
                     {offer.effect_type === 'test_access' && (
-                      <span className="rounded bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
+                      <span className="bg-secondary text-muted-foreground rounded px-2 py-0.5 text-xs">
                         {t('promo.offers.test')}
                       </span>
                     )}
                   </div>
-                  <p className="mb-3 text-sm text-dark-400">{getOfferDescription(offer, t)}</p>
+                  <p className="text-muted-foreground mb-3 text-sm">
+                    {getOfferDescription(offer, t)}
+                  </p>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-1 text-xs text-dark-500">
+                    <div className="text-muted-foreground flex items-center gap-1 text-xs">
                       <ClockIcon />
                       <span>
                         {t('promo.offers.remaining', { time: formatTimeLeft(offer.expires_at, t) })}
                       </span>
                     </div>
-                    <button
+                    <Button
                       onClick={() => handleClaim(offer.id)}
                       disabled={claimingId === offer.id}
-                      className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:scale-105 hover:shadow-xl hover:shadow-orange-500/30 active:scale-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 sm:w-auto"
+                      className="group shadow-primary/25 hover:shadow-primary/30 from-primary to-primary/80 relative h-auto w-full gap-2 overflow-hidden bg-linear-to-r px-5 py-2.5 text-sm font-semibold shadow-lg hover:scale-105 hover:shadow-xl active:scale-100 disabled:cursor-not-allowed disabled:hover:scale-100 sm:w-auto"
                     >
                       {/* Shimmer effect */}
-                      <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
+                      <span className="via-primary-foreground/20 absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
                       {claimingId === offer.id ? (
                         <>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          <div className="border-primary-foreground h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                           <span>{t('promo.offers.activating')}</span>
                         </>
                       ) : (
@@ -323,26 +328,26 @@ export default function PromoOffersSection({ className = '' }: PromoOffersSectio
                           <span>{t('promo.offers.activate')}</span>
                         </>
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
       {/* Loading State */}
       {offersLoading && (
-        <div className="card">
+        <Card>
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 animate-pulse rounded-xl bg-dark-700" />
+            <div className="bg-muted h-12 w-12 animate-pulse rounded-xl" />
             <div className="flex-1 space-y-2">
-              <div className="h-5 w-32 animate-pulse rounded bg-dark-700" />
-              <div className="h-4 w-48 animate-pulse rounded bg-dark-700" />
+              <div className="bg-muted h-5 w-32 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-48 animate-pulse rounded" />
             </div>
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );

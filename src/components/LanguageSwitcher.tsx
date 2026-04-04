@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useRef, useEffect } from 'react';
 import { infoApi, type LanguageInfo } from '@/api/info';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
@@ -49,42 +51,46 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
+      <Button
+        variant="ghost"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2 text-sm transition-all ${
+        className={cn(
+          'h-auto gap-1.5 rounded-xl border px-2.5 py-2 text-sm',
           isOpen
-            ? 'border-dark-600 bg-dark-700'
-            : 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600 hover:bg-dark-700'
-        }`}
+            ? 'border-border bg-muted hover:bg-muted'
+            : 'border-border/50 bg-card/50 hover:border-border hover:bg-muted',
+        )}
         aria-label="Change language"
       >
         <span>{currentLang.flag}</span>
-        <span className="font-medium text-dark-200">{currentLang.code.toUpperCase()}</span>
+        <span className="text-foreground font-medium">{currentLang.code.toUpperCase()}</span>
         <svg
-          className={`h-3.5 w-3.5 text-dark-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-muted-foreground h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
+      </Button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-40 animate-fade-in rounded-xl border border-dark-700/50 bg-dark-800 py-1 shadow-lg">
+        <div className="animate-fade-in border-border/50 bg-card absolute right-0 z-50 mt-2 w-40 rounded-xl border py-1 shadow-lg">
           {availableLanguages.map((lang) => (
-            <button
+            <Button
               key={lang.code}
+              variant="ghost"
               onClick={() => changeLanguage(lang.code)}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+              className={cn(
+                'h-auto w-full justify-start gap-3 px-4 py-2.5 text-sm',
                 lang.code === i18n.language
-                  ? 'bg-accent-500/10 text-accent-400'
-                  : 'text-dark-300 hover:bg-dark-700/50'
-              }`}
+                  ? 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary'
+                  : 'text-muted-foreground hover:bg-muted/50',
+              )}
             >
               <span>{lang.flag}</span>
               <span>{lang.name}</span>
-            </button>
+            </Button>
           ))}
         </div>
       )}

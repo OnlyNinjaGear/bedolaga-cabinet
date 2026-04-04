@@ -35,14 +35,16 @@ export function TrialsTab({ params }: TrialsTabProps) {
     return (
       <div className="animate-pulse space-y-4">
         {Array.from({ length: 3 }, (_, i) => (
-          <div key={i} className="h-24 rounded-xl bg-dark-800/30" />
+          <div key={i} className="bg-card/30 h-24 rounded-xl" />
         ))}
       </div>
     );
   }
 
   if (isError || !data) {
-    return <div className="py-8 text-center text-red-400">{t('admin.salesStats.loadError')}</div>;
+    return (
+      <div className="text-destructive py-8 text-center">{t('admin.salesStats.loadError')}</div>
+    );
   }
 
   const pieData = data.by_provider.map((item) => ({

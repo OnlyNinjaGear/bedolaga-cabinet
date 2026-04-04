@@ -11,10 +11,13 @@ import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PlatformProvider } from './platform/PlatformProvider';
 import { ThemeColorsProvider } from './providers/ThemeColorsProvider';
+import { useThemeInit } from './hooks/useThemeInit';
 import { WebSocketProvider } from './providers/WebSocketProvider';
-import { ToastProvider } from './components/Toast';
+import { Toaster } from './components/ui/sonner';
 import { TooltipProvider } from './components/primitives/Tooltip';
 import { isInTelegramWebApp } from './hooks/useTelegramSDK';
+import { GlobalSearch } from './components/admin/GlobalSearch';
+import { KeyboardShortcutsHelp } from './components/admin/KeyboardShortcutsHelp';
 
 const TWEMOJI_OPTIONS = { className: 'twemoji', folder: 'svg', ext: '.svg' } as const;
 
@@ -63,6 +66,7 @@ function TelegramBackButton() {
 
 export function AppWithNavigator() {
   const isTelegram = isInTelegramWebApp();
+  useThemeInit();
 
   return (
     <BrowserRouter>
@@ -71,13 +75,14 @@ export function AppWithNavigator() {
         <PlatformProvider>
           <ThemeColorsProvider>
             <TooltipProvider>
-              <ToastProvider>
-                <WebSocketProvider>
-                  <Twemoji options={TWEMOJI_OPTIONS}>
-                    <App />
-                  </Twemoji>
-                </WebSocketProvider>
-              </ToastProvider>
+              <WebSocketProvider>
+                <Twemoji options={TWEMOJI_OPTIONS}>
+                  <App />
+                </Twemoji>
+              </WebSocketProvider>
+              <Toaster />
+              <GlobalSearch />
+              <KeyboardShortcutsHelp />
             </TooltipProvider>
           </ThemeColorsProvider>
         </PlatformProvider>

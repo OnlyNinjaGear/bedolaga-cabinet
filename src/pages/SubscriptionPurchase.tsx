@@ -2,12 +2,11 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
+import { Button } from '@/components/ui/button';
 import { AxiosError } from 'axios';
 import { subscriptionApi } from '../api/subscription';
 import { promoApi } from '../api/promo';
 import { WebBackButton } from '../components/WebBackButton';
-import { getGlassColors } from '../utils/glassTheme';
-import { useTheme } from '../hooks/useTheme';
 import type {
   PurchaseSelection,
   PeriodOption,
@@ -34,8 +33,6 @@ export default function SubscriptionPurchase() {
     ? parseInt(searchParams.get('subscriptionId')!, 10)
     : undefined;
   const { formatAmount, currencySymbol } = useCurrency();
-  const { isDark } = useTheme();
-  const g = getGlassColors(isDark);
 
   const formatPrice = (kopeks: number) => `${formatAmount(kopeks / 100)} ${currencySymbol}`;
 
@@ -378,7 +375,7 @@ export default function SubscriptionPurchase() {
   if (isLoading || optionsLoading) {
     return (
       <div className="flex min-h-64 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+        <div className="border-primary h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
@@ -386,23 +383,14 @@ export default function SubscriptionPurchase() {
   if (optionsError || (!purchaseOptions && !optionsLoading)) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">{t('subscription.extend')}</h1>
-        <div
-          className="rounded-3xl p-6 text-center"
-          style={{
-            background: g.cardBg,
-            border: `1px solid ${g.cardBorder}`,
-          }}
-        >
-          <p className="mb-4 text-dark-300">
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
+          {t('subscription.extend')}
+        </h1>
+        <div className="border-border bg-card rounded-3xl border p-6 text-center">
+          <p className="text-muted-foreground mb-4">
             {t('subscription.loadError', 'Не удалось загрузить варианты подписки')}
           </p>
-          <button
-            onClick={() => refetchOptions()}
-            className="rounded-xl bg-accent-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
-          >
-            {t('common.retry')}
-          </button>
+          <Button onClick={() => refetchOptions()}>{t('common.retry')}</Button>
         </div>
       </div>
     );
@@ -415,7 +403,7 @@ export default function SubscriptionPurchase() {
         <WebBackButton
           to={subscriptionId ? `/subscriptions/${subscriptionId}` : '/subscriptions'}
         />
-        <h1 className="text-2xl font-bold text-dark-50 sm:text-3xl">
+        <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
           {isMultiTariff && !subscriptionId
             ? t('subscription.newTariff', 'Новый тариф')
             : !isMultiTariff && subscription?.is_daily && !subscription?.is_trial
@@ -428,15 +416,7 @@ export default function SubscriptionPurchase() {
 
       {/* Tariffs Section */}
       {isTariffsMode && tariffs.length > 0 && (
-        <div
-          className="relative overflow-hidden rounded-3xl"
-          style={{
-            background: g.cardBg,
-            border: `1px solid ${g.cardBorder}`,
-            boxShadow: g.shadow,
-            padding: '24px 28px',
-          }}
-        >
+        <div className="border-border bg-card relative overflow-hidden rounded-3xl border px-7 py-6 shadow-sm">
           {/* Trial upgrade prompt — hidden when expired banner is active */}
           {subscription?.is_trial &&
             !(
@@ -449,21 +429,23 @@ export default function SubscriptionPurchase() {
                 className="mb-6 rounded-[14px] p-4"
                 style={{
                   background:
-                    'linear-gradient(135deg, rgba(255,184,0,0.08), rgba(var(--color-accent-400),0.06))',
-                  border: '1px solid rgba(255,184,0,0.15)',
+                    'linear-gradient(135deg, color-mix(in srgb, var(--color-warning-400) 8%, transparent), color-mix(in srgb, var(--primary) 6%, transparent))',
+                  border: '1px solid color-mix(in srgb, var(--color-warning-400) 15%, transparent)',
                 }}
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px]"
-                    style={{ background: 'rgba(255,184,0,0.12)' }}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
+                    style={{
+                      background: 'color-mix(in srgb, var(--color-warning-400) 12%, transparent)',
+                    }}
                   >
                     <svg
                       width="16"
                       height="16"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#FFB800"
+                      stroke="var(--color-warning-400)"
                       strokeWidth="1.5"
                       aria-hidden="true"
                     >
@@ -475,10 +457,13 @@ export default function SubscriptionPurchase() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold" style={{ color: '#FFB800' }}>
+                    <div
+                      className="text-sm font-semibold"
+                      style={{ color: 'var(--color-warning-400)' }}
+                    >
                       {t('subscription.trialUpgrade.title')}
                     </div>
-                    <div className="mt-1 text-[12px] text-dark-50/40">
+                    <div className="text-foreground/40 mt-1 text-xs">
                       {t('subscription.trialUpgrade.description')}
                     </div>
                   </div>
@@ -494,21 +479,24 @@ export default function SubscriptionPurchase() {
               <div
                 className="mb-6 rounded-[14px] p-4"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255,59,92,0.08), rgba(255,184,0,0.06))',
-                  border: '1px solid rgba(255,59,92,0.15)',
+                  background:
+                    'linear-gradient(135deg, color-mix(in srgb, var(--color-error-400) 8%, transparent), color-mix(in srgb, var(--color-warning-400) 6%, transparent))',
+                  border: '1px solid color-mix(in srgb, var(--color-error-400) 15%, transparent)',
                 }}
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px]"
-                    style={{ background: 'rgba(255,59,92,0.12)' }}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
+                    style={{
+                      background: 'color-mix(in srgb, var(--color-error-400) 12%, transparent)',
+                    }}
                   >
                     <svg
                       width="16"
                       height="16"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#FF3B5C"
+                      stroke="var(--color-error-400)"
                       strokeWidth="1.5"
                       aria-hidden="true"
                     >
@@ -520,10 +508,13 @@ export default function SubscriptionPurchase() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold" style={{ color: '#FF3B5C' }}>
+                    <div
+                      className="text-sm font-semibold"
+                      style={{ color: 'var(--color-error-400)' }}
+                    >
                       {t('subscription.expiredBanner.title')}
                     </div>
-                    <div className="mt-1 text-[12px] text-dark-50/40">
+                    <div className="text-foreground/40 mt-1 text-xs">
                       {t('subscription.expiredBanner.selectTariff')}
                     </div>
                   </div>
@@ -533,14 +524,14 @@ export default function SubscriptionPurchase() {
 
           {/* Legacy subscription notice */}
           {subscription && !subscription.is_trial && !subscription.tariff_id && (
-            <div className="mb-6 rounded-xl border border-accent-500/30 bg-accent-500/10 p-4">
-              <div className="mb-2 font-medium text-accent-400">
+            <div className="border-primary/30 bg-primary/10 mb-6 rounded-xl border p-4">
+              <div className="text-primary mb-2 font-medium">
                 {t('subscription.legacy.selectTariffTitle')}
               </div>
-              <div className="text-sm text-dark-300">
+              <div className="text-muted-foreground text-sm">
                 {t('subscription.legacy.selectTariffDescription')}
               </div>
-              <div className="mt-2 text-xs text-dark-500">
+              <div className="text-muted-foreground mt-2 text-xs">
                 {t('subscription.legacy.currentSubContinues')}
               </div>
             </div>
@@ -548,22 +539,24 @@ export default function SubscriptionPurchase() {
 
           {/* Switch Tariff Preview Modal */}
           {switchTariffId && (
-            <div ref={switchModalRef} className="mb-6 space-y-4 rounded-xl bg-dark-800/50 p-5">
+            <div ref={switchModalRef} className="bg-card/50 mb-6 space-y-4 rounded-xl p-5">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium text-dark-100">
+                <h3 className="text-foreground font-medium">
                   {t('subscription.switchTariff.title')}
                 </h3>
-                <button
+                <Button
                   onClick={() => setSwitchTariffId(null)}
-                  className="text-sm text-dark-400 hover:text-dark-200"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   ✕
-                </button>
+                </Button>
               </div>
 
               {switchPreviewLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                  <div className="border-primary h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
                 </div>
               ) : (
                 switchPreview &&
@@ -576,45 +569,45 @@ export default function SubscriptionPurchase() {
                   return (
                     <>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between text-dark-300">
+                        <div className="text-muted-foreground flex justify-between">
                           <span>{t('subscription.switchTariff.currentTariff')}</span>
-                          <span className="font-medium text-dark-100">
+                          <span className="text-foreground font-medium">
                             {switchPreview.current_tariff_name || '-'}
                           </span>
                         </div>
-                        <div className="flex justify-between text-dark-300">
+                        <div className="text-muted-foreground flex justify-between">
                           <span>{t('subscription.switchTariff.newTariff')}</span>
-                          <span className="font-medium text-accent-400">
+                          <span className="text-primary font-medium">
                             {switchPreview.new_tariff_name}
                           </span>
                         </div>
-                        <div className="flex justify-between text-dark-300">
+                        <div className="text-muted-foreground flex justify-between">
                           <span>{t('subscription.switchTariff.remainingDays')}</span>
                           <span>{switchPreview.remaining_days}</span>
                         </div>
                       </div>
 
                       {isDailyTariff && (
-                        <div className="rounded-lg border border-accent-500/30 bg-accent-500/10 p-3 text-center">
-                          <div className="text-sm text-dark-300">
+                        <div className="border-primary/30 bg-primary/10 rounded-lg border p-3 text-center">
+                          <div className="text-muted-foreground text-sm">
                             {t('subscription.switchTariff.dailyPayment')}
                           </div>
-                          <div className="text-lg font-bold text-accent-400">
+                          <div className="text-primary text-lg font-bold">
                             {formatPrice(dailyPrice)}
                           </div>
-                          <div className="mt-1 text-xs text-dark-400">
+                          <div className="text-muted-foreground mt-1 text-xs">
                             {t('subscription.switchTariff.dailyChargeDescription')}
                           </div>
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between border-t border-dark-700/50 pt-3">
+                      <div className="border-border/50 flex items-center justify-between border-t pt-3">
                         <div>
-                          <span className="font-medium text-dark-100">
+                          <span className="text-foreground font-medium">
                             {t('subscription.switchTariff.upgradeCost')}
                           </span>
                           {switchPreview.discount_percent && switchPreview.discount_percent > 0 && (
-                            <span className="ml-2 inline-block rounded-full bg-success-500/20 px-2 py-0.5 text-xs font-medium text-success-400">
+                            <span className="bg-success-500/20 text-success-400 ml-2 inline-block rounded-full px-2 py-0.5 text-xs font-medium">
                               -{switchPreview.discount_percent}%
                             </span>
                           )}
@@ -624,12 +617,12 @@ export default function SubscriptionPurchase() {
                             switchPreview.discount_percent > 0 &&
                             switchPreview.base_upgrade_cost_kopeks &&
                             switchPreview.base_upgrade_cost_kopeks > 0 && (
-                              <span className="mr-2 text-sm text-dark-500 line-through">
+                              <span className="text-muted-foreground mr-2 text-sm line-through">
                                 {formatPrice(switchPreview.base_upgrade_cost_kopeks)}
                               </span>
                             )}
                           <span
-                            className={`text-lg font-bold ${switchPreview.upgrade_cost_kopeks === 0 ? 'text-success-400' : 'text-accent-400'}`}
+                            className={`text-lg font-bold ${switchPreview.upgrade_cost_kopeks === 0 ? 'text-success-400' : 'text-primary'}`}
                           >
                             {switchPreview.upgrade_cost_kopeks > 0
                               ? switchPreview.upgrade_cost_label
@@ -646,10 +639,10 @@ export default function SubscriptionPurchase() {
                           />
                         )}
 
-                      <button
+                      <Button
                         onClick={() => switchTariffMutation.mutate(switchTariffId)}
                         disabled={switchTariffMutation.isPending || !switchPreview.can_switch}
-                        className="btn-primary w-full py-2.5"
+                        className="w-full"
                       >
                         {switchTariffMutation.isPending ? (
                           <span className="flex items-center justify-center gap-2">
@@ -658,7 +651,7 @@ export default function SubscriptionPurchase() {
                         ) : (
                           t('subscription.switchTariff.switch')
                         )}
-                      </button>
+                      </Button>
 
                       {switchTariffMutation.isError &&
                         (() => {
@@ -673,7 +666,7 @@ export default function SubscriptionPurchase() {
                             return null;
                           }
                           return (
-                            <div className="mt-3 text-center text-sm text-error-400">
+                            <div className="text-error-400 mt-3 text-center text-sm">
                               {getErrorMessage(switchTariffMutation.error)}
                             </div>
                           );
@@ -689,8 +682,8 @@ export default function SubscriptionPurchase() {
             <>
               {/* Promo group discount banner */}
               {tariffs.some((tariff) => tariff.promo_group_name) && (
-                <div className="mb-4 flex items-center gap-3 rounded-xl border border-success-500/30 bg-success-500/10 p-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success-500/20 text-success-400">
+                <div className="border-success-500/30 bg-success-500/10 mb-4 flex items-center gap-3 rounded-xl border p-3">
+                  <div className="bg-success-500/20 text-success-400 flex h-8 w-8 items-center justify-center rounded-lg">
                     <svg
                       className="h-5 w-5"
                       fill="none"
@@ -706,12 +699,12 @@ export default function SubscriptionPurchase() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-success-400">
+                    <div className="text-success-400 text-sm font-medium">
                       {t('subscription.promoGroup.yourGroup', {
                         name: tariffs.find((tariff) => tariff.promo_group_name)?.promo_group_name,
                       })}
                     </div>
-                    <div className="text-xs text-dark-400">
+                    <div className="text-muted-foreground text-xs">
                       {t('subscription.promoGroup.personalDiscountsApplied')}
                     </div>
                   </div>
@@ -723,26 +716,20 @@ export default function SubscriptionPurchase() {
                 purchaseOptions &&
                 'all_tariffs_purchased' in purchaseOptions &&
                 purchaseOptions.all_tariffs_purchased && (
-                  <div
-                    className="rounded-2xl border p-6 text-center"
-                    style={{ background: g.cardBg, borderColor: g.cardBorder }}
-                  >
+                  <div className="border-border bg-card rounded-2xl border p-6 text-center">
                     <div className="mb-2 text-3xl">✅</div>
-                    <h3 className="mb-1 text-lg font-semibold" style={{ color: g.text }}>
+                    <h3 className="text-foreground mb-1 text-lg font-semibold">
                       {t('subscription.allTariffsPurchased', 'Все тарифы подключены')}
                     </h3>
-                    <p className="mb-4 text-sm" style={{ color: g.textSecondary }}>
+                    <p className="text-muted-foreground mb-4 text-sm">
                       {t(
                         'subscription.allTariffsPurchasedDesc',
                         'Вы уже приобрели все доступные тарифы. Продлить подписку можно на странице тарифа.',
                       )}
                     </p>
-                    <button
-                      onClick={() => navigate('/subscriptions')}
-                      className="rounded-xl bg-accent-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-600"
-                    >
+                    <Button onClick={() => navigate('/subscriptions')}>
                       {t('subscription.backToList', 'Мои подписки')}
-                    </button>
+                    </Button>
                   </div>
                 )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -785,14 +772,16 @@ export default function SubscriptionPurchase() {
                       <div
                         key={tariff.id}
                         className={`bento-card-hover p-5 text-left transition-all ${
-                          isCurrentTariff ? 'bento-card-glow border-accent-500' : ''
+                          isCurrentTariff ? 'bento-card-glow border-primary' : ''
                         }`}
                       >
                         <div className="mb-3 flex items-start justify-between">
                           <div>
-                            <div className="text-lg font-semibold text-dark-100">{tariff.name}</div>
+                            <div className="text-foreground text-lg font-semibold">
+                              {tariff.name}
+                            </div>
                             {tariff.description && (
-                              <div className="mt-1 whitespace-pre-line text-sm text-dark-400">
+                              <div className="text-muted-foreground mt-1 text-sm whitespace-pre-line">
                                 {tariff.description}
                               </div>
                             )}
@@ -806,7 +795,7 @@ export default function SubscriptionPurchase() {
                         <div className="flex flex-wrap gap-4 text-sm">
                           <div className="flex items-center gap-1.5">
                             <svg
-                              className="h-4 w-4 text-accent-400"
+                              className="text-primary h-4 w-4"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -818,13 +807,13 @@ export default function SubscriptionPurchase() {
                                 d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
                               />
                             </svg>
-                            <span className="font-medium text-dark-200">
+                            <span className="text-foreground font-medium">
                               {tariff.traffic_limit_label}
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             <svg
-                              className="h-4 w-4 text-dark-400"
+                              className="text-muted-foreground h-4 w-4"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -836,7 +825,7 @@ export default function SubscriptionPurchase() {
                                 d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
                               />
                             </svg>
-                            <span className="text-dark-300">
+                            <span className="text-muted-foreground">
                               {tariff.device_limit === 0
                                 ? '∞'
                                 : t('subscription.devices', { count: tariff.device_limit })}
@@ -846,7 +835,7 @@ export default function SubscriptionPurchase() {
                             tariff.traffic_reset_mode !== 'NO_RESET' && (
                               <div className="flex items-center gap-1.5">
                                 <svg
-                                  className="h-4 w-4 text-dark-400"
+                                  className="text-muted-foreground h-4 w-4"
                                   fill="none"
                                   viewBox="0 0 24 24"
                                   stroke="currentColor"
@@ -858,14 +847,14 @@ export default function SubscriptionPurchase() {
                                     d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182"
                                   />
                                 </svg>
-                                <span className="text-dark-300">
+                                <span className="text-muted-foreground">
                                   {t(`subscription.trafficReset.${tariff.traffic_reset_mode}`)}
                                 </span>
                               </div>
                             )}
                         </div>
                         {/* Price info */}
-                        <div className="mt-3 border-t border-dark-700/50 pt-3 text-sm text-dark-400">
+                        <div className="border-border/50 text-muted-foreground mt-3 border-t pt-3 text-sm">
                           {(() => {
                             const dailyPrice =
                               tariff.daily_price_kopeks ?? tariff.price_per_day_kopeks ?? 0;
@@ -877,12 +866,12 @@ export default function SubscriptionPurchase() {
                               );
                               return (
                                 <span className="flex items-center gap-2">
-                                  <span className="font-medium text-accent-400">
+                                  <span className="text-primary font-medium">
                                     {formatPrice(promoDaily.price)}
                                   </span>
                                   {promoDaily.original &&
                                     promoDaily.original > promoDaily.price && (
-                                      <span className="text-xs text-dark-500 line-through">
+                                      <span className="text-muted-foreground text-xs line-through">
                                         {formatPrice(promoDaily.original)}
                                       </span>
                                     )}
@@ -910,12 +899,12 @@ export default function SubscriptionPurchase() {
                               return (
                                 <span className="flex flex-wrap items-center gap-2">
                                   <span>{t('subscription.from')}</span>
-                                  <span className="font-medium text-accent-400">
+                                  <span className="text-primary font-medium">
                                     {formatPrice(promoPeriod.price)}
                                   </span>
                                   {promoPeriod.original &&
                                     promoPeriod.original > promoPeriod.price && (
-                                      <span className="text-xs text-dark-500 line-through">
+                                      <span className="text-muted-foreground text-xs line-through">
                                         {formatPrice(promoPeriod.original)}
                                       </span>
                                     )}
@@ -934,7 +923,7 @@ export default function SubscriptionPurchase() {
                               );
                             }
                             return (
-                              <span className="font-medium text-accent-400">
+                              <span className="text-primary font-medium">
                                 {t('subscription.tariff.flexiblePayment')}
                               </span>
                             );
@@ -945,50 +934,55 @@ export default function SubscriptionPurchase() {
                         <div className="mt-4 flex gap-2">
                           {isCurrentTariff ? (
                             subscription?.is_daily ? (
-                              <div className="flex-1 py-2 text-center text-sm text-dark-500">
+                              <div className="text-muted-foreground flex-1 py-2 text-center text-sm">
                                 {t('subscription.currentTariff')}
                               </div>
                             ) : (
-                              <button
+                              <Button
                                 onClick={() => {
                                   setSelectedTariff(tariff);
                                   setSelectedTariffPeriod(tariff.periods[0] || null);
                                   setShowTariffPurchase(true);
                                 }}
-                                className="btn-primary flex-1 py-2 text-sm"
+                                className="flex-1"
+                                size="sm"
                               >
                                 {t('subscription.extend')}
-                              </button>
+                              </Button>
                             )
                           ) : isLegacySubscription ? (
-                            <button
+                            <Button
                               onClick={() => {
                                 setSelectedTariff(tariff);
                                 setSelectedTariffPeriod(tariff.periods[0] || null);
                                 setShowTariffPurchase(true);
                               }}
-                              className="btn-primary flex-1 py-2 text-sm"
+                              className="flex-1"
+                              size="sm"
                             >
                               {t('subscription.tariff.selectForRenewal')}
-                            </button>
+                            </Button>
                           ) : canSwitch ? (
-                            <button
+                            <Button
+                              variant="secondary"
                               onClick={() => setSwitchTariffId(tariff.id)}
-                              className="btn-secondary flex-1 py-2 text-sm"
+                              className="flex-1"
+                              size="sm"
                             >
                               {t('subscription.switchTariff.switch')}
-                            </button>
+                            </Button>
                           ) : (
-                            <button
+                            <Button
                               onClick={() => {
                                 setSelectedTariff(tariff);
                                 setSelectedTariffPeriod(tariff.periods[0] || null);
                                 setShowTariffPurchase(true);
                               }}
-                              className="btn-primary flex-1 py-2 text-sm"
+                              className="flex-1"
+                              size="sm"
                             >
                               {t('subscription.purchase')}
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -1001,34 +995,34 @@ export default function SubscriptionPurchase() {
               /* Tariff Purchase Form */
               <div ref={tariffPurchaseRef} className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-dark-100">{selectedTariff.name}</h3>
-                  <button
+                  <h3 className="text-foreground text-lg font-medium">{selectedTariff.name}</h3>
+                  <Button
+                    variant="ghost"
                     onClick={() => {
                       setShowTariffPurchase(false);
                       setSelectedTariff(null);
                       setSelectedTariffPeriod(null);
                     }}
-                    className="text-dark-400 hover:text-dark-200"
                   >
                     ← {t('common.back')}
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Tariff Info */}
-                <div className="rounded-xl bg-dark-800/50 p-4">
+                <div className="bg-card/50 rounded-xl p-4">
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div>
-                      <span className="text-dark-500">{t('subscription.traffic')}:</span>
-                      <span className="ml-2 text-dark-200">
+                      <span className="text-muted-foreground">{t('subscription.traffic')}:</span>
+                      <span className="text-foreground ml-2">
                         {selectedTariff.traffic_limit_label}
                       </span>
                     </div>
                     <div>
-                      <span className="text-dark-500">{t('subscription.devices')}:</span>
-                      <span className="ml-2 text-dark-200">
+                      <span className="text-muted-foreground">{t('subscription.devices')}:</span>
+                      <span className="text-foreground ml-2">
                         {selectedTariff.device_limit === 0 ? '∞' : selectedTariff.device_limit}
                         {selectedTariff.extra_devices_count > 0 && (
-                          <span className="ml-1 text-xs text-accent-400">
+                          <span className="text-primary ml-1 text-xs">
                             (+{selectedTariff.extra_devices_count})
                           </span>
                         )}
@@ -1040,26 +1034,26 @@ export default function SubscriptionPurchase() {
                 {/* Daily Tariff Purchase */}
                 {selectedTariff.is_daily ||
                 (selectedTariff.daily_price_kopeks && selectedTariff.daily_price_kopeks > 0) ? (
-                  <div className="rounded-xl border border-accent-500/30 bg-accent-500/10 p-5">
+                  <div className="border-primary/30 bg-primary/10 rounded-xl border p-5">
                     <div className="mb-4 text-center">
-                      <div className="mb-2 text-sm text-dark-400">
+                      <div className="text-muted-foreground mb-2 text-sm">
                         {t('subscription.dailyPurchase.costPerDay')}
                       </div>
-                      <div className="text-3xl font-bold text-accent-400">
+                      <div className="text-primary text-3xl font-bold">
                         {formatPrice(selectedTariff.daily_price_kopeks || 0)}
                       </div>
                     </div>
-                    <div className="space-y-2 text-sm text-dark-400">
+                    <div className="text-muted-foreground space-y-2 text-sm">
                       <div className="flex items-start gap-2">
-                        <span className="text-accent-400">•</span>
+                        <span className="text-primary">•</span>
                         <span>{t('subscription.dailyPurchase.chargedDaily')}</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-accent-400">•</span>
+                        <span className="text-primary">•</span>
                         <span>{t('subscription.dailyPurchase.canPause')}</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="text-accent-400">•</span>
+                        <span className="text-primary">•</span>
                         <span>{t('subscription.dailyPurchase.pausedOnLowBalance')}</span>
                       </div>
                     </div>
@@ -1079,10 +1073,10 @@ export default function SubscriptionPurchase() {
                             />
                           )}
 
-                          <button
+                          <Button
                             onClick={() => tariffPurchaseMutation.mutate()}
                             disabled={tariffPurchaseMutation.isPending}
-                            className="btn-primary w-full py-3"
+                            className="w-full"
                           >
                             {tariffPurchaseMutation.isPending ? (
                               <span className="flex items-center justify-center gap-2">
@@ -1094,11 +1088,11 @@ export default function SubscriptionPurchase() {
                                 price: formatPrice(dailyPrice),
                               })
                             )}
-                          </button>
+                          </Button>
 
                           {tariffPurchaseMutation.isError &&
                             !getInsufficientBalanceError(tariffPurchaseMutation.error) && (
-                              <div className="mt-3 text-center text-sm text-error-400">
+                              <div className="text-error-400 mt-3 text-center text-sm">
                                 {getErrorMessage(tariffPurchaseMutation.error)}
                               </div>
                             )}
@@ -1123,7 +1117,7 @@ export default function SubscriptionPurchase() {
                   <>
                     {/* Period Selection for non-daily tariffs */}
                     <div>
-                      <div className="mb-3 text-sm text-dark-400">
+                      <div className="text-muted-foreground mb-3 text-sm">
                         {t('subscription.selectPeriod')}
                       </div>
 
@@ -1143,44 +1137,45 @@ export default function SubscriptionPurchase() {
                                 : period.price_per_month_kopeks;
 
                             return (
-                              <button
+                              <Button
                                 key={period.days}
                                 onClick={() => {
                                   setSelectedTariffPeriod(period);
                                   setUseCustomDays(false);
                                 }}
-                                className={`relative rounded-xl border p-4 text-left transition-all ${
+                                variant="ghost"
+                                className={`relative h-auto flex-col items-start rounded-xl border p-4 text-left transition-all ${
                                   selectedTariffPeriod?.days === period.days && !useCustomDays
-                                    ? 'border-accent-500 bg-accent-500/10'
-                                    : 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600'
+                                    ? 'border-primary bg-primary/10'
+                                    : 'border-border/50 bg-card/50 hover:border-border'
                                 }`}
                               >
                                 {displayDiscount && displayDiscount > 0 && (
                                   <div
-                                    className={`absolute -right-2 -top-2 rounded-full px-2 py-0.5 text-xs font-medium text-white ${
+                                    className={`absolute -top-2 -right-2 rounded-full px-2 py-0.5 text-xs font-medium text-white ${
                                       promoPeriod.isPromoGroup ? 'bg-success-500' : 'bg-orange-500'
                                     }`}
                                   >
                                     -{displayDiscount}%
                                   </div>
                                 )}
-                                <div className="text-lg font-semibold text-dark-100">
+                                <div className="text-foreground text-lg font-semibold">
                                   {period.label}
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-accent-400">
+                                  <span className="text-primary font-medium">
                                     {formatPrice(displayPrice)}
                                   </span>
                                   {displayOriginal && displayOriginal > displayPrice && (
-                                    <span className="text-sm text-dark-500 line-through">
+                                    <span className="text-muted-foreground text-sm line-through">
                                       {formatPrice(displayOriginal)}
                                     </span>
                                   )}
                                 </div>
-                                <div className="mt-1 text-xs text-dark-500">
+                                <div className="text-muted-foreground mt-1 text-xs">
                                   {formatPrice(displayPerMonth)}/{t('subscription.month')}
                                 </div>
-                              </button>
+                              </Button>
                             );
                           })}
                         </div>
@@ -1197,35 +1192,40 @@ export default function SubscriptionPurchase() {
                             <div className="mb-2 text-sm font-medium text-amber-400">
                               {t('subscription.noPeriodsAvailable')}
                             </div>
-                            <div className="text-xs text-dark-400">
+                            <div className="text-muted-foreground text-xs">
                               {t('subscription.noPeriodsAvailableHint')}
                             </div>
-                            <button
+                            <Button
+                              variant="secondary"
                               onClick={() => {
                                 setShowTariffPurchase(false);
                                 setSelectedTariff(null);
                                 setSelectedTariffPeriod(null);
                               }}
-                              className="btn-secondary mt-3 px-4 py-2 text-sm"
+                              className="mt-3"
+                              size="sm"
                             >
                               {t('subscription.chooseDifferentTariff')}
-                            </button>
+                            </Button>
                           </div>
                         )}
 
                       {/* Custom days option */}
                       {selectedTariff.custom_days_enabled &&
                         (selectedTariff.price_per_day_kopeks ?? 0) > 0 && (
-                          <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4">
+                          <div className="border-border/50 bg-card/50 rounded-xl border p-4">
                             <div className="mb-3 flex items-center justify-between">
-                              <span className="font-medium text-dark-200">
+                              <span className="text-foreground font-medium">
                                 {t('subscription.customDays.title')}
                               </span>
-                              <button
+                              <Button
                                 type="button"
                                 onClick={() => setUseCustomDays(!useCustomDays)}
-                                className={`relative h-6 w-10 rounded-full transition-colors ${
-                                  useCustomDays ? 'bg-accent-500' : 'bg-dark-600'
+                                variant="ghost"
+                                className={`relative h-6 w-10 rounded-full p-0 transition-colors ${
+                                  useCustomDays
+                                    ? 'bg-primary hover:bg-primary'
+                                    : 'bg-muted hover:bg-muted'
                                 }`}
                               >
                                 <span
@@ -1233,7 +1233,7 @@ export default function SubscriptionPurchase() {
                                     useCustomDays ? 'left-5' : 'left-1'
                                   }`}
                                 />
-                              </button>
+                              </Button>
                             </div>
                             {useCustomDays && (
                               <div className="space-y-3">
@@ -1244,7 +1244,7 @@ export default function SubscriptionPurchase() {
                                     max={selectedTariff.max_days ?? 365}
                                     value={customDays}
                                     onChange={(e) => setCustomDays(parseInt(e.target.value))}
-                                    className="flex-1 accent-accent-500"
+                                    className="accent-accent-500 flex-1"
                                   />
                                   <input
                                     type="number"
@@ -1263,7 +1263,7 @@ export default function SubscriptionPurchase() {
                                         ),
                                       )
                                     }
-                                    className="w-20 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-center text-dark-100"
+                                    className="border-border bg-muted text-foreground w-20 rounded-lg border px-3 py-2 text-center"
                                   />
                                 </div>
                                 {(() => {
@@ -1281,19 +1281,19 @@ export default function SubscriptionPurchase() {
                                   );
                                   return (
                                     <div className="flex justify-between text-sm">
-                                      <span className="text-dark-400">
+                                      <span className="text-muted-foreground">
                                         {t('subscription.days', { count: customDays })} ×{' '}
                                         {formatPrice(selectedTariff.price_per_day_kopeks ?? 0)}/
                                         {t('subscription.customDays.perDay')}
                                       </span>
                                       <div className="flex items-center gap-2">
-                                        <span className="font-medium text-accent-400">
+                                        <span className="text-primary font-medium">
                                           {formatPrice(promoCustom.price)}
                                         </span>
                                         {promoCustom.original &&
                                           promoCustom.original > promoCustom.price && (
                                             <>
-                                              <span className="text-xs text-dark-500 line-through">
+                                              <span className="text-muted-foreground text-xs line-through">
                                                 {formatPrice(promoCustom.original)}
                                               </span>
                                               <span
@@ -1321,19 +1321,22 @@ export default function SubscriptionPurchase() {
                     {selectedTariff.custom_traffic_enabled &&
                       (selectedTariff.traffic_price_per_gb_kopeks ?? 0) > 0 && (
                         <div>
-                          <div className="mb-3 text-sm text-dark-400">
+                          <div className="text-muted-foreground mb-3 text-sm">
                             {t('subscription.customTraffic.label')}
                           </div>
-                          <div className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4">
+                          <div className="border-border/50 bg-card/50 rounded-xl border p-4">
                             <div className="mb-3 flex items-center justify-between">
-                              <span className="font-medium text-dark-200">
+                              <span className="text-foreground font-medium">
                                 {t('subscription.customTraffic.selectVolume')}
                               </span>
-                              <button
+                              <Button
                                 type="button"
                                 onClick={() => setUseCustomTraffic(!useCustomTraffic)}
-                                className={`relative h-6 w-10 rounded-full transition-colors ${
-                                  useCustomTraffic ? 'bg-accent-500' : 'bg-dark-600'
+                                variant="ghost"
+                                className={`relative h-6 w-10 rounded-full p-0 transition-colors ${
+                                  useCustomTraffic
+                                    ? 'bg-primary hover:bg-primary'
+                                    : 'bg-muted hover:bg-muted'
                                 }`}
                               >
                                 <span
@@ -1341,10 +1344,10 @@ export default function SubscriptionPurchase() {
                                     useCustomTraffic ? 'left-5' : 'left-1'
                                   }`}
                                 />
-                              </button>
+                              </Button>
                             </div>
                             {!useCustomTraffic && (
-                              <div className="text-sm text-dark-400">
+                              <div className="text-muted-foreground text-sm">
                                 {t('subscription.customTraffic.default', {
                                   label: selectedTariff.traffic_limit_label,
                                 })}
@@ -1359,7 +1362,7 @@ export default function SubscriptionPurchase() {
                                     max={selectedTariff.max_traffic_gb ?? 1000}
                                     value={customTrafficGb}
                                     onChange={(e) => setCustomTrafficGb(parseInt(e.target.value))}
-                                    className="flex-1 accent-accent-500"
+                                    className="accent-accent-500 flex-1"
                                   />
                                   <div className="flex items-center gap-2">
                                     <input
@@ -1379,18 +1382,20 @@ export default function SubscriptionPurchase() {
                                           ),
                                         )
                                       }
-                                      className="w-20 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-center text-dark-100"
+                                      className="border-border bg-muted text-foreground w-20 rounded-lg border px-3 py-2 text-center"
                                     />
-                                    <span className="text-dark-400">{t('common.units.gb')}</span>
+                                    <span className="text-muted-foreground">
+                                      {t('common.units.gb')}
+                                    </span>
                                   </div>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-dark-400">
+                                  <span className="text-muted-foreground">
                                     {customTrafficGb} {t('common.units.gb')} ×{' '}
                                     {formatPrice(selectedTariff.traffic_price_per_gb_kopeks ?? 0)}/
                                     {t('common.units.gb')}
                                   </span>
-                                  <span className="font-medium text-accent-400">
+                                  <span className="text-primary font-medium">
                                     +
                                     {formatPrice(
                                       customTrafficGb *
@@ -1406,7 +1411,7 @@ export default function SubscriptionPurchase() {
 
                     {/* Summary & Purchase */}
                     {(selectedTariffPeriod || useCustomDays) && (
-                      <div className="rounded-xl bg-dark-800/50 p-5">
+                      <div className="bg-card/50 rounded-xl p-5">
                         {(() => {
                           const basePeriodPrice = useCustomDays
                             ? customDays * (selectedTariff.price_per_day_kopeks ?? 0)
@@ -1441,7 +1446,7 @@ export default function SubscriptionPurchase() {
                             <>
                               <div className="mb-4 space-y-2">
                                 {useCustomDays ? (
-                                  <div className="flex justify-between text-sm text-dark-300">
+                                  <div className="text-muted-foreground flex justify-between text-sm">
                                     <span>
                                       {t('subscription.stepPeriod')}:{' '}
                                       {t('subscription.days', { count: customDays })}
@@ -1450,7 +1455,7 @@ export default function SubscriptionPurchase() {
                                       <span>{formatPrice(promoPeriod.price)}</span>
                                       {promoPeriod.original &&
                                         promoPeriod.original > promoPeriod.price && (
-                                          <span className="text-xs text-dark-500 line-through">
+                                          <span className="text-muted-foreground text-xs line-through">
                                             {formatPrice(promoPeriod.original)}
                                           </span>
                                         )}
@@ -1462,7 +1467,7 @@ export default function SubscriptionPurchase() {
                                       {(selectedTariffPeriod.extra_devices_count ?? 0) > 0 &&
                                       selectedTariffPeriod.base_tariff_price_kopeks ? (
                                         <>
-                                          <div className="flex justify-between text-sm text-dark-300">
+                                          <div className="text-muted-foreground flex justify-between text-sm">
                                             <span>
                                               {t('subscription.baseTariff')}:{' '}
                                               {selectedTariffPeriod.label}
@@ -1473,7 +1478,7 @@ export default function SubscriptionPurchase() {
                                               )}
                                             </span>
                                           </div>
-                                          <div className="flex justify-between text-sm text-dark-300">
+                                          <div className="text-muted-foreground flex justify-between text-sm">
                                             <span>
                                               {t('subscription.extraDevices')} (
                                               {selectedTariffPeriod.extra_devices_count})
@@ -1487,7 +1492,7 @@ export default function SubscriptionPurchase() {
                                           </div>
                                         </>
                                       ) : (
-                                        <div className="flex justify-between text-sm text-dark-300">
+                                        <div className="text-muted-foreground flex justify-between text-sm">
                                           <span>
                                             {t('subscription.summary.period', {
                                               label: selectedTariffPeriod.label,
@@ -1497,7 +1502,7 @@ export default function SubscriptionPurchase() {
                                             <span>{formatPrice(promoPeriod.price)}</span>
                                             {promoPeriod.original &&
                                               promoPeriod.original > promoPeriod.price && (
-                                                <span className="text-xs text-dark-500 line-through">
+                                                <span className="text-muted-foreground text-xs line-through">
                                                   {formatPrice(promoPeriod.original)}
                                                 </span>
                                               )}
@@ -1508,7 +1513,7 @@ export default function SubscriptionPurchase() {
                                   )
                                 )}
                                 {useCustomTraffic && selectedTariff.custom_traffic_enabled && (
-                                  <div className="flex justify-between text-sm text-dark-300">
+                                  <div className="text-muted-foreground flex justify-between text-sm">
                                     <span>
                                       {t('subscription.summary.traffic', { gb: customTrafficGb })}
                                     </span>
@@ -1525,26 +1530,26 @@ export default function SubscriptionPurchase() {
                                 </div>
                               )}
 
-                              <div className="mb-4 flex items-center justify-between border-t border-dark-700/50 pt-2">
-                                <span className="font-medium text-dark-100">
+                              <div className="border-border/50 mb-4 flex items-center justify-between border-t pt-2">
+                                <span className="text-foreground font-medium">
                                   {t('subscription.total')}
                                 </span>
                                 <div className="text-right">
-                                  <span className="text-2xl font-bold text-accent-400">
+                                  <span className="text-primary text-2xl font-bold">
                                     {formatPrice(totalPrice)}
                                   </span>
                                   {originalTotal && (
-                                    <div className="text-sm text-dark-500 line-through">
+                                    <div className="text-muted-foreground text-sm line-through">
                                       {formatPrice(originalTotal)}
                                     </div>
                                   )}
                                 </div>
                               </div>
 
-                              <button
+                              <Button
                                 onClick={() => tariffPurchaseMutation.mutate()}
                                 disabled={tariffPurchaseMutation.isPending}
-                                className="btn-primary w-full py-3"
+                                className="w-full"
                               >
                                 {tariffPurchaseMutation.isPending ? (
                                   <span className="flex items-center justify-center gap-2">
@@ -1554,14 +1559,14 @@ export default function SubscriptionPurchase() {
                                 ) : (
                                   t('subscription.purchase')
                                 )}
-                              </button>
+                              </Button>
                             </>
                           );
                         })()}
 
                         {tariffPurchaseMutation.isError &&
                           !getInsufficientBalanceError(tariffPurchaseMutation.error) && (
-                            <div className="mt-3 text-center text-sm text-error-400">
+                            <div className="text-error-400 mt-3 text-center text-sm">
                               {getErrorMessage(tariffPurchaseMutation.error)}
                             </div>
                           )}
@@ -1589,27 +1594,19 @@ export default function SubscriptionPurchase() {
 
       {/* Purchase/Extend Section - Classic Mode */}
       {classicOptions && classicOptions.periods.length > 0 && (
-        <div
-          className="relative overflow-hidden rounded-3xl"
-          style={{
-            background: g.cardBg,
-            border: `1px solid ${g.cardBorder}`,
-            boxShadow: g.shadow,
-            padding: '24px 28px',
-          }}
-        >
+        <div className="border-border bg-card relative overflow-hidden rounded-3xl border px-7 py-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-bold tracking-tight text-dark-50">
+            <h2 className="text-foreground text-base font-bold tracking-tight">
               {subscription && !subscription.is_trial
                 ? t('subscription.extend')
                 : t('subscription.getSubscription')}
             </h2>
             {!showPurchaseForm && (
-              <button onClick={() => setShowPurchaseForm(true)} className="btn-primary">
+              <Button onClick={() => setShowPurchaseForm(true)}>
                 {subscription && !subscription.is_trial
                   ? t('subscription.extend')
                   : t('subscription.getSubscription')}
-              </button>
+              </Button>
             )}
           </div>
 
@@ -1617,7 +1614,7 @@ export default function SubscriptionPurchase() {
             <div className="space-y-6">
               {/* Step Indicator */}
               <div className="mb-6 flex items-center justify-between">
-                <div className="text-sm text-dark-400">
+                <div className="text-muted-foreground text-sm">
                   {t('subscription.step', { current: currentStepIndex + 1, total: steps.length })}
                 </div>
                 <div className="flex gap-2">
@@ -1625,14 +1622,14 @@ export default function SubscriptionPurchase() {
                     <div
                       key={step}
                       className={`h-1 w-8 rounded-full transition-colors ${
-                        idx <= currentStepIndex ? 'bg-accent-500' : 'bg-dark-700'
+                        idx <= currentStepIndex ? 'bg-primary' : 'bg-muted'
                       }`}
                     />
                   ))}
                 </div>
               </div>
 
-              <div className="mb-4 text-lg font-medium text-dark-100">
+              <div className="text-foreground mb-4 text-lg font-medium">
                 {getStepLabel(currentStep)}
               </div>
 
@@ -1646,7 +1643,7 @@ export default function SubscriptionPurchase() {
                     );
 
                     return (
-                      <button
+                      <Button
                         key={period.id}
                         onClick={() => {
                           setSelectedPeriod(period);
@@ -1666,33 +1663,32 @@ export default function SubscriptionPurchase() {
                             setSelectedDevices(period.devices.current);
                           }
                         }}
-                        className={`bento-card-hover relative p-4 text-left transition-all ${
-                          selectedPeriod?.id === period.id
-                            ? 'bento-card-glow border-accent-500'
-                            : ''
+                        variant="ghost"
+                        className={`bento-card-hover relative h-auto flex-col items-start p-4 text-left transition-all ${
+                          selectedPeriod?.id === period.id ? 'bento-card-glow border-primary' : ''
                         }`}
                       >
                         {promoPeriod.percent && promoPeriod.percent > 0 && (
                           <div
-                            className={`absolute right-2 top-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
+                            className={`absolute top-2 right-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
                               promoPeriod.isPromoGroup ? 'bg-success-500' : 'bg-orange-500'
                             }`}
                           >
                             -{promoPeriod.percent}%
                           </div>
                         )}
-                        <div className="text-lg font-semibold text-dark-100">{period.label}</div>
+                        <div className="text-foreground text-lg font-semibold">{period.label}</div>
                         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-                          <span className="font-medium text-accent-400">
+                          <span className="text-primary font-medium">
                             {formatPrice(promoPeriod.price)}
                           </span>
                           {promoPeriod.original && promoPeriod.original > promoPeriod.price && (
-                            <span className="text-sm text-dark-500 line-through">
+                            <span className="text-muted-foreground text-sm line-through">
                               {formatPrice(promoPeriod.original)}
                             </span>
                           )}
                         </div>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -1708,35 +1704,34 @@ export default function SubscriptionPurchase() {
                     );
 
                     return (
-                      <button
+                      <Button
                         key={option.value}
                         onClick={() => setSelectedTraffic(option.value)}
                         disabled={!option.is_available}
-                        className={`bento-card-hover relative p-4 text-center transition-all ${
-                          selectedTraffic === option.value
-                            ? 'bento-card-glow border-accent-500'
-                            : ''
+                        variant="ghost"
+                        className={`bento-card-hover relative h-auto flex-col p-4 text-center transition-all ${
+                          selectedTraffic === option.value ? 'bento-card-glow border-primary' : ''
                         } ${!option.is_available ? 'cursor-not-allowed opacity-50' : ''}`}
                       >
                         {promoTraffic.percent && promoTraffic.percent > 0 && (
                           <div
-                            className={`absolute right-2 top-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
+                            className={`absolute top-2 right-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
                               promoTraffic.isPromoGroup ? 'bg-success-500' : 'bg-orange-500'
                             }`}
                           >
                             -{promoTraffic.percent}%
                           </div>
                         )}
-                        <div className="text-lg font-semibold text-dark-100">{option.label}</div>
+                        <div className="text-foreground text-lg font-semibold">{option.label}</div>
                         <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-                          <span className="text-accent-400">{formatPrice(promoTraffic.price)}</span>
+                          <span className="text-primary">{formatPrice(promoTraffic.price)}</span>
                           {promoTraffic.original && promoTraffic.original > promoTraffic.price && (
-                            <span className="text-xs text-dark-500 line-through">
+                            <span className="text-muted-foreground text-xs line-through">
                               {formatPrice(promoTraffic.original)}
                             </span>
                           )}
                         </div>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -1760,21 +1755,22 @@ export default function SubscriptionPurchase() {
                       );
 
                       return (
-                        <button
+                        <Button
                           key={server.uuid}
                           onClick={() => toggleServer(server.uuid)}
                           disabled={!server.is_available}
-                          className={`relative rounded-xl border p-4 text-left transition-all ${
+                          variant="ghost"
+                          className={`relative h-auto flex-col items-start rounded-xl border p-4 text-left transition-all ${
                             selectedServers.includes(server.uuid)
-                              ? 'border-accent-500 bg-accent-500/10'
+                              ? 'border-primary bg-primary/10'
                               : server.is_available
-                                ? 'border-dark-700/50 bg-dark-800/50 hover:border-dark-600'
-                                : 'cursor-not-allowed border-dark-800/30 bg-dark-900/30 opacity-50'
+                                ? 'border-border/50 bg-card/50 hover:border-border'
+                                : 'border-border/30 bg-background/30 cursor-not-allowed opacity-50'
                           }`}
                         >
                           {promoServer.percent && promoServer.percent > 0 ? (
                             <div
-                              className={`absolute right-2 top-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
+                              className={`absolute top-2 right-2 z-10 rounded-full px-2 py-0.5 text-xs font-medium text-white shadow-sm ${
                                 promoServer.isPromoGroup ? 'bg-success-500' : 'bg-orange-500'
                               }`}
                             >
@@ -1783,31 +1779,31 @@ export default function SubscriptionPurchase() {
                           ) : null}
                           <div className="flex items-center gap-3">
                             <div
-                              className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 ${
+                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 ${
                                 selectedServers.includes(server.uuid)
-                                  ? 'border-accent-500 bg-accent-500'
-                                  : 'border-dark-600'
+                                  ? 'border-primary bg-primary'
+                                  : 'border-border'
                               }`}
                             >
                               {selectedServers.includes(server.uuid) && <CheckIcon />}
                             </div>
                             <div>
-                              <div className="font-medium text-dark-100">{server.name}</div>
+                              <div className="text-foreground font-medium">{server.name}</div>
                               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                <span className="text-sm text-accent-400">
+                                <span className="text-primary text-sm">
                                   {formatPrice(promoServer.price)}
                                   {t('subscription.perMonth')}
                                 </span>
                                 {promoServer.original &&
                                 promoServer.original > promoServer.price ? (
-                                  <span className="text-xs text-dark-500 line-through">
+                                  <span className="text-muted-foreground text-xs line-through">
                                     {formatPrice(promoServer.original)}
                                   </span>
                                 ) : null}
                               </div>
                             </div>
                           </div>
-                        </button>
+                        </Button>
                       );
                     })}
                 </div>
@@ -1817,35 +1813,37 @@ export default function SubscriptionPurchase() {
               {currentStep === 'devices' && selectedPeriod && (
                 <div className="flex flex-col items-center py-8">
                   <div className="flex items-center gap-6">
-                    <button
+                    <Button
+                      variant="secondary"
                       onClick={() =>
                         setSelectedDevices(
                           Math.max(selectedPeriod.devices.min, selectedDevices - 1),
                         )
                       }
                       disabled={selectedDevices <= selectedPeriod.devices.min}
-                      className="btn-secondary flex h-14 w-14 items-center justify-center !p-0 text-2xl"
+                      className="h-14 w-14 p-0 text-2xl"
                     >
                       -
-                    </button>
+                    </Button>
                     <div className="text-center">
-                      <div className="text-5xl font-bold text-dark-100">{selectedDevices}</div>
-                      <div className="mt-2 text-dark-500">{t('subscription.devices')}</div>
+                      <div className="text-foreground text-5xl font-bold">{selectedDevices}</div>
+                      <div className="text-muted-foreground mt-2">{t('subscription.devices')}</div>
                     </div>
-                    <button
+                    <Button
+                      variant="secondary"
                       onClick={() =>
                         setSelectedDevices(
                           Math.min(selectedPeriod.devices.max, selectedDevices + 1),
                         )
                       }
                       disabled={selectedDevices >= selectedPeriod.devices.max}
-                      className="btn-secondary flex h-14 w-14 items-center justify-center !p-0 text-2xl"
+                      className="h-14 w-14 p-0 text-2xl"
                     >
                       +
-                    </button>
+                    </Button>
                   </div>
-                  <div className="mt-4 space-y-1 text-center text-sm text-dark-500">
-                    <div className="text-accent-400">
+                  <div className="text-muted-foreground mt-4 space-y-1 text-center text-sm">
+                    <div className="text-primary">
                       {t('subscription.devicesFree', { count: selectedPeriod.devices.min })}
                     </div>
                     {selectedPeriod.devices.max > selectedPeriod.devices.min && (
@@ -1863,10 +1861,10 @@ export default function SubscriptionPurchase() {
                 <div>
                   {previewLoading ? (
                     <div className="flex items-center justify-center py-8">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                      <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
                     </div>
                   ) : preview ? (
-                    <div className="space-y-4 rounded-xl bg-dark-800/50 p-5">
+                    <div className="bg-card/50 space-y-4 rounded-xl p-5">
                       {activeDiscount?.is_active && activeDiscount.discount_percent && (
                         <div className="flex items-center justify-center gap-2 rounded-lg border border-orange-500/30 bg-orange-500/10 p-3">
                           <svg
@@ -1889,7 +1887,7 @@ export default function SubscriptionPurchase() {
                       )}
 
                       {preview.breakdown.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-dark-300">
+                        <div key={idx} className="text-muted-foreground flex justify-between">
                           <span>{item.label}</span>
                           <span>{item.value}</span>
                         </div>
@@ -1902,16 +1900,16 @@ export default function SubscriptionPurchase() {
                         );
 
                         return (
-                          <div className="flex items-center justify-between border-t border-dark-700/50 pt-4">
-                            <span className="text-lg font-semibold text-dark-100">
+                          <div className="border-border/50 flex items-center justify-between border-t pt-4">
+                            <span className="text-foreground text-lg font-semibold">
                               {t('subscription.total')}
                             </span>
                             <div className="text-right">
-                              <div className="text-2xl font-bold text-accent-400">
+                              <div className="text-primary text-2xl font-bold">
                                 {formatPrice(promoTotal.price)}
                               </div>
                               {promoTotal.original && promoTotal.original > promoTotal.price && (
-                                <div className="text-sm text-dark-500 line-through">
+                                <div className="text-muted-foreground text-sm line-through">
                                   {formatPrice(promoTotal.original)}
                                 </div>
                               )}
@@ -1921,7 +1919,7 @@ export default function SubscriptionPurchase() {
                       })()}
 
                       {preview.discount_label && (
-                        <div className="text-center text-sm text-success-400">
+                        <div className="text-success-400 text-center text-sm">
                           {preview.discount_label}
                         </div>
                       )}
@@ -1933,7 +1931,7 @@ export default function SubscriptionPurchase() {
                             compact
                           />
                         ) : preview.status_message ? (
-                          <div className="rounded-lg bg-error-500/10 px-4 py-3 text-center text-sm text-error-400">
+                          <div className="bg-error-500/10 text-error-400 rounded-lg px-4 py-3 text-center text-sm">
                             {preview.status_message}
                           </div>
                         ) : null)}
@@ -1943,34 +1941,30 @@ export default function SubscriptionPurchase() {
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex gap-3 border-t border-dark-800/50 pt-4">
+              <div className="border-border/50 flex gap-3 border-t pt-4">
                 {!isFirstStep && (
-                  <button onClick={goToPrevStep} className="btn-secondary flex-1">
+                  <Button variant="secondary" onClick={goToPrevStep} className="flex-1">
                     {t('common.back')}
-                  </button>
+                  </Button>
                 )}
 
                 {isFirstStep && (
-                  <button onClick={resetPurchase} className="btn-secondary">
+                  <Button variant="secondary" onClick={resetPurchase}>
                     {t('common.cancel')}
-                  </button>
+                  </Button>
                 )}
 
                 {!isLastStep ? (
-                  <button
-                    onClick={goToNextStep}
-                    disabled={!selectedPeriod}
-                    className="btn-primary flex-1"
-                  >
+                  <Button onClick={goToNextStep} disabled={!selectedPeriod} className="flex-1">
                     {t('common.next')}
-                  </button>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => purchaseMutation.mutate()}
                     disabled={
                       purchaseMutation.isPending || previewLoading || !preview?.can_purchase
                     }
-                    className="btn-primary flex-1"
+                    className="flex-1"
                   >
                     {purchaseMutation.isPending ? (
                       <span className="flex items-center justify-center gap-2">
@@ -1980,12 +1974,12 @@ export default function SubscriptionPurchase() {
                     ) : (
                       t('subscription.purchase')
                     )}
-                  </button>
+                  </Button>
                 )}
               </div>
 
               {purchaseMutation.isError && (
-                <div className="text-center text-sm text-error-400">
+                <div className="text-error-400 text-center text-sm">
                   {getErrorMessage(purchaseMutation.error)}
                 </div>
               )}
@@ -1999,22 +1993,11 @@ export default function SubscriptionPurchase() {
         !optionsLoading &&
         !(isTariffsMode && tariffs.length > 0) &&
         !(classicOptions && classicOptions.periods.length > 0) && (
-          <div
-            className="rounded-3xl p-6 text-center"
-            style={{
-              background: g.cardBg,
-              border: `1px solid ${g.cardBorder}`,
-            }}
-          >
-            <p className="mb-4 text-dark-300">
+          <div className="border-border bg-card rounded-3xl border p-6 text-center">
+            <p className="text-muted-foreground mb-4">
               {t('subscription.noOptionsAvailable', 'Нет доступных вариантов подписки')}
             </p>
-            <button
-              onClick={() => refetchOptions()}
-              className="rounded-xl bg-accent-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
-            >
-              {t('common.retry')}
-            </button>
+            <Button onClick={() => refetchOptions()}>{t('common.retry')}</Button>
           </div>
         )}
     </div>

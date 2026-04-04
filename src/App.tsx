@@ -142,6 +142,11 @@ const AdminLandingEditor = lazyWithRetry(() => import('./pages/AdminLandingEdito
 const AdminLandingStats = lazyWithRetry(() => import('./pages/AdminLandingStats'));
 const AdminReferralNetwork = lazyWithRetry(() => import('./pages/ReferralNetwork'));
 
+// New admin pages
+const AdminNotifications = lazyWithRetry(() => import('./pages/AdminNotifications'));
+const AdminHealth = lazyWithRetry(() => import('./pages/AdminHealth'));
+const AdminSEO = lazyWithRetry(() => import('./pages/AdminSEO'));
+
 // News pages
 const NewsArticlePage = lazyWithRetry(() => import('./pages/NewsArticle'));
 const AdminNews = lazyWithRetry(() => import('./pages/AdminNews'));
@@ -1278,6 +1283,35 @@ function App() {
                 <AdminAuditLog />
               </LazyPage>
             </PermissionRoute>
+          }
+        />
+
+        <Route
+          path="/admin/notifications"
+          element={
+            <LazyPage>
+              <AdminNotifications />
+            </LazyPage>
+          }
+        />
+
+        <Route
+          path="/admin/health"
+          element={
+            <LazyPage>
+              <AdminHealth />
+            </LazyPage>
+          }
+        />
+
+        <Route
+          path="/admin/seo"
+          element={
+            <AdminRoute>
+              <LazyPage>
+                <AdminSEO />
+              </LazyPage>
+            </AdminRoute>
           }
         />
 

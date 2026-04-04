@@ -46,8 +46,8 @@ export function MobileBottomNav({
     <nav
       className={cn(
         'fixed z-50 transition-all duration-200 lg:hidden',
-        'bg-dark-900/95 backdrop-blur-linear',
-        'border border-dark-700/30',
+        'bg-card/80 backdrop-blur-xl',
+        'border-border border',
         isKeyboardOpen ? 'pointer-events-none opacity-0' : 'opacity-100',
       )}
       style={{
@@ -66,19 +66,21 @@ export function MobileBottomNav({
             to={item.path}
             onClick={handleNavClick}
             className={cn(
-              'relative flex min-w-[56px] flex-1 shrink-0 flex-col items-center justify-center rounded-2xl px-3 py-2.5 transition-all duration-200',
-              isActive(item.path) ? 'text-accent-400' : 'text-dark-500 hover:text-dark-300',
+              'relative flex min-w-14 flex-1 shrink-0 flex-col items-center justify-center rounded-2xl px-3 py-2.5 transition-all duration-200',
+              isActive(item.path)
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-muted-foreground',
             )}
           >
             {isActive(item.path) && (
               <motion.div
                 layoutId="bottom-nav-active"
-                className="absolute inset-0 rounded-2xl bg-accent-500/15"
+                className="bg-primary/15 absolute inset-0 rounded-2xl"
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               />
             )}
             <item.icon className="relative z-10 h-5 w-5" />
-            <span className="relative z-10 mt-1 whitespace-nowrap text-2xs">{item.label}</span>
+            <span className="text-2xs relative z-10 mt-1 whitespace-nowrap">{item.label}</span>
           </Link>
         ))}
       </div>

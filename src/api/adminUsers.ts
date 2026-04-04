@@ -703,4 +703,62 @@ export const adminUsersApi = {
     const response = await apiClient.get(`/cabinet/admin/users/${userId}/gifts`);
     return response.data;
   },
+
+  /**
+   * Fetch all users matching filters and export as a CSV file download.
+   * Fetches up to 5 000 users in one request (backend default max).
+   */
+  exportCsv: async (
+    params: {
+      search?: string;
+      status?: 'active' | 'blocked' | 'deleted';
+    } = {},
+  ): Promise<void> => {
+    const response = await apiClient.get<UsersListResponse>('/cabinet/admin/users', {
+      params: { ...params, limit: 5000, offset: 0 },
+    });
+    const users = response.data.users;
+
+    const escape = (v: unknown) => {
+      const s = String(v ?? '').replace(/"/g, '""');
+      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+    };
+
+    const headers = [
+      'ID',
+      'Telegram ID',
+      'Имя',
+      'Username',
+      'Статус',
+      'Статус подписки',
+      'Баланс (руб)',
+      'Покупок',
+      'Дата регистрации',
+    ];
+
+    const rows = users.map((u) =>
+      [
+        u.id,
+        u.telegram_id ?? '',
+        u.full_name ?? '',
+        u.username ?? '',
+        u.status ?? '',
+        u.subscription_status ?? '',
+        (u.balance_rubles ?? 0).toFixed(2),
+        u.purchase_count ?? 0,
+        u.created_at ? new Date(u.created_at).toLocaleDateString('ru-RU') : '',
+      ]
+        .map(escape)
+        .join(','),
+    );
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 };

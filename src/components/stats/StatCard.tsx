@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-const DEFAULT_VALUE_CLASS = 'text-dark-100';
+const DEFAULT_VALUE_CLASS = 'text-foreground';
 
 interface StatCardProps {
   label: string;
@@ -16,8 +16,8 @@ export function StatCard({
   valueClassName = DEFAULT_VALUE_CLASS,
 }: StatCardProps) {
   return (
-    <div className="rounded-xl bg-dark-800/30 p-3">
-      <div className="flex items-center gap-1.5 text-sm text-dark-500">
+    <div className="bg-card/30 rounded-xl p-3">
+      <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
         {icon}
         <span>{label}</span>
       </div>

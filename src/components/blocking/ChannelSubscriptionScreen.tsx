@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBlockingStore } from '../../store/blocking';
 import { apiClient, isChannelSubscriptionError } from '../../api/client';
+import { Button } from '@/components/ui/button';
 
 const CHECK_COOLDOWN_SECONDS = 5;
 
@@ -70,22 +71,22 @@ export default function ChannelSubscriptionScreen() {
   }, [clearBlocking, t]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-dark-950 p-6">
+    <div className="bg-background fixed inset-0 z-[100] flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-md text-center">
         {/* Icon */}
         <div className="mb-8">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
-            <svg className="h-12 w-12 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+          <div className="from-primary/20 to-primary/10 mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br">
+            <svg className="text-primary h-12 w-12" fill="currentColor" viewBox="0 0 24 24">
               <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
             </svg>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="mb-4 text-2xl font-bold text-white">{t('blocking.channel.title')}</h1>
+        <h1 className="text-foreground mb-4 text-2xl font-bold">{t('blocking.channel.title')}</h1>
 
         {/* Message */}
-        <p className="mb-6 text-lg text-gray-400">
+        <p className="text-muted-foreground mb-6 text-lg">
           {channelInfo?.message || t('blocking.channel.defaultMessage')}
         </p>
 
@@ -95,16 +96,20 @@ export default function ChannelSubscriptionScreen() {
             {channels.map((ch) => (
               <div
                 key={ch.channel_id}
-                className="flex items-center justify-between rounded-xl border border-red-500/30 bg-red-500/10 p-3"
+                className="border-destructive/30 bg-destructive/10 flex items-center justify-between rounded-xl border p-3"
               >
-                <span className="text-sm font-medium text-white">{ch.title || ch.channel_id}</span>
+                <span className="text-foreground text-sm font-medium">
+                  {ch.title || ch.channel_id}
+                </span>
                 {ch.channel_link && (
-                  <button
+                  <Button
                     onClick={() => safeOpenUrl(ch.channel_link)}
-                    className="rounded-lg bg-blue-500/20 px-3 py-1 text-xs font-medium text-blue-400 hover:bg-blue-500/30"
+                    variant="ghost"
+                    size="sm"
+                    className="bg-primary/20 text-primary hover:bg-primary/30 rounded-lg px-3 py-1 text-xs font-medium"
                   >
                     {t('blocking.channel.openChannel')}
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}
@@ -113,26 +118,27 @@ export default function ChannelSubscriptionScreen() {
 
         {/* Fallback: single channel (legacy) */}
         {channels.length === 0 && channelInfo?.channel_link && (
-          <button
+          <Button
             onClick={() => safeOpenUrl(channelInfo.channel_link)}
-            className="mb-6 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-4 font-semibold text-white transition-all duration-200 hover:from-blue-600 hover:to-cyan-600"
+            className="mb-6 flex w-full items-center justify-center gap-3 rounded-xl px-6 py-4 font-semibold transition-all duration-200"
           >
             {t('blocking.channel.openChannel')}
-          </button>
+          </Button>
         )}
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="border-destructive/30 bg-destructive/10 mb-4 rounded-xl border p-3">
+            <p className="text-destructive text-sm">{error}</p>
           </div>
         )}
 
         {/* Check subscription button */}
-        <button
+        <Button
           onClick={checkSubscription}
           disabled={isChecking || cooldown > 0}
-          className="flex w-full items-center justify-center gap-3 rounded-xl bg-dark-800 px-6 py-4 font-semibold text-white transition-all duration-200 hover:bg-dark-700 disabled:bg-dark-800 disabled:opacity-60"
+          variant="outline"
+          className="flex w-full items-center justify-center gap-3 rounded-xl px-6 py-4 font-semibold transition-all duration-200"
         >
           {isChecking ? (
             <>
@@ -161,7 +167,7 @@ export default function ChannelSubscriptionScreen() {
           ) : cooldown > 0 ? (
             <>
               <svg
-                className="h-5 w-5 text-gray-500"
+                className="text-muted-foreground h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -188,10 +194,10 @@ export default function ChannelSubscriptionScreen() {
               {t('blocking.channel.checkSubscription')}
             </>
           )}
-        </button>
+        </Button>
 
         {/* Hint */}
-        <p className="mt-4 text-sm text-gray-500">{t('blocking.channel.hint')}</p>
+        <p className="text-muted-foreground mt-4 text-sm">{t('blocking.channel.hint')}</p>
       </div>
     </div>
   );
